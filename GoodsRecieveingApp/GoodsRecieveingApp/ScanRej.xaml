@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="GoodsRecieveingApp.ScanRej"
+             Title="Reject Stock">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label x:Name="lblMainRej" Text="{Binding name}" FontSize="25"/>
+            <Entry MaxLength="14" HorizontalOptions="FillAndExpand" TextChanged="EntryRej_TextChanged" x:Name="txfRejCode" Focused="TxfRejCode_Focused"/>
+            <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblitemDescRej" FontSize="25"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100*"/>
+                    <ColumnDefinition Width="50*"/>
+                </Grid.ColumnDefinitions>
+                <Label Text="Order Qty" FontSize="20" FontAttributes="Bold" Grid.Column="0" Grid.Row="0"/>
+                <Label Text="Scan Qty" FontSize="20" FontAttributes="Bold" Grid.Column="0" Grid.Row="1"/>
+                <Label Text="Balance" FontSize="20" FontAttributes="Bold" Grid.Column="0" Grid.Row="2"/>
+                <Label x:Name="lblOrderQTY" FontSize="20" Grid.Column="1" Grid.Row="0"/>
+                <Label x:Name="lblScanQTY" FontSize="20" Grid.Column="1" Grid.Row="1"/>
+                <Label x:Name="lblBalance" FontSize="20" Grid.Column="1" Grid.Row="2"/>
+            </Grid>
+            <Button x:Name="PicImage" HeightRequest="150" WidthRequest="150" Clicked="PicImage_Clicked" IsVisible="False" BackgroundColor="Transparent"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

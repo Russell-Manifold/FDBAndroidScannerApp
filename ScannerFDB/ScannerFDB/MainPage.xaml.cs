@@ -21,5 +21,10 @@ namespace ScannerFDB
         {
             Navigation.PushAsync(new GoodsRecieveingApp.MainPage());
         }
+
+        private void Button_Clicked_1(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new AdminPage());
+        }
     }
 }

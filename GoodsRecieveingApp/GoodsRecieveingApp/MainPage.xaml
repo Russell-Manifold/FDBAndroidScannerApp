@@ -4,11 +4,27 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             x:Class="GoodsRecieveingApp.MainPage">
-
-    <StackLayout>
-        <Entry x:Name="txfUserCode" TextChanged="TxfUserCode_TextChanged"/> 
-        <Entry x:Name="txfPOCode" TextChanged="TxfPOCode_TextChanged"/>
+             x:Class="GoodsRecieveingApp.MainPage"
+             Title="Goods Receiving">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Back" Clicked="ToolbarItemComplete_Clicked"/>
+    </ContentPage.ToolbarItems>
+    <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">
+        <StackLayout Orientation="Horizontal">
+            <Label Text="User Barcode:"/>
+            <Entry x:Name="txfUserCode" HorizontalOptions="FillAndExpand" MaxLength="8"   TextChanged="TxfUserCode_TextChanged" Focused="TxfUserCode_Focused"/>
+        </StackLayout>
+        <StackLayout Orientation="Horizontal">
+            <Label Text="PO Barcode:"/>
+            <Entry x:Name="txfPOCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfPOCode_TextChanged" Focused="TxfPOCode_Focused"/>
+        </StackLayout>
+        <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
+        <StackLayout Orientation="Horizontal">
+            <Label x:Name="lblCompanyPre" Text="Supplier:" IsVisible="False"/>
+            <Label x:Name="lblCompany" IsVisible="False" />
+        </StackLayout>
+        <Button Text="Scan Accepted Items" Clicked="ButtonAccepted_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100" />
+        <Button Text="Scan Rejected Items" Clicked="ButtonRejected_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100"/>
+        <Button Text="View all items" Clicked="ButtonViewS_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100"/>
     </StackLayout>
-
 </ContentPage>

@@ -5,11 +5,11 @@ using SQLite;
 
 namespace Data.Model
 {
-    class BOMItem
+    public class BOMItem
     {
         [AutoIncrement,PrimaryKey]
         public int ID { get; set; }
-        public string PackCode { get; set; }
+        public string PackBarcode { get; set; }
         public string ItemCode { get; set; }
         public int Qty { get; set; }
     }

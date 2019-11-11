@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Data.Model;
+using System.Threading.Tasks;
 
 namespace Data.DataAccess
 {
@@ -15,6 +16,71 @@ namespace Data.DataAccess
             database.CreateTableAsync<BOMItem>().Wait();
             database.CreateTableAsync<DocHeader>().Wait();
             database.CreateTableAsync<DocLine>().Wait();
+            database.CreateTableAsync<DBInfo>().Wait();
+        }
+        public Task<DBInfo> GetAuthentication()
+        {
+            return database.Table<DBInfo>().FirstOrDefaultAsync();
+        }
+        public Task<DocHeader> GetHeader(string docNum)
+        {
+            return database.Table<DocHeader>().Where(x=>x.DocNum==docNum).FirstOrDefaultAsync();
+        }
+        public Task<int> SaveAuthAsync(DBInfo info)
+        {
+            return database.InsertAsync(info);
+        }
+        public Task<int> DeleteOldInfoAsync()
+        {
+            return database.Table<DBInfo>().DeleteAsync();
+        }
+        public Task<int>Delete(DocLine d)
+        {
+            return database.DeleteAsync(d);
+        }
+        public Task<int> Delete(DocHeader h)
+        {
+            return database.DeleteAsync(h);
+        }
+        public Task<int> DeleteBOMData()
+        {
+            return database.ExecuteAsync("DELETE FROM BOMItem");
+        }
+        public Task<int> Insert(DocLine data)
+        {
+            return database.InsertAsync(data);
+        }
+        public Task<int> Insert(BOMItem data)
+        {
+            return database.InsertAsync(data);
+        }
+        public Task<int> Insert(DocHeader data)
+        {
+            return database.InsertAsync(data);
+        }
+        public Task<int> Insert(DBInfo data)
+        {
+            return database.InsertAsync(data);
+        }
+        public Task<List<DocLine>> GetLinesAsync()
+        {
+            return database.Table<DocLine>().ToListAsync();
+        }
+        public Task<List<BOMItem>> GetBOMITEMSAsync()
+        {
+            return database.Table<BOMItem>().ToListAsync();
+        }
+        public Task<List<DocLine>> GetSpecificDocsAsync(string DocNumber)
+        {
+            return database.Table<DocLine>().Where(i => i.DocNum == DocNumber).ToListAsync();
+        }
+        public Task<DocLine> GetOneSpecificDocAsync(string DocNumber)
+        {
+            return database.Table<DocLine>().Where(i => i.DocNum == DocNumber && i.ItemQty != 0).FirstAsync();
+        }
+        public Task<BOMItem> GetBOMItem(string packBarcode)
+        {
+            return database.Table<BOMItem>().Where(i => i.PackBarcode == packBarcode).FirstAsync();
         }
         //public Task<User> GetOneUserAsync(string guid)
         //{
@@ -24,10 +90,7 @@ namespace Data.DataAccess
         //{
         //    return database.Table<PO>().Where(i => i.LindID == LindID).FirstOrDefaultAsync();
         //}
-        //public Task<List<User>> GetUsersAsync()
-        //{
-        //    return database.Table<User>().ToListAsync();
-        //}
+
         //public Task<List<PO>> GetPOAllAsync()
         //{
         //    return database.Table<PO>().ToListAsync();

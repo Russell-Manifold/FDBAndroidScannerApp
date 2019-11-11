@@ -5,10 +5,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="ScannerFDB.MainPage">
-
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Admin" Clicked="Button_Clicked_1"/>
+    </ContentPage.ToolbarItems>
     <StackLayout>
-        <Button Text="Click me!" Clicked="Button_Clicked"
-                />
+        <Button Text="Goods Receving" Clicked="Button_Clicked"/>
+        <Button Text="Repacking" Clicked="Button_Clicked"/>
+        <Button Text="Inventory Control" Clicked="Button_Clicked"/>
+        <Button Text="Picking and Packing" Clicked="Button_Clicked"/>
+        
     </StackLayout>
 
 </ContentPage>
