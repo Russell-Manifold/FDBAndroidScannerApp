@@ -8,12 +8,14 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Admin" Clicked="Button_Clicked_1"/>
     </ContentPage.ToolbarItems>
+    <ScrollView>
     <StackLayout>
-        <Button Text="Goods Receving" Clicked="Button_Clicked"/>
-        <Button Text="Repacking" Clicked="Button_Clicked"/>
-        <Button Text="Inventory Control" Clicked="Button_Clicked"/>
-        <Button Text="Picking and Packing" Clicked="Button_Clicked"/>
-        
-    </StackLayout>
+        <Button Text="Goods Receving" Clicked="Button_Clicked" ImageSource="ReceiveStck.png" FontSize="Large"  VerticalOptions="EndAndExpand" BackgroundColor="#FFFFFF"/>
+        <Button Text="Repacking" Clicked="Button_Clicked" ImageSource="repack.png" FontSize="Large" VerticalOptions="EndAndExpand" BackgroundColor="#FFFFFF"/>
+        <Button Text="Inventory Count" Clicked="Button_Clicked" ImageSource="InvCount.png" FontSize="Large" VerticalOptions="EndAndExpand" BackgroundColor="#FFFFFF"/>
+        <Button Text="Warehouse Transfer" Clicked="Button_Clicked" ImageSource="WHTrf.png" FontSize="Large" VerticalOptions="EndAndExpand" BackgroundColor="#FFFFFF"/>
+            <Button Text="Picking and Packing" Clicked="Button_Clicked" ImageSource="pickpack.png" FontSize="Large" VerticalOptions="EndAndExpand" BackgroundColor="#FFFFFF"/>
+        </StackLayout>
+    </ScrollView>
 
 </ContentPage>

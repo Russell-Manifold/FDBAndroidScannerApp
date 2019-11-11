@@ -28,6 +28,7 @@ namespace GoodsRecieveingApp
         {
             Thread.Sleep(100);
             CurrentUser = txfUserCode.Text;
+            txfPOCode.Focus();
         }
         private async void TxfPOCode_TextChanged(object sender, TextChangedEventArgs e)
         {

@@ -188,7 +188,7 @@ namespace GoodsRecieveingApp
         {
             if (wrong)
             {
-                string output = await DisplayActionSheet("Confirm:-Reset QTY to zero?", "YES", "NO");
+                string output = await DisplayActionSheet("Confirm:- Reset QTY to zero?", "YES", "NO");
                 switch (output)
                 {
                     case "NO":

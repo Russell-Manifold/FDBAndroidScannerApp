@@ -10,21 +10,26 @@
         <ToolbarItem Text="Back" Clicked="ToolbarItemComplete_Clicked"/>
     </ContentPage.ToolbarItems>
     <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">
-        <StackLayout Orientation="Horizontal">
-            <Label Text="User Barcode:"/>
-            <Entry x:Name="txfUserCode" HorizontalOptions="FillAndExpand" MaxLength="8"   TextChanged="TxfUserCode_TextChanged" Focused="TxfUserCode_Focused"/>
+        <StackLayout Orientation="Horizontal" Padding="0,20,0,0">
+            <Label Text="User Barcode:" HorizontalOptions="CenterAndExpand" FontSize="Large" />
         </StackLayout>
         <StackLayout Orientation="Horizontal">
-            <Label Text="PO Barcode:"/>
-            <Entry x:Name="txfPOCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfPOCode_TextChanged" Focused="TxfPOCode_Focused"/>
+            <Entry x:Name="txfUserCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfUserCode_TextChanged" Focused="TxfUserCode_Focused" TabIndex="0" />
+        </StackLayout>
+        
+        <StackLayout Orientation="Horizontal">
+            <Label Text="PO Barcode:" HorizontalOptions="CenterAndExpand" FontSize="Large"/>
+        </StackLayout>
+        <StackLayout Orientation="Horizontal">
+        <Entry x:Name="txfPOCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfPOCode_TextChanged" Focused="TxfPOCode_Focused" TabIndex="1"/>
         </StackLayout>
         <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
         <StackLayout Orientation="Horizontal">
             <Label x:Name="lblCompanyPre" Text="Supplier:" IsVisible="False"/>
             <Label x:Name="lblCompany" IsVisible="False" />
         </StackLayout>
-        <Button Text="Scan Accepted Items" Clicked="ButtonAccepted_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100" />
-        <Button Text="Scan Rejected Items" Clicked="ButtonRejected_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100"/>
-        <Button Text="View all items" Clicked="ButtonViewS_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100"/>
+        <Button Text="Accepted Items" Clicked="ButtonAccepted_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100" BackgroundColor="#fff" ImageSource="ItemAccept.png" FontSize="Large" />
+        <Button Text="Receive as Damaged" Clicked="ButtonRejected_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100" BackgroundColor="#fff" ImageSource="ItemAcceptDamaged.png" FontSize="Large"/>
+        <Button Text="All items" Clicked="ButtonViewS_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100" BackgroundColor="#fff" ImageSource="ViewAll.png" FontSize="Large"/>
     </StackLayout>
 </ContentPage>
