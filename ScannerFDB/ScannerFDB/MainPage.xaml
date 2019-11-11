@@ -6,7 +6,7 @@
              mc:Ignorable="d"
              x:Class="ScannerFDB.MainPage">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Admin" Clicked="Button_Clicked_1"/>
+        <ToolbarItem Text="Admin" Clicked="Button_Clicked_1" IconImageSource="settings.png"/>
     </ContentPage.ToolbarItems>
     <ScrollView>
     <StackLayout>

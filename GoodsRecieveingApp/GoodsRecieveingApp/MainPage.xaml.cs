@@ -82,11 +82,6 @@ namespace GoodsRecieveingApp
                 await DisplayAlert("Error", "Could not load info of the entered PO", "Try Again");
             }
         }
-        private async void ToolbarItemComplete_Clicked(object sender, EventArgs e)
-        {
-            await DisplayAlert("Complete","All items have been added","Okay");
-            await Navigation.PopAsync();
-        }
         private async Task<bool> GetItems(string code)
         {
             if (await RemoveAllOld(code))

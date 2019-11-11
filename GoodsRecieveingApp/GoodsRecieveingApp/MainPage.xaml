@@ -7,7 +7,7 @@
              x:Class="GoodsRecieveingApp.MainPage"
              Title="Goods Receiving">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Back" Clicked="ToolbarItemComplete_Clicked"/>
+        <ToolbarItem Text="Help" IconImageSource="helpicon.png"/>
     </ContentPage.ToolbarItems>
     <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">
         <StackLayout Orientation="Horizontal" Padding="0,20,0,0">
@@ -30,6 +30,6 @@
         </StackLayout>
         <Button Text="Accepted Items" Clicked="ButtonAccepted_Clicked" VerticalOptions="EndAndExpand" BackgroundColor="#fff" ImageSource="ItemAccept.png" FontSize="Large" />
         <Button Text="Receive as Damaged" Clicked="ButtonRejected_Clicked" VerticalOptions="EndAndExpand" BackgroundColor="#fff" ImageSource="ItemAcceptDamaged.png" FontSize="Large"/>
-        <Button Text="All items" Clicked="ButtonViewS_Clicked" VerticalOptions="EndAndExpand" BackgroundColor="#fff" ImageSource="ViewAll.png" FontSize="Large"/>
+        <Button Text="List All items" Clicked="ButtonViewS_Clicked" VerticalOptions="EndAndExpand" BackgroundColor="#fff" ImageSource="ViewAll.png" FontSize="Large"/>
     </StackLayout>
 </ContentPage>
