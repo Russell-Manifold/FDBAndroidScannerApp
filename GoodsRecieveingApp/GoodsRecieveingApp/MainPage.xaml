@@ -28,8 +28,8 @@
             <Label x:Name="lblCompanyPre" Text="Supplier:" IsVisible="False"/>
             <Label x:Name="lblCompany" IsVisible="False" />
         </StackLayout>
-        <Button Text="Accepted Items" Clicked="ButtonAccepted_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100" BackgroundColor="#fff" ImageSource="ItemAccept.png" FontSize="Large" />
-        <Button Text="Receive as Damaged" Clicked="ButtonRejected_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100" BackgroundColor="#fff" ImageSource="ItemAcceptDamaged.png" FontSize="Large"/>
-        <Button Text="All items" Clicked="ButtonViewS_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100" BackgroundColor="#fff" ImageSource="ViewAll.png" FontSize="Large"/>
+        <Button Text="Accepted Items" Clicked="ButtonAccepted_Clicked" VerticalOptions="EndAndExpand" BackgroundColor="#fff" ImageSource="ItemAccept.png" FontSize="Large" />
+        <Button Text="Receive as Damaged" Clicked="ButtonRejected_Clicked" VerticalOptions="EndAndExpand" BackgroundColor="#fff" ImageSource="ItemAcceptDamaged.png" FontSize="Large"/>
+        <Button Text="All items" Clicked="ButtonViewS_Clicked" VerticalOptions="EndAndExpand" BackgroundColor="#fff" ImageSource="ViewAll.png" FontSize="Large"/>
     </StackLayout>
 </ContentPage>
