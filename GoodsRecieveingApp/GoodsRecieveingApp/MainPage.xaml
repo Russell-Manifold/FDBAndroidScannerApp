@@ -12,11 +12,11 @@
     <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">
         <StackLayout Orientation="Horizontal">
             <Label Text="User Barcode:"/>
-            <Entry x:Name="txfUserCode" HorizontalOptions="FillAndExpand" MaxLength="8"   TextChanged="TxfUserCode_TextChanged" Focused="TxfUserCode_Focused"/>
+            <Entry x:Name="txfUserCode" HorizontalOptions="FillAndExpand" MaxLength="8"   TextChanged="TxfUserCode_TextChanged"/>
         </StackLayout>
         <StackLayout Orientation="Horizontal">
             <Label Text="PO Barcode:"/>
-            <Entry x:Name="txfPOCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfPOCode_TextChanged" Focused="TxfPOCode_Focused"/>
+            <Entry x:Name="txfPOCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfPOCode_TextChanged"/>
         </StackLayout>
         <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
         <StackLayout Orientation="Horizontal">

@@ -17,14 +17,19 @@ namespace ScannerFDB
             InitializeComponent();
         }
 
-        private void Button_Clicked(object sender, EventArgs e)
+        private void Button_Clicked_Goods_Receving(object sender, EventArgs e)
         {
             Navigation.PushAsync(new GoodsRecieveingApp.MainPage());
         }
 
-        private void Button_Clicked_1(object sender, EventArgs e)
+        private void Button_Clicked_Admin(object sender, EventArgs e)
         {
             Navigation.PushAsync(new AdminPage());
+        }
+
+        private void Button_Clicked_Repacking(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new RepackagingMoblie.MainPage());
         }
     }
 }

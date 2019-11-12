@@ -6,13 +6,13 @@
              mc:Ignorable="d"
              x:Class="ScannerFDB.MainPage">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Admin" Clicked="Button_Clicked_1"/>
+        <ToolbarItem Text="Admin" Clicked="Button_Clicked_Admin"/>
     </ContentPage.ToolbarItems>
     <StackLayout>
-        <Button Text="Goods Receving" Clicked="Button_Clicked"/>
-        <Button Text="Repacking" Clicked="Button_Clicked"/>
-        <Button Text="Inventory Control" Clicked="Button_Clicked"/>
-        <Button Text="Picking and Packing" Clicked="Button_Clicked"/>
+        <Button Text="Goods Receving" Clicked="Button_Clicked_Goods_Receving"/>
+        <Button Text="Repacking" Clicked="Button_Clicked_Repacking"/>
+        <Button Text="Inventory Control" Clicked="Button_Clicked_Repacking"/>
+        <Button Text="Picking and Packing" Clicked="Button_Clicked_Repacking"/>
         
     </StackLayout>
 

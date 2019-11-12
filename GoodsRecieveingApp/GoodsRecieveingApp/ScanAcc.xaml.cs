@@ -79,6 +79,7 @@ namespace GoodsRecieveingApp
                     PicImage.ImageSource = "Wrong.png";
                 }
             }
+            txfAccCode.Focus();
         }
         public bool Check(string Icode)
         {
@@ -101,28 +102,6 @@ namespace GoodsRecieveingApp
                 }
             }
             return false;
-        }
-        private void TxfAccCode_Focused(object sender, FocusEventArgs e)
-        {
-            ScanAsync();
-        }
-        private async void ScanAsync()
-        {
-            var scanPage = new ZXingScannerPage();
-            scanPage.OnScanResult += (result) => {
-                // Stop scanning
-                scanPage.IsScanning = false;
-
-                // Pop the page and show the result
-                Device.BeginInvokeOnMainThread(() => {
-                    Navigation.PopAsync();
-                    txfAccCode.Text = result.Text;
-                });
-            };
-
-            // Navigate to our scanner page
-            await Navigation.PushAsync(scanPage);
-
         }
         private async void SetQtyDisplay(string Icode)
         {

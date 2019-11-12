@@ -9,7 +9,7 @@
     <ContentPage.Content>
         <StackLayout>
             <Label x:Name="lblMainAcc" Text="{Binding name}" FontSize="25"/>
-            <Entry MaxLength="14" HorizontalOptions="FillAndExpand" TextChanged="EntryAcc_TextChanged" x:Name="txfAccCode" Focused="TxfAccCode_Focused"/>
+            <Entry MaxLength="14" HorizontalOptions="FillAndExpand" TextChanged="EntryAcc_TextChanged" x:Name="txfAccCode" />
             <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblitemDescAcc" FontSize="25"/>
             <Grid>
                 <Grid.RowDefinitions>

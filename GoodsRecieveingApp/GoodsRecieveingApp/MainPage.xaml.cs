@@ -146,42 +146,7 @@ namespace GoodsRecieveingApp
             }
             return false;
         }
-        private async void ScanAsync()
-        {
-            var scanPage = new ZXingScannerPage();
-            scanPage.OnScanResult += (result) => {
-                // Stop scanning
-                scanPage.IsScanning = false;
-
-                // Pop the page and show the result
-                Device.BeginInvokeOnMainThread(() => {
-                    Navigation.PopAsync();
-                    txfPOCode.Text = result.Text;
-                });
-            };
-
-            // Navigate to our scanner page
-            await Navigation.PushAsync(scanPage);
-
-        }
-        private async void ScanAsyncUserCode()
-        {
-            var scanPage = new ZXingScannerPage();
-            scanPage.OnScanResult += (result) => {
-                // Stop scanning
-                scanPage.IsScanning = false;
-
-                // Pop the page and show the result
-                Device.BeginInvokeOnMainThread(() => {
-                    Navigation.PopAsync();
-                    txfUserCode.Text = result.Text;
-                });
-            };
-
-            // Navigate to our scanner page
-            await Navigation.PushAsync(scanPage);
-
-        }
+ 
         private async void ButtonViewS_Clicked(object sender, EventArgs e)
         {
             try
@@ -199,17 +164,9 @@ namespace GoodsRecieveingApp
             if (txfUserCode.Text==""|| txfUserCode.Text == null)
             {
                 await DisplayAlert("Error!","Please Scan a user barcode","Okay");
-            }
-            else
-            {
-                ScanAsync();
-            }
-            
-        }
-        private void TxfUserCode_Focused(object sender, FocusEventArgs e)
-        {
-            ScanAsyncUserCode();
-        }
+                txfUserCode.Focus();
+            }                   
+        }       
         private async Task<bool> RemoveAllOld(string docNum)
         {
             try
