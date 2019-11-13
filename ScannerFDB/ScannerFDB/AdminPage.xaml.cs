@@ -52,15 +52,20 @@ namespace ScannerFDB
                             }                                                                                                        
                         }
                         LodingIndiactor.IsVisible = false;
-                        await DisplayAlert("Complete","All of the BOM's have been fetched","Okay");
+                        await DisplayAlert("Complete","All of the BOM's have been fetched","OK");
                     }
                 }
             }
             else
             {
                 LodingIndiactor.IsVisible = false;
-                await DisplayAlert("Error!!", "Please Reconnect to the internet", "Okay");
+                await DisplayAlert("Error!!", "Please Reconnect to the internet", "OK");
             }
+        }
+
+        private void Button_Clicked_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

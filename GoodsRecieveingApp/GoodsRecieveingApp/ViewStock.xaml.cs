@@ -86,12 +86,12 @@ namespace GoodsRecieveingApp
         {
             if (await Check())
             {
-                await DisplayAlert("Complete!", "The recieving for this PO is complete", "Okay");
+                await DisplayAlert("Complete!", "The recieving for this PO is complete", "OK");
                 //send GRV back to Pastel database
             }
             else
             {
-                await DisplayAlert("Errro!", "There is an error in the order, Please make sure all items are green", "Okay");
+                await DisplayAlert("Errro!", "There is an error in the order, Please make sure all items are green", "OK");
             }
         }
         private async Task<bool> Check()

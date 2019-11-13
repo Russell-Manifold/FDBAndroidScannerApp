@@ -3,28 +3,39 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:effects="clr-namespace:Xamarin.KeyboardHelper;assembly=Xamarin.KeyboardHelper"
              mc:Ignorable="d"
              x:Class="GoodsRecieveingApp.MainPage"
              Title="Goods Receiving">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Back" Clicked="ToolbarItemComplete_Clicked"/>
+        
     </ContentPage.ToolbarItems>
-    <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">
+  <ScrollView>
+      <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0">
         <StackLayout Orientation="Horizontal">
-            <Label Text="User Barcode:"/>
-            <Entry x:Name="txfUserCode" HorizontalOptions="FillAndExpand" MaxLength="8"   TextChanged="TxfUserCode_TextChanged"/>
+                <Label x:Name="lblUserCode" Text="User :" HorizontalOptions="CenterAndExpand"/>
         </StackLayout>
         <StackLayout Orientation="Horizontal">
-            <Label Text="PO Barcode:"/>
-            <Entry x:Name="txfPOCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfPOCode_TextChanged"/>
+                <Entry x:Name="txfUserCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfUserCode_TextChanged"  effects:KeyboardEffect.EnableKeyboard="False" effects:KeyboardEffect.RequestFocus="True" >
+                    <Entry.Effects>
+                        <effects:KeyboardEnableEffect />
+                    </Entry.Effects>
+                </Entry>
+        </StackLayout>
+        <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+                <Label x:Name="lblPOCode" Text="PO Number:" IsVisible="False"/>
+        </StackLayout>
+        <StackLayout Orientation="Horizontal">
+            <Entry x:Name="txfPOCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfPOCode_TextChanged" IsVisible="False" effects:KeyboardEffect.EnableKeyboard="False" />
         </StackLayout>
         <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
         <StackLayout Orientation="Horizontal">
-            <Label x:Name="lblCompanyPre" Text="Supplier:" IsVisible="False"/>
-            <Label x:Name="lblCompany" IsVisible="False" />
+            <Label x:Name="lblCompany" IsVisible="False" HorizontalOptions="FillAndExpand" FontSize="Large" />
         </StackLayout>
-        <Button Text="Scan Accepted Items" Clicked="ButtonAccepted_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100" />
-        <Button Text="Scan Rejected Items" Clicked="ButtonRejected_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100"/>
-        <Button Text="View all items" Clicked="ButtonViewS_Clicked" VerticalOptions="EndAndExpand" HeightRequest="100"/>
+        <Button Text="Accepted Items" Clicked="ButtonAccepted_Clicked" VerticalOptions="EndAndExpand" ImageSource="ItemAccept.png" BackgroundColor="Transparent" FontSize="Large"/>
+            <Button Text="Receive As Damaged" Clicked="ButtonRejected_Clicked" VerticalOptions="EndAndExpand" ImageSource="ItemAcceptDamaged.png" BackgroundColor="Transparent" FontSize="Large"/>
+            <Button Text="List All Items" Clicked="ButtonViewS_Clicked" VerticalOptions="EndAndExpand" ImageSource="ViewAll.png" BackgroundColor="Transparent" FontSize="Large"/>
     </StackLayout>
+    </ScrollView>
 </ContentPage>
+ 

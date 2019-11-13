@@ -6,14 +6,15 @@
              mc:Ignorable="d"
              x:Class="ScannerFDB.MainPage">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Admin" Clicked="Button_Clicked_Admin"/>
+        <ToolbarItem Text="Admin" Clicked="Button_Clicked_Admin" IconImageSource="settings.png"/>
     </ContentPage.ToolbarItems>
+    <ScrollView>
     <StackLayout>
-        <Button Text="Goods Receving" Clicked="Button_Clicked_Goods_Receving"/>
-        <Button Text="Repacking" Clicked="Button_Clicked_Repacking"/>
-        <Button Text="Inventory Control" Clicked="Button_Clicked_Repacking"/>
-        <Button Text="Picking and Packing" Clicked="Button_Clicked_Repacking"/>
-        
-    </StackLayout>
-
+        <Button Text="Goods Receving" Clicked="Button_Clicked_Goods_Receving" VerticalOptions="EndAndExpand" ImageSource="ReceiveStck.png" BackgroundColor="Transparent" FontSize="Large" />
+        <Button Text="Repacking" Clicked="Button_Clicked_Repacking" VerticalOptions="EndAndExpand" ImageSource="repack.png" BackgroundColor="Transparent" FontSize="Large"/>
+        <Button Text="Inventory Count" Clicked="Button_Clicked_Repacking" VerticalOptions="EndAndExpand" ImageSource="InvCount.png" BackgroundColor="Transparent" FontSize="Large"/>
+        <Button Text="Warehouse Transfer" Clicked="Button_Clicked_Repacking" VerticalOptions="EndAndExpand" ImageSource="WHTrf.png" BackgroundColor="Transparent" FontSize="Large"/>
+            <Button Text="Picking and Packing" Clicked="Button_Clicked_Repacking" VerticalOptions="EndAndExpand" ImageSource="pickpack.png" BackgroundColor="Transparent" FontSize="Large"/>
+        </StackLayout>
+    </ScrollView>
 </ContentPage>

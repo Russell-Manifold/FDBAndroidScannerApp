@@ -8,6 +8,7 @@
     <ContentPage.Content>
         <StackLayout Orientation="Vertical">
             <Button Text="Get BOM's" Clicked="Button_Clicked"/>
+            <Button Text="Connections Setup" Clicked="Button_Clicked_1"/>
             <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
         </StackLayout>
     </ContentPage.Content>

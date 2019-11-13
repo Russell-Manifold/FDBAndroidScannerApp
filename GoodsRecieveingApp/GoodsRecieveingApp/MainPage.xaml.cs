@@ -9,7 +9,6 @@ using Xamarin.Forms;
 using Data.Model;
 using Xamarin.Essentials;
 using System.Data;
-using ZXing.Net.Mobile.Forms;
 
 namespace GoodsRecieveingApp
 {
@@ -23,38 +22,51 @@ namespace GoodsRecieveingApp
         public MainPage()
         {
             InitializeComponent();
-        }      
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            txfUserCode.Focus();
+        }
+
         private void TxfUserCode_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Thread.Sleep(100);
             CurrentUser = txfUserCode.Text;
+            // MUST CHECK HERE FOR VALID USER
+
+            txfUserCode.IsVisible = false;
+            lblUserCode.IsVisible = false;
+            txfPOCode.IsVisible = true;
+            lblPOCode.IsVisible = true;
+            txfPOCode.Text = "";
             txfPOCode.Focus();
         }
+   
         private async void TxfPOCode_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            Thread.Sleep(100);            
+        {       
             if (txfPOCode.Text.Length == 8)
             {            
-                    LodingIndiactor.IsVisible = true;
-                    if (await GetItems(txfPOCode.Text.ToUpper()))
-                    {
-                        DocLine d = await App.Database.GetOneSpecificDocAsync(txfPOCode.Text.ToUpper());
-                        lblCompany.Text = d.SupplierName + " - " + d.SupplierCode;
-                        lblCompany.IsVisible = true;
-                        lblCompanyPre.IsVisible = true;
+                LodingIndiactor.IsVisible = true;
+                if (await GetItems(txfPOCode.Text.ToUpper()))
+                {
+                    DocLine d = await App.Database.GetOneSpecificDocAsync(txfPOCode.Text.ToUpper());
+                    lblCompany.Text = d.SupplierName + " - " + txfPOCode.Text.ToUpper();
+                    lblCompany.IsVisible = true;
+                    txfPOCode.IsVisible = false;
+                    lblPOCode.IsVisible = false;
                     try
-                    {
-                        await App.Database.Delete(await App.Database.GetHeader(d.DocNum));
-                    }
-                    catch
-                    {
+                {
+                    await App.Database.Delete(await App.Database.GetHeader(d.DocNum));
+                }
+                catch
+                {
 
-                    }                      
-                        await App.Database.Insert(new DocHeader {DocNum= txfPOCode.Text,User=txfUserCode.Text,AccName=d.SupplierName,AcctCode=d.SupplierCode});
-                        LodingIndiactor.IsVisible = false;
-                        await DisplayAlert("Done", "All the data has been loaded for this order", "Okay");                       
-                    }
-                            
+                }                      
+                    await App.Database.Insert(new DocHeader {DocNum= txfPOCode.Text,User=txfUserCode.Text,AccName=d.SupplierName,AcctCode=d.SupplierCode});
+                    LodingIndiactor.IsVisible = false;
+                    //await DisplayAlert("Done", "All the data has been loaded for this order", "OK");                       
+                }              
             }
         }     
         private async void ButtonAccepted_Clicked(object sender, EventArgs e)
@@ -130,14 +142,14 @@ namespace GoodsRecieveingApp
                         else
                         {
                             LodingIndiactor.IsVisible = false;
-                            await DisplayAlert("Error", "There is no data in this PO", "Okay");
+                            await DisplayAlert("Error", "There is no data in this PO", "OK");
                         }
                     }
                 }
                 else
                 {
                     LodingIndiactor.IsVisible = false;
-                    await DisplayAlert("Error!!", "Please Reconnect to the internet", "Okay");
+                    await DisplayAlert("Error!!", "Please Reconnect to the internet", "OK");
                 }
             }
             return false;
@@ -159,7 +171,7 @@ namespace GoodsRecieveingApp
         {
             if (txfUserCode.Text==""|| txfUserCode.Text == null)
             {
-                await DisplayAlert("Error!","Please Scan a user barcode","Okay");
+                await DisplayAlert("Error!","Please Scan a user barcode","OK");
                 txfUserCode.Focus();
             }                   
         }       
@@ -178,5 +190,6 @@ namespace GoodsRecieveingApp
             }
             return true;
         }
+        
     }
 }

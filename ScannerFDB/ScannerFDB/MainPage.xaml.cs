@@ -15,6 +15,7 @@ namespace ScannerFDB
         public MainPage()
         {
             InitializeComponent();
+            
         }
 
         private void Button_Clicked_Goods_Receving(object sender, EventArgs e)

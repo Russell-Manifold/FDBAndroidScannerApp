@@ -26,7 +26,7 @@ namespace GoodsRecieveingApp
         }
         private void ButtonRej_Clicked(object sender, EventArgs e)
         {
-            DisplayAlert("Complete","All items have been scanned into Rejected stock","Okay");
+            DisplayAlert("Complete","All items have been scanned into Rejected stock","OK");
             Navigation.PopAsync();
         }
         protected async override void OnAppearing()
@@ -47,7 +47,7 @@ namespace GoodsRecieveingApp
                 }
                 catch
                 {
-                    await DisplayAlert("Error!", "There is no item with this tag", "Okay");
+                    await DisplayAlert("Error!", "There is no item with this tag", "OK");
                     return;
                 }
                 if (Check(bi.ItemCode))
@@ -60,7 +60,7 @@ namespace GoodsRecieveingApp
                 }
                 else
                 {
-                    await DisplayAlert("Error!!", "There was no item on the PO with this barcode", "Okay");
+                    await DisplayAlert("Error!!", "There was no item on the PO with this barcode", "OK");
                     PicImage.IsVisible = true;
                     PicImage.ImageSource = "Wrong.png";
                 }
@@ -79,7 +79,7 @@ namespace GoodsRecieveingApp
                 }
                 else
                 {
-                    await DisplayAlert("Error!!","There was no item on the PO with this barcode","Okay");
+                    await DisplayAlert("Error!!","There was no item on the PO with this barcode","OK");
                     PicImage.IsVisible = true;
                     PicImage.ImageSource = "Wrong.png";
                 }
