@@ -1,4 +1,5 @@
 ﻿using Data.Model;
+using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,6 +67,11 @@ namespace ScannerFDB
         private void Button_Clicked_1(object sender, EventArgs e)
         {
 
+        }
+
+        private async void Add_User_Clicked(object sender, EventArgs e)
+        {
+            await PopupNavigation.Instance.PushAsync(new UserInfoPopup());
         }
     }
 }

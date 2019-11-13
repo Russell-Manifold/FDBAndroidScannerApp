@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rg.Plugins.Popup.Services;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -23,9 +24,9 @@ namespace ScannerFDB
             Navigation.PushAsync(new GoodsRecieveingApp.MainPage());
         }
 
-        private void Button_Clicked_Admin(object sender, EventArgs e)
+        private async void Button_Clicked_Admin(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new AdminPage());
+            await PopupNavigation.Instance.PushAsync(new Password());
         }
 
         private void Button_Clicked_Repacking(object sender, EventArgs e)

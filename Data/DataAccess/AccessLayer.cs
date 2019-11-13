@@ -17,6 +17,7 @@ namespace Data.DataAccess
             database.CreateTableAsync<DocHeader>().Wait();
             database.CreateTableAsync<DocLine>().Wait();
             database.CreateTableAsync<DBInfo>().Wait();
+            database.CreateTableAsync<User>().Wait();
         }
         public Task<DBInfo> GetAuthentication()
         {
@@ -46,6 +47,10 @@ namespace Data.DataAccess
         {
             return database.ExecuteAsync("DELETE FROM BOMItem");
         }
+        public Task<int> DeleteUser()
+        {
+            return database.ExecuteAsync("DELETE FROM User");
+        }
         public Task<int> Insert(DocLine data)
         {
             return database.InsertAsync(data);
@@ -61,6 +66,10 @@ namespace Data.DataAccess
         public Task<int> Insert(DBInfo data)
         {
             return database.InsertAsync(data);
+        }
+        public Task<int> Insert(User user)
+        {
+            return database.InsertAsync(user);
         }
         public Task<List<DocLine>> GetLinesAsync()
         {
@@ -81,59 +90,6 @@ namespace Data.DataAccess
         public Task<BOMItem> GetBOMItem(string packBarcode)
         {
             return database.Table<BOMItem>().Where(i => i.PackBarcode == packBarcode).FirstAsync();
-        }
-        //public Task<User> GetOneUserAsync(string guid)
-        //{
-        //    return database.Table<User>().Where(i => i.GUID == guid).FirstOrDefaultAsync();
-        //}
-        //public Task<PO> GetOnePOAsync(string LindID)
-        //{
-        //    return database.Table<PO>().Where(i => i.LindID == LindID).FirstOrDefaultAsync();
-        //}
-
-        //public Task<List<PO>> GetPOAllAsync()
-        //{
-        //    return database.Table<PO>().ToListAsync();
-        //}
-        //public Task<User> GetUserAsync()
-        //{
-        //    return database.Table<User>().FirstOrDefaultAsync();
-        //}
-
-        //public Task<List<PO>> GetPOAsync()
-        //{
-        //    return database.Table<PO>().ToListAsync();
-        //}
-
-        //public Task<int> SaveUserAsync(User user)
-        //{
-        //    return database.InsertAsync(user);
-        //}
-        //public Task<int> SavePOAsync(PO po)
-        //{
-        //    return database.InsertAsync(po);
-        //}
-
-        //public Task<int> DeleteUserAsync(User user)
-        //{
-        //    return database.DeleteAsync(user);
-        //}
-        //public Task<int> DeleteAllUsersAsync()
-        //{
-        //    return database.DeleteAllAsync<User>();
-        //}
-
-        //public Task<int> UpdateApproved(PO po)
-        //{
-        //    return database.UpdateAsync(po);
-        //}
-        //public Task<int> DeleteAllPOAsync()
-        //{
-        //    return database.DeleteAllAsync<PO>();
-        //}
-        //public Task<int> DeletePOAsync(PO deleter)
-        //{
-        //    return database.DeleteAsync(deleter);
-        //}
+        }       
     }
 }
