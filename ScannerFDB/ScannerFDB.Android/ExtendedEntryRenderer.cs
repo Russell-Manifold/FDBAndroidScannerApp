@@ -1,14 +1,15 @@
-using Android.Content;
+﻿using Android.Content;
 using Android.Text;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
+using Data.KeyboardContol;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
-[assembly: ExportRenderer(typeof(XamarinAndroidEntry.ExtendedEntry), typeof(XamarinAndroidEntry.Droid.ExtendedEntryRenderer))]
-namespace XamarinAndroidEntry.Droid
+[assembly: ExportRenderer(typeof(ExtendedEntry), typeof(ScannerFDB.Droid.ExtendedEntryRenderer))]
+namespace ScannerFDB.Droid
 {
     /// <summary>
     /// Class ExtendedEntryRenderer.

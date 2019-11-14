@@ -5,10 +5,13 @@ using Data.DataAccess;
 using Data.Model;
 using System.IO;
 using System.Threading;
+using Data.KeyboardContol;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace ScannerFDB
 {
-    public partial class App : Application
+    public partial class App : Xamarin.Forms.Application
     {
         static AccessLayer database;
         public App()
@@ -31,32 +34,9 @@ namespace ScannerFDB
                 return database;
             }
         }
-        protected async override void OnStart()
+        protected override void OnStart()
         {
-            //try
-            //{
-            //    RestSharp.RestClient client = new RestSharp.RestClient();
-            //    string path = "GetSDKAuth";
-            //    string API = "http://localhost:7721//api/";
-            //    client.BaseUrl = new Uri(API + path);
-            //    {
-            //        var Request = new RestSharp.RestRequest();
-            //        string str = "GET?auth=1154";
-            //        Request.Method = RestSharp.Method.GET;
-            //        Request.Resource = str;
-            //        var cancellationTokenSource = new CancellationTokenSource();                   
-            //        var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
-            //        if (res.IsSuccessful)
-            //        {
-            //            await database.DeleteOldInfoAsync();
-            //            await database.SaveAuthAsync(new DBInfo {DBPath="",APIPath="",SerNum="",Auth=""});
-            //        }
-            //    }
-            //}
-            //catch
-            //{
-
-            //}
+            App.Current.On<Android>().UseWindowSoftInputModeAdjust(WindowSoftInputModeAdjust.Resize);
         }
 
         protected override void OnSleep()

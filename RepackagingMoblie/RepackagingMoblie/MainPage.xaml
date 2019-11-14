@@ -4,13 +4,15 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             x:Class="RepackagingMoblie.MainPage">
+             x:Class="RepackagingMoblie.MainPage"
+             Title="Unpacking">
 
     <StackLayout>
-        <!-- Place new controls here -->
-        <Label Text="Repackaging Moblie center" 
-           HorizontalOptions="Center"
-           VerticalOptions="CenterAndExpand" />
+        <Label Text="Pack Barcode:"/>
+        <Entry x:Name="txfPackbarcode" TextChanged="TxfPackbarcode_TextChanged"/>
+        <Label x:Name="lblDesc"/>
+        <Label x:Name="lblQTY"/>
+        <Button Text="Go to Repacking" x:Name="btnGoToRepack" Clicked="BtnGoToRepack_Clicked"/>
     </StackLayout>
 
 </ContentPage>

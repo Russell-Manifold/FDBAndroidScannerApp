@@ -126,6 +126,10 @@
     <Folder Include="Resources\drawable\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Data\Data.csproj">
+      <Project>{2a790ad2-bc9a-409f-b074-a44b10447d40}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RepackagingMoblie\RepackagingMoblie.csproj">
       <Project>{2A75A3CB-F0DC-4C4F-8F3D-00269F83076B}</Project>
       <Name>RepackagingMoblie</Name>

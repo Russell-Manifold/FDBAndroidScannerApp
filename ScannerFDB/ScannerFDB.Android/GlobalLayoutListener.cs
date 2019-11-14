@@ -1,14 +1,20 @@
-﻿using Android.App;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using Android.App;
 using Android.Content;
 using Android.Graphics;
+using Android.OS;
+using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
-using System;
+using Data.KeyboardContol;
 
-
-namespace XamarinAndroidEntry.Droid
+namespace ScannerFDB.Droid
 {
     internal class GlobalLayoutListener : Java.Lang.Object, ViewTreeObserver.IOnGlobalLayoutListener
     {

@@ -1,4 +1,5 @@
-﻿using Rg.Plugins.Popup.Services;
+﻿using Data.KeyboardContol;
+using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,8 +16,7 @@ namespace ScannerFDB
     {
         public MainPage()
         {
-            InitializeComponent();
-            
+            InitializeComponent();                     
         }
 
         private void Button_Clicked_Goods_Receving(object sender, EventArgs e)
@@ -26,12 +26,12 @@ namespace ScannerFDB
 
         private async void Button_Clicked_Admin(object sender, EventArgs e)
         {
-            await PopupNavigation.Instance.PushAsync(new Password());
+            await Navigation.PushAsync(new AccessCheck());
         }
 
         private void Button_Clicked_Repacking(object sender, EventArgs e)
         {
             Navigation.PushAsync(new RepackagingMoblie.MainPage());
-        }
+        }                
     }
 }

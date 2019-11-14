@@ -95,9 +95,12 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtendedEntryRenderer.cs" />
+    <Compile Include="GlobalLayoutListener.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SoftwareKeyboardServiceDroid.cs" />
     <Compile Include="SplashPage.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -130,6 +133,10 @@
     <Folder Include="Resources\drawable-xxxhdpi\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Data\Data.csproj">
+      <Project>{2A790AD2-BC9A-409F-B074-A44B10447D40}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ScannerFDB\ScannerFDB.csproj">
       <Project>{DCA256EC-A75C-489A-86F7-5F7E3D222733}</Project>
       <Name>ScannerFDB</Name>

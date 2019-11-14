@@ -30,7 +30,7 @@ namespace GoodsRecieveingApp
             txfUserCode.Focus();
         }
 
-        private void TxfUserCode_TextChanged(object sender, TextChangedEventArgs e)
+        private async void TxfUserCode_TextChanged(object sender, TextChangedEventArgs e)
         {
             CurrentUser = txfUserCode.Text;
             // MUST CHECK HERE FOR VALID USER
@@ -40,6 +40,7 @@ namespace GoodsRecieveingApp
             txfPOCode.IsVisible = true;
             lblPOCode.IsVisible = true;
             txfPOCode.Text = "";
+            await Task.Delay(100);
             txfPOCode.Focus();
         }
    
