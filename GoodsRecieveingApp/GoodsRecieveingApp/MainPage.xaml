@@ -3,30 +3,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:effects="clr-namespace:Xamarin.KeyboardHelper;assembly=Xamarin.KeyboardHelper"
+             xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
              mc:Ignorable="d"
              x:Class="GoodsRecieveingApp.MainPage"
              Title="Goods Receiving">
-    <ContentPage.ToolbarItems>
-        
-    </ContentPage.ToolbarItems>
-  <ScrollView>
+    <ScrollView>
       <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0">
         <StackLayout Orientation="Horizontal">
                 <Label x:Name="lblUserCode" Text="User :" HorizontalOptions="CenterAndExpand"/>
         </StackLayout>
         <StackLayout Orientation="Horizontal">
-                <Entry x:Name="txfUserCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfUserCode_TextChanged"  effects:KeyboardEffect.EnableKeyboard="False" effects:KeyboardEffect.RequestFocus="True" >
-                    <Entry.Effects>
-                        <effects:KeyboardEnableEffect />
-                    </Entry.Effects>
-                </Entry>
-        </StackLayout>
+                <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False" x:Name="txfUserCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfUserCode_TextChanged"/>
+            </StackLayout>
         <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
                 <Label x:Name="lblPOCode" Text="PO Number:" IsVisible="False"/>
         </StackLayout>
         <StackLayout Orientation="Horizontal">
-            <Entry x:Name="txfPOCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfPOCode_TextChanged" IsVisible="False" effects:KeyboardEffect.EnableKeyboard="False" />
+                <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfPOCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfPOCode_TextChanged" IsVisible="False" />
         </StackLayout>
         <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
         <StackLayout Orientation="Horizontal">

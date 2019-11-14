@@ -1,4 +1,5 @@
-﻿using Data.Model;
+﻿using Data.KeyboardContol;
+using Data.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,11 @@ namespace GoodsRecieveingApp
         List<DocLine> currentDocs;
         string lastItem;
         bool wrong;
+        private ExtendedEntry _currententry;
         public ScanAcc(DocLine d)
         {
             InitializeComponent();
+            txfAccCode.Focused += Entry_Focused;
             UsingDoc = d;
             lblMainAcc.Text = UsingDoc.SupplierName + " - " + UsingDoc.SupplierCode;
         }
@@ -190,6 +193,23 @@ namespace GoodsRecieveingApp
             {
                 await Navigation.PopAsync();
             }                      
+        }
+        private async void Entry_Focused(object sender, FocusEventArgs e)
+        {
+            await Task.Delay(110);
+            _currententry = sender as ExtendedEntry;
+            if (_currententry != null)
+            {
+                try
+                {
+                    _currententry.HideKeyboard();
+                }
+                catch
+                {
+
+                }
+
+            }
         }
     }
 }

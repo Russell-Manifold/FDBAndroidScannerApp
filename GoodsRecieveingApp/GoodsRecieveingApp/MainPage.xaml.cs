@@ -9,6 +9,7 @@ using Xamarin.Forms;
 using Data.Model;
 using Xamarin.Essentials;
 using System.Data;
+using Data.KeyboardContol;
 
 namespace GoodsRecieveingApp
 {
@@ -19,9 +20,12 @@ namespace GoodsRecieveingApp
     {
         private string auth = "DK198110007|5635796|C:/FDBManifoldData/FDB2020";
         private string CurrentUser="";
+        private ExtendedEntry _currententry;
         public MainPage()
         {
             InitializeComponent();
+            txfUserCode.Focused += Entry_Focused;
+            txfPOCode.Focused += Entry_Focused;
         }
 
         protected override void OnAppearing()
@@ -191,6 +195,22 @@ namespace GoodsRecieveingApp
             }
             return true;
         }
-        
+        private async void Entry_Focused(object sender, FocusEventArgs e)
+        {
+            await Task.Delay(110);
+            _currententry = sender as ExtendedEntry;
+            if (_currententry != null)
+            {
+                try
+                {
+                    _currententry.HideKeyboard();
+                }
+                catch
+                {
+
+                }
+
+            }
+        }
     }
 }
