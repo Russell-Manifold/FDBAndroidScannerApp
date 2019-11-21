@@ -19,7 +19,14 @@ namespace RepackagingMoblie
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            lblBOMInfo.Text = "You have accounted for "+ MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemQty+ " items in the BOM of "+ MainPage.docLines.FindAll(x => x.ItemDesc != "1ItemFromMain").Sum(x => x.ItemQty) + " items";
+            try
+            {
+                lblBOMInfo.Text = "You have accounted for " +MainPage.docLines.FindAll(x => x.ItemDesc != "1ItemFromMain").Sum(x => x.ItemQty) + " items in the BOM of " + +MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemQty + " items";
+            }
+            catch
+            {
+                lblBOMInfo.Text = "You have accounted for 0 items in the BOM of " + MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemQty;
+            }
         }
         private async void BtnSingles_Clicked(object sender, EventArgs e)
         {
@@ -48,7 +55,9 @@ namespace RepackagingMoblie
         {
             if (MainPage.docLines.Find(x=>x.ItemDesc=="1ItemFromMain").ItemQty==MainPage.docLines.FindAll(x=>x.ItemDesc!= "1ItemFromMain").Sum(x=>x.ItemQty))
             {
+                // send all to API for printing MainPage.PackCodes
                 await DisplayAlert("Done!", "Your repacking has been completed", "Okay");
+                await Navigation.PopToRootAsync();
             }
             else
             {

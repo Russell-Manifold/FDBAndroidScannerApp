@@ -36,18 +36,59 @@ namespace GoodsRecieveingApp
 
         private async void TxfUserCode_TextChanged(object sender, TextChangedEventArgs e)
         {
+            await Task.Delay(200);
             CurrentUser = txfUserCode.Text;
-            // MUST CHECK HERE FOR VALID USER
-
-            txfUserCode.IsVisible = false;
-            lblUserCode.IsVisible = false;
-            txfPOCode.IsVisible = true;
-            lblPOCode.IsVisible = true;
-            txfPOCode.Text = "";
-            await Task.Delay(100);
-            txfPOCode.Focus();
+            if (CurrentUser.Length>1)
+            {
+                LodingIndiactor.IsVisible = true;
+                if (await userCheck()) {
+                    LodingIndiactor.IsVisible = false;
+                    txfUserCode.IsVisible = false;
+                    lblUserCode.IsVisible = false;
+                    txfPOCode.IsVisible = true;
+                    lblPOCode.IsVisible = true;
+                    txfPOCode.Text = "";
+                    await Task.Delay(100);
+                    txfPOCode.Focus();
+                }
+                else
+                {
+                    LodingIndiactor.IsVisible = false;
+                    txfUserCode.Text = "";
+                    await DisplayAlert("Error!", "Invalid User", "Okay");
+                    txfUserCode.Focus();
+                }
+            }
         }
-   
+        private async Task<bool> userCheck()
+        {
+            try
+            {
+                RestSharp.RestClient client = new RestSharp.RestClient();
+                string path = "GetUser";
+                client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+                {
+                    string str = $"GET?UserName={CurrentUser}";
+                    var Request = new RestSharp.RestRequest();
+                    Request.Resource = str;
+                    Request.Method = RestSharp.Method.GET;
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content != null)
+                    {
+                        int userAcccess = Convert.ToInt32(res.Content.Replace('\\', ' ').Replace('\"', ' ').Trim());
+                        if (userAcccess > 0 && userAcccess < 5)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch
+            {                
+            }          
+            return false;
+        }
         private async void TxfPOCode_TextChanged(object sender, TextChangedEventArgs e)
         {       
             if (txfPOCode.Text.Length == 8)
@@ -61,17 +102,22 @@ namespace GoodsRecieveingApp
                     txfPOCode.IsVisible = false;
                     lblPOCode.IsVisible = false;
                     try
-                {
-                    await App.Database.Delete(await App.Database.GetHeader(d.DocNum));
-                }
-                catch
-                {
+                    {
+                        await App.Database.Delete(await App.Database.GetHeader(d.DocNum));
+                    }
+                    catch
+                    {
 
-                }                      
+                    }                      
                     await App.Database.Insert(new DocHeader {DocNum= txfPOCode.Text,User=txfUserCode.Text,AccName=d.SupplierName,AcctCode=d.SupplierCode});
                     LodingIndiactor.IsVisible = false;
                     //await DisplayAlert("Done", "All the data has been loaded for this order", "OK");                       
-                }              
+                }
+                else
+                {
+                    txfPOCode.Text = "";
+                    txfPOCode.Focus();
+                }          
             }
         }     
         private async void ButtonAccepted_Clicked(object sender, EventArgs e)

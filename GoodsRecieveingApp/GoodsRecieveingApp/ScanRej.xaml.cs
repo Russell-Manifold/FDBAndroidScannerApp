@@ -35,11 +35,13 @@ namespace GoodsRecieveingApp
         protected async override void OnAppearing()
         {
             base.OnAppearing();
+            txfRejCode.Focus();
             currentDocs = await App.Database.GetSpecificDocsAsync(UsingDoc.DocNum);
         }
         private async void EntryRej_TextChanged(object sender, TextChangedEventArgs e)
         {
             await Task.Delay(500);
+            lblBarCode.Text = txfRejCode.Text;
             //BOM Barcode
             if (txfRejCode.Text.Length==14|| txfRejCode.Text.Length==8)
             {
@@ -116,7 +118,7 @@ namespace GoodsRecieveingApp
             currentDocs = await App.Database.GetSpecificDocsAsync(UsingDoc.DocNum);
             int scanQty = 0;
             int OrderQty = currentDocs.Find(x => x.ItemCode == Icode && x.ItemQty != 0).ItemQty;
-            lblitemDescRej.Text = currentDocs.Find(x => x.ItemCode == Icode && x.ItemQty != 0).ItemDesc;
+            lblitemDescRej.Text = currentDocs.Find(x => x.ItemCode == Icode && x.ItemQty != 0).ItemDesc + "\n" + txfRejCode.Text;
             int balance = OrderQty;
             foreach (DocLine dl in currentDocs.Where(x => x.ItemCode == Icode && x.ItemQty != 0))
             {
@@ -149,6 +151,7 @@ namespace GoodsRecieveingApp
                 PicImage.ImageSource = "Wrong.png";
                 wrong = true;
             }
+            txfRejCode.Focus();
         }
         public async Task<bool> restetQty()
         {
@@ -169,6 +172,7 @@ namespace GoodsRecieveingApp
             lblOrderQTY.Text = "";
             lblitemDescRej.Text = "";
             PicImage.IsVisible = false;
+            txfRejCode.Focus();
             return true;
         }
         private async void PicImage_Clicked(object sender, EventArgs e)

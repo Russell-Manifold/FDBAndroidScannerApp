@@ -8,15 +8,15 @@
              x:Class="GoodsRecieveingApp.MainPage"
              Title="Goods Receiving">
     <ScrollView>
-      <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0">
+      <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0">   
         <StackLayout Orientation="Horizontal">
-                <Label x:Name="lblUserCode" Text="User :" HorizontalOptions="CenterAndExpand"/>
+                <Label x:Name="lblUserCode" Text="User :" HorizontalOptions="CenterAndExpand" FontSize="Large" HorizontalTextAlignment="Center"/>
         </StackLayout>
         <StackLayout Orientation="Horizontal">
                 <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False" x:Name="txfUserCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfUserCode_TextChanged"/>
             </StackLayout>
         <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
-                <Label x:Name="lblPOCode" Text="PO Number:" IsVisible="False"/>
+                <Label x:Name="lblPOCode" Text="PO Number:" IsVisible="False" FontSize="Large" HorizontalTextAlignment="Center"/>
         </StackLayout>
         <StackLayout Orientation="Horizontal">
                 <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfPOCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfPOCode_TextChanged" IsVisible="False" />

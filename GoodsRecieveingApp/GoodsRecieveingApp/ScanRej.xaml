@@ -11,7 +11,8 @@
         <StackLayout>
             <Label x:Name="lblMainRej" Text="{Binding name}" FontSize="25"/>
             <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" MaxLength="14" HorizontalOptions="FillAndExpand" TextChanged="EntryRej_TextChanged" x:Name="txfRejCode" />
-            <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblitemDescRej" FontSize="25"/>
+            <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblitemDescRej" FontSize="23"/>
+            <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblBarCode" FontSize="20" VerticalOptions="Start"/>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>

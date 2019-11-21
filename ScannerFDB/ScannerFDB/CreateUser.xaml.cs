@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -15,34 +16,98 @@ namespace ScannerFDB
     {
         public CreateUser()
         {
-            InitializeComponent();            
+            InitializeComponent();
         }
-
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            var a = this.Navigation.NavigationStack.ToList();
+            Navigation.RemovePage(a[1]);
+            List<string> s = new List<string>();
+            s.Add("Default");
+            s.Add("Pick and Pack Manager");
+            s.Add("Warehouse Manager");
+            s.Add("Super User");
+            pickerLevel.ItemsSource = s;
+        }
         private async void BtnCreateUser_Clicked(object sender, EventArgs e)
         {
-            if(txfUserName.Text!=null&&txfLevel.Text!=null){
-                switch (txfLevel.Text)
+            if (txfUserName.Text != null && txfEmpNum.Text != null && txfUserName.Text != ""&&txfEmpNum.Text!=""&&pickerLevel.SelectedItem!=null)
+            {
+                switch (pickerLevel.SelectedItem.ToString())
                 {
-                    case "1":
-                        await GoodsRecieveingApp.App.Database.Insert(new User{UserName=txfUserName.Text,useLevel=1});
-                        await DisplayAlert("Complete", "The User has been added", "Okay");
-                        await Navigation.PopAsync();
+                    case "Default":
+                        if (await AddUser(txfUserName.Text,txfEmpNum.Text,1))
+                        {
+                            await DisplayAlert("Complete", "The User has been added", "Okay");                            
+                        }
+                        else
+                        {
+                            await DisplayAlert("Error!", "The User has not been added", "Okay");
+                        }                       
                         break;
-                    case "2":
-                        await GoodsRecieveingApp.App.Database.Insert(new User { UserName = txfUserName.Text, useLevel = 2 });
-                        await DisplayAlert("Complete", "The User has been added", "Okay");
-                        await Navigation.PopAsync();
+                    case "Pick and Pack Manager":
+                        if (await AddUser(txfUserName.Text, txfEmpNum.Text, 2))
+                        {
+                            await DisplayAlert("Complete", "The User has been added", "Okay");
+                        }
+                        else
+                        {
+                            await DisplayAlert("Error!", "The User has not been added", "Okay");
+                        }                       
                         break;
-                    case "3":
-                        await GoodsRecieveingApp.App.Database.Insert(new User { UserName = txfUserName.Text, useLevel = 3 });
-                        await DisplayAlert("Complete", "The User has been added", "Okay");
-                        await Navigation.PopAsync();
+                    case "Warehouse Manager":
+                        if (await AddUser(txfUserName.Text, txfEmpNum.Text, 3))
+                        {
+                            await DisplayAlert("Complete", "The User has been added", "Okay");
+                        }
+                        else
+                        {
+                            await DisplayAlert("Error!", "The User has not been added", "Okay");
+                        }                       
                         break;
+                    case "Super User":
+                        if (await AddUser(txfUserName.Text, txfEmpNum.Text, 4))
+                        {
+                            await DisplayAlert("Complete", "The User has been added", "Okay");
+                        }
+                        else
+                        {
+                            await DisplayAlert("Error!", "The User has not been added", "Okay");
+                        }                       
+                        break;
+                    
                     default:
-                        await DisplayAlert("Error","The access level you have entered is invalid","Okay");
+                        await DisplayAlert("Error", "The access level you have entered is invalid", "Okay");
                         break;
                 }
             }
+        }
+        public async Task<bool> AddUser(string userName,string UserNum,int Access)
+        {
+            try
+            {
+                RestSharp.RestClient client = new RestSharp.RestClient();
+                string path = "AddUser";
+                client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+                {
+                    string str = $"POST?UserName={userName}&UserNum={UserNum}&Access={Access}";
+                    var Request = new RestSharp.RestRequest();
+                    Request.Resource = str;
+                    Request.Method = RestSharp.Method.POST;
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("User has been added"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+            return false;
         }
     }
 }

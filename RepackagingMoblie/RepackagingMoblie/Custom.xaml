@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="RepackagingMoblie.Custom"
@@ -9,7 +10,8 @@
     <ContentPage.Content>
         <StackLayout>
             <Label Text="Scan the item Barcode"/>
-            <Entry x:Name="txfBarcode" TextChanged="TxfBarcode_TextChanged"/>
+            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfBarcode" TextChanged="TxfBarcode_TextChanged"/>
+            <ActivityIndicator x:Name="Loader" IsVisible="False" IsRunning="True"/>
             <Label x:Name="lblItemDesc"/>
             <Label Text="Enter the item QTY"/>
             <Entry x:Name="txfQTY" Keyboard="Numeric"/>

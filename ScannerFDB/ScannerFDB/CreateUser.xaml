@@ -7,10 +7,12 @@
              x:Class="ScannerFDB.CreateUser">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Please add a username and Access Level\n1-Default\n2-Member\n3-Admin"/>
-            <Entry x:Name="txfUserName"/>
-            <Entry x:Name="txfLevel" Keyboard="Numeric"/>
-            <Button Text="Add User" x:Name="btnCreateUser" Clicked="BtnCreateUser_Clicked"/>
+            <Label Text="Username:" FontSize="Large"/>
+            <Entry x:Name="txfUserName" FontSize="Large"/>
+            <Label Text="Employee Number:" FontSize="Large"/>
+            <Entry x:Name="txfEmpNum" FontSize="Large"/>
+            <Picker Title="Access Level" x:Name="pickerLevel" FontSize="Large"/>
+            <Button Text="Save User" x:Name="btnCreateUser" Clicked="BtnCreateUser_Clicked" FontSize="Large"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

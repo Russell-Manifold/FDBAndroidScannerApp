@@ -29,9 +29,13 @@ namespace ScannerFDB
             await Navigation.PushAsync(new AccessCheck());
         }
 
-        private void Button_Clicked_Repacking(object sender, EventArgs e)
+        private async void Button_Clicked_Repacking(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new RepackagingMoblie.MainPage());
-        }                
+           await Navigation.PushAsync(new RepackagingMoblie.MainPage());
+        }
+        private async void Button_Clicked_WareHouseTransfer(object sender, EventArgs e)
+        {
+            //await Navigation.PushAsync(new WareHouseTransfer.MainPage());
+        }
     }
 }

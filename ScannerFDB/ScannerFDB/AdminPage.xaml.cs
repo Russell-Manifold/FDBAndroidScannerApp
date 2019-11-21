@@ -27,7 +27,12 @@ namespace ScannerFDB
                     break;
             }
         }
-
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            var a =this.Navigation.NavigationStack.ToList();
+            Navigation.RemovePage(a[1]);
+        }
         private async void Button_Clicked(object sender, EventArgs e)
         {
             LodingIndiactor.IsVisible = true;

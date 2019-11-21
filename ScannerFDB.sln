@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepackagingMoblie.Android", "RepackagingMoblie\RepackagingMoblie.Android\RepackagingMoblie.Android.csproj", "{54B6C74D-7861-48FB-B9D0-DDE60FB515A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepackagingMoblie", "RepackagingMoblie\RepackagingMoblie\RepackagingMoblie.csproj", "{6E5F4EC0-984E-411C-BE7A-AB14B3914072}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepackagingMoblie", "RepackagingMoblie\RepackagingMoblie\RepackagingMoblie.csproj", "{6E5F4EC0-984E-411C-BE7A-AB14B3914072}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

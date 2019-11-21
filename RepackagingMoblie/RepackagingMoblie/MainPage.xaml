@@ -3,13 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
              mc:Ignorable="d"
              x:Class="RepackagingMoblie.MainPage"
              Title="Unpacking">
 
     <StackLayout>
         <Label Text="Pack Barcode:"/>
-        <Entry x:Name="txfPackbarcode" TextChanged="TxfPackbarcode_TextChanged"/>
+        <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfPackbarcode" TextChanged="TxfPackbarcode_TextChanged"/>
         <Label x:Name="lblDesc"/>
         <Label x:Name="lblQTY"/>
         <Button Text="Go to Repacking" x:Name="btnGoToRepack" Clicked="BtnGoToRepack_Clicked"/>

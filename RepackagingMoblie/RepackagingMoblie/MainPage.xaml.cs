@@ -1,7 +1,9 @@
-﻿using Data.Model;
+﻿using Data.KeyboardContol;
+using Data.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace RepackagingMoblie
@@ -11,12 +13,30 @@ namespace RepackagingMoblie
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
+        private ExtendedEntry _currententry;
         public static List<DocLine> docLines = new List<DocLine>();
-        private string auth = "DK198110007|5635796|C:/FDBManifoldData/FDB2020";
+        public static List<string> PackCodes = new List<string>();
         public MainPage()
         {
             InitializeComponent();
-            
+            txfPackbarcode.Focused += Entry_Focused;
+        }
+        private async void Entry_Focused(object sender, FocusEventArgs e)
+        {
+            await Task.Delay(110);
+            _currententry = sender as ExtendedEntry;
+            if (_currententry != null)
+            {
+                try
+                {
+                    _currententry.HideKeyboard();
+                }
+                catch
+                {
+
+                }
+
+            }
         }
         protected override void OnAppearing()
         {
@@ -38,16 +58,20 @@ namespace RepackagingMoblie
 
         private async void TxfPackbarcode_TextChanged(object sender, TextChangedEventArgs e)
         {
-            try
-            {
-                BOMItem bi = await GoodsRecieveingApp.App.Database.GetBOMItem(txfPackbarcode.Text);
-                lblDesc.Text = bi.ItemDesc;
-                lblQTY.Text = "There are "+bi.Qty+" items on this BOM";
-                docLines.Add(new DocLine {ItemBarcode=bi.PackBarcode,ItemDesc="#1ItemFromMain",ItemQty=bi.Qty});
-            }
-            catch
-            {
-                await DisplayAlert("Error!","No BOM with this code was found","Okay");
+            if(txfPackbarcode.Text!=""&&txfPackbarcode.Text!=null){
+                try
+                {
+                    BOMItem bi = await GoodsRecieveingApp.App.Database.GetBOMItem(txfPackbarcode.Text);
+                    lblDesc.Text = bi.ItemDesc;
+                    lblQTY.Text = "There are " + bi.Qty + " items on this BOM";
+                    docLines.Add(new DocLine { ItemBarcode = bi.PackBarcode,ItemCode=bi.ItemCode, ItemDesc = "1ItemFromMain", ItemQty = bi.Qty });
+                }
+                catch
+                {
+                    await DisplayAlert("Error!", "No BOM with this code was found", "Okay");
+                    txfPackbarcode.Text = "";
+                    txfPackbarcode.Focus();
+                }
             }
         }
     }

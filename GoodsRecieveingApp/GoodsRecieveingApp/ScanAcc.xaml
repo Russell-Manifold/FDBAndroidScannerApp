@@ -11,7 +11,8 @@
         <StackLayout>
             <Label x:Name="lblMainAcc" Text="{Binding name}" FontSize="25"/>
             <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" MaxLength="14" HorizontalOptions="FillAndExpand" TextChanged="EntryAcc_TextChanged" x:Name="txfAccCode" />
-            <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblitemDescAcc" FontSize="25"/>
+            <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblitemDescAcc" FontSize="23"/>
+            <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblBarCode" FontSize="20" VerticalOptions="Start"/>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>

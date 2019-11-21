@@ -9,8 +9,9 @@
    
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Enter in your user barcode:"/>
+            <Label Text="Enter in Supervisor Barcode:" FontSize="Large"/>
             <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfUserBarcode" TextChanged="TxfUserBarcode_TextChanged"/>
+            <ActivityIndicator x:Name="AccessLoading" IsRunning="True"  IsVisible="False"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

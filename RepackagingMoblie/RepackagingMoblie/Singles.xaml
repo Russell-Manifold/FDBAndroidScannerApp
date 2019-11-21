@@ -3,13 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
              mc:Ignorable="d"
              x:Class="RepackagingMoblie.Singles"
              Title="Single Items">
     <ContentPage.Content>
         <StackLayout>
             <Label Text="Please Scan the items:"/>
-            <Entry x:Name="txfBarcode" TextChanged="TxfBarcode_TextChanged"/>
+            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfBarcode" TextChanged="TxfBarcode_TextChanged"/>
+            <ActivityIndicator x:Name="Loader" IsRunning="True" IsVisible="False"/>
+            <Label x:Name="lblBarcode"/>
             <Label x:Name="lblItemDesc"/>
             <Label x:Name="lblItemQTY"/>
             <Button Text="Complete" x:Name="btnComplete" Clicked="BtnComplete_Clicked"/>
