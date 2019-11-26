@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
+             mc:Ignorable="d"
+             Title="Authentication"
+             x:Class="WHTransfer.AuthOut">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Please scan your User Barcode:" x:Name="lblUserCode"/>
+            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfUserCode" TextChanged="TxfUserCode_TextChanged"/>
+            <ActivityIndicator IsVisible="False" IsRunning="True" x:Name="Loading"/>
+            <Button Text="Done" x:Name="btnDone" Clicked="BtnDone_Clicked" IsEnabled="False"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

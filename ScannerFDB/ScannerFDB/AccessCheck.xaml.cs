@@ -1,4 +1,5 @@
 ﻿using Data.KeyboardContol;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,16 +58,15 @@ namespace ScannerFDB
             AccessLoading.IsVisible = true;
             try
             {
-                RestSharp.RestClient client = new RestSharp.RestClient();
+                RestClient client = new RestClient();
                 string path = "GetUser";
                 client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
                 {
                     string str = $"GET?UserName={txfUserBarcode.Text}";
-                    var Request = new RestSharp.RestRequest();
-                    Request.Resource = str;
-                    Request.Method = RestSharp.Method.GET;
+                    var Request = new RestRequest(str, Method.GET);
                     var cancellationTokenSource = new CancellationTokenSource();
                     var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                    cancellationTokenSource.Dispose();
                     if (res.IsSuccessful && res.Content != null)
                     {
                         int userAcccess = Convert.ToInt32(res.Content.Replace('\\', ' ').Replace('\"', ' ').Trim());

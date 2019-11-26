@@ -76,10 +76,21 @@ namespace GoodsRecieveingApp
                     var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
                     if (res.IsSuccessful && res.Content != null)
                     {
-                        int userAcccess = Convert.ToInt32(res.Content.Replace('\\', ' ').Replace('\"', ' ').Trim());
-                        if (userAcccess > 0 && userAcccess < 5)
+                        DataSet myds = new DataSet();
+                        myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                        foreach (DataRow row in myds.Tables[0].Rows)
                         {
-                            return true;
+                            try
+                            {
+                                if (Convert.ToInt32(row["AccessLevel"])>0)
+                                {
+                                    return true;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex);
+                            }
                         }
                     }
                 }

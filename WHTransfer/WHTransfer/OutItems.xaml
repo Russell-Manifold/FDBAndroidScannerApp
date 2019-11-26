@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
+             mc:Ignorable="d"
+             Title="Scan Items"
+             x:Class="WHTransfer.OutItems">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label Text="Scan items to go out:"/>
+            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScannedItem" TextChanged="TxfScannedItem_TextChanged"/>
+            <ActivityIndicator x:Name="Loading" IsVisible="False" IsRunning="True" Color="Blue"/>
+            <Label Text="Start Scanning..." x:Name="lblLastItem"/>
+            <ListView x:Name="ListViewItems" HasUnevenRows="True">
+                <ListView.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100*" />
+                            <ColumnDefinition Width="30*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0" Grid.Column="0" Text="Item Code" TextColor="Black" FontSize="Medium"/>
+                        <Label Grid.Row="0" Grid.Column="1" Text="Qty" TextColor="Black" FontSize="Medium"/>
+                    </Grid>
+                </ListView.Header>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100*" />
+                                        <ColumnDefinition Width="30*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding ItemDesc}" TextColor="Black"/>
+                                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding ItemQtyOut}" TextColor="Black"/>
+                                </Grid>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Button Text="Complete" x:Name="btnComplete" Clicked="BtnComplete_Clicked"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

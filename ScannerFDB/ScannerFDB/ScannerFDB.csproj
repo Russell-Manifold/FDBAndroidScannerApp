@@ -26,6 +26,7 @@
     <ProjectReference Include="..\..\Data\Data.csproj" />
     <ProjectReference Include="..\..\GoodsRecieveingApp\GoodsRecieveingApp\GoodsRecieveingApp.csproj" />
     <ProjectReference Include="..\..\RepackagingMoblie\RepackagingMoblie\RepackagingMoblie.csproj" />
+    <ProjectReference Include="..\..\WHTransfer\WHTransfer\WHTransfer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

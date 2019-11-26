@@ -35,7 +35,7 @@ namespace ScannerFDB
         }
         private async void Button_Clicked_WareHouseTransfer(object sender, EventArgs e)
         {
-            //await Navigation.PushAsync(new WareHouseTransfer.MainPage());
+            await Navigation.PushAsync(new WHTransfer.MainPage());
         }
     }
 }

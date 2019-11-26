@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Title="Release Items"
+             x:Class="WHTransfer.OutPage">
+    <ContentPage.Content>
+        <StackLayout>
+            <StackLayout x:Name="LayoutHeader">
+                <Label Text="Continue with a previous one or start new:" FontSize="Large"/>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                    <Button Text="Continue" x:Name="btnContinue" Clicked="BtnContinue_Clicked" FontSize="Large"/>
+                    <Button Text="Start New" x:Name="btnStartNewHeader" Clicked="BtnStartNewHeader_Clicked" FontSize="Large"/>
+                </StackLayout>
+            </StackLayout>
+            <StackLayout x:Name="StartNewLayout" IsVisible="False">
+                <Label Text="From Warehouse"/>
+                <Picker x:Name="pickerFromWH" SelectedIndexChanged="PickerFromWH_SelectedIndexChanged">
+                    <Picker.Items>
+                        <x:String>
+                            001
+                        </x:String>
+                        <x:String>
+                            002
+                        </x:String>
+                    </Picker.Items>
+                </Picker>
+                <Label Text="To WareHouse"/>
+                <Picker x:Name="pickerToWH" SelectedIndexChanged="PickerToWH_SelectedIndexChanged" IsEnabled="False">
+                    <Picker.Items>
+                        <x:String>
+                            001
+                        </x:String>
+                        <x:String>
+                            002
+                        </x:String>
+                    </Picker.Items>
+                </Picker>
+                <Label Text="From Date:" x:Name="lblDatePickFrom"/>
+                <DatePicker x:Name="DatePickerFrom" Unfocused="DatePickerFrom_Unfocused" IsEnabled="False"/>
+                <Label Text="Receving Date:" x:Name="lblDatePickRec"/>
+                <DatePicker x:Name="DatePickerRec" Unfocused="DatePickerRec_Unfocused" IsEnabled="False"/>
+                <Button x:Name="btnAdd" Text="Add IBT Header" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand" IsEnabled="False" Clicked="Button_Clicked"/>
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

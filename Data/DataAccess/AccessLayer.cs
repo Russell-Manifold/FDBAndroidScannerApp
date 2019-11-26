@@ -18,6 +18,8 @@ namespace Data.DataAccess
             database.CreateTableAsync<DocLine>().Wait();
             database.CreateTableAsync<DBInfo>().Wait();
             database.CreateTableAsync<User>().Wait();
+            database.CreateTableAsync<IBTItem>().Wait();
+            database.CreateTableAsync<IBTHeader>().Wait();
         }
         public Task<DBInfo> GetAuthentication()
         {
@@ -35,11 +37,23 @@ namespace Data.DataAccess
         {
             return database.Table<DBInfo>().DeleteAsync();
         }
+        public Task<int> DeleteOldHeaders()
+        {
+            return database.Table<IBTHeader>().DeleteAsync();
+        }
         public Task<int>Delete(DocLine d)
         {
             return database.DeleteAsync(d);
         }
         public Task<int> Delete(DocHeader h)
+        {
+            return database.DeleteAsync(h);
+        }
+        public Task<int> Delete(IBTItem h)
+        {
+            return database.DeleteAsync(h);
+        }
+        public Task<int> Delete(IBTHeader h)
         {
             return database.DeleteAsync(h);
         }
@@ -51,7 +65,23 @@ namespace Data.DataAccess
         {
             return database.ExecuteAsync("DELETE FROM User");
         }
+        public Task<int> Update(IBTItem data)
+        {
+            return database.UpdateAsync(data);
+        }
+        public Task<int> Update(List<IBTItem> data)
+        {
+            return database.UpdateAllAsync(data);
+        }
+        public Task<int> Insert(IBTHeader data)
+        {
+            return database.InsertAsync(data);
+        }
         public Task<int> Insert(DocLine data)
+        {
+            return database.InsertAsync(data);
+        }
+        public Task<int> Insert(IBTItem data)
         {
             return database.InsertAsync(data);
         }
@@ -74,6 +104,14 @@ namespace Data.DataAccess
         public Task<List<DocLine>> GetLinesAsync()
         {
             return database.Table<DocLine>().ToListAsync();
+        }
+        public Task<List<IBTHeader>> GetIBTHeaders()
+        {
+            return database.Table<IBTHeader>().ToListAsync();
+        }
+        public Task<List<IBTItem>> GetIBTItems()
+        {
+            return database.Table<IBTItem>().ToListAsync();
         }
         public Task<List<BOMItem>> GetBOMITEMSAsync()
         {
