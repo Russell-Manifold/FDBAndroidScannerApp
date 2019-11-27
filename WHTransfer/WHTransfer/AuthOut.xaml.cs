@@ -18,7 +18,7 @@ namespace WHTransfer
     public partial class AuthOut : ContentPage
     {
         private ExtendedEntry _currententry;
-        private string UserName="",AdminName="";
+        private string UserName="",AdminName="",WH;
         private int UserCode, AdminCode,ColID;
         public AuthOut()
         {
@@ -38,6 +38,7 @@ namespace WHTransfer
                 case"Yes":
                     if (await completeOrder())
                     {
+                        await GoodsRecieveingApp.App.Database.Delete((await GoodsRecieveingApp.App.Database.GetIBTHeaders()).First());
                         await DisplayAlert("Complete!","All the data has been saved","Okay");
                         await Navigation.PopToRootAsync();
                         return;
@@ -54,7 +55,7 @@ namespace WHTransfer
         {
             if(await InsertHeader())
             {
-                await UpdateRecords();
+                UpdateRecords();
                 if (await InsertLines())
                 {
                     return true;
@@ -67,6 +68,7 @@ namespace WHTransfer
             try
             {
                 IBTHeader header = (await GoodsRecieveingApp.App.Database.GetIBTHeaders()).First();
+                WH = header.FromWH;
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "IBTHeader";
                 client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
@@ -91,12 +93,9 @@ namespace WHTransfer
             }           
             return false;
         }
-
-        private async Task UpdateRecords()
+        private void UpdateRecords()
         {
-            List<IBTItem> itemse = OutItems.items;
-            itemse.Select(x=> { x.PickerUser = UserCode;x.AuthUser = AdminCode; x.iTrfID=ColID;return x;}).ToList();
-            List<IBTItem> ite = OutItems.items;
+            OutItems.items.Select(x=> { x.PickerUser = UserCode;x.AuthUser = AdminCode; x.iTrfID=ColID; x.WH=WH; return x;}).ToList();
         }
         private async Task<bool> InsertLines()
         {
@@ -113,19 +112,19 @@ namespace WHTransfer
                         var cancellationTokenSource = new CancellationTokenSource();
                         var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
                         cancellationTokenSource.Dispose();
-                        if (res.IsSuccessful && res.Content.Contains("Complete"))
+                        if (!(res.IsSuccessful && res.Content.Contains("Complete")))
                         {
-                            return true;
+                            return false;
                         }
                     }
-                }
+                }                
                 catch
                 {
                     await DisplayAlert("Error!","There was an error in inserting the lines","OKay");
                     return false;
                 }
             }
-            return false;
+            return true;
         }
         private async void TxfUserCode_TextChanged(object sender, TextChangedEventArgs e)
         {

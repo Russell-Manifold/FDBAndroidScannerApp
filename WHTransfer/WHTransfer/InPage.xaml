@@ -9,7 +9,9 @@
              x:Class="WHTransfer.InPage">
     <ContentPage.Content>
         <StackLayout>
+            <Label Text="Please select a IBT number you would like to recieve:" FontSize="Large" x:Name="lblTop"/>
             <Picker x:Name="pickerHeaders" FontSize="Large" SelectedIndexChanged="PickerHeaders_SelectedIndexChanged"/>
+            <ActivityIndicator x:Name="isLoading" IsVisible="False" IsRunning="True"/>
             <StackLayout IsVisible="False" x:Name="LayoutMain">
                 <Label x:Name="lblInfo" FontSize="Large"/>
                 <Label Text="Scan all items:" FontSize="Large"/>
@@ -32,6 +34,17 @@
                         <DataTemplate>
                             <ViewCell>
                                 <StackLayout>
+                                    <StackLayout.Triggers>
+                                        <DataTrigger TargetType="StackLayout" Binding="{Binding ItemQtyIn}" Value="-1">
+                                            <Setter Property="BackgroundColor" Value="#53f57e"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="StackLayout" Binding="{Binding ItemQtyIn}" Value="-2">
+                                            <Setter Property="BackgroundColor" Value="#f5a940"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="StackLayout" Binding="{Binding ItemQtyIn}" Value="0">
+                                            <Setter Property="BackgroundColor" Value="Transparent"/>
+                                        </DataTrigger>
+                                    </StackLayout.Triggers>
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
