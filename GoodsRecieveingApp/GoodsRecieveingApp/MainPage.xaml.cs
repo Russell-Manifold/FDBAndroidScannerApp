@@ -19,6 +19,7 @@ namespace GoodsRecieveingApp
     public partial class MainPage : ContentPage
     {
         private string auth = "DK198110007|5635796|C:/FDBManifoldData/FDB2020";
+        //DK198110007|5635796|C:\Users\Russell - Manifold\Desktop\FDB2020
         private string CurrentUser="";
         private ExtendedEntry _currententry;
         public MainPage()

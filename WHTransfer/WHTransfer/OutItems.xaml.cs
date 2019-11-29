@@ -20,11 +20,12 @@ namespace WHTransfer
         public OutItems()
         {
             InitializeComponent();
+            items = new List<IBTItem>();
             txfScannedItem.Focused += Entry_Focused;
         }
         protected override void OnAppearing()
         {
-            base.OnAppearing();
+            base.OnAppearing();           
             txfScannedItem.Focus();
         }
         private async void TxfScannedItem_TextChanged(object sender, TextChangedEventArgs e)

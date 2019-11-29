@@ -41,7 +41,7 @@ namespace WHTransfer
         {
             try
             {
-                await GoodsRecieveingApp.App.Database.Delete((await GoodsRecieveingApp.App.Database.GetIBTHeaders()).First());
+                await GoodsRecieveingApp.App.Database.DeleteAllHeaders();
             }
             catch
             {

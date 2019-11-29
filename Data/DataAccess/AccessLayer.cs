@@ -49,6 +49,10 @@ namespace Data.DataAccess
         {
             return database.DeleteAsync(h);
         }
+        public Task<int> DeleteAllHeaders()
+        {
+            return database.ExecuteAsync("DELETE FROM IBTHeader");
+        }
         public Task<int> Delete(IBTItem h)
         {
             return database.DeleteAsync(h);

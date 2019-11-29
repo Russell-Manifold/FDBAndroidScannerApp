@@ -19,8 +19,10 @@ namespace WHTransfer
         private List<IBTHeader> headers = new List<IBTHeader>();
         private List<IBTItem> lines = new List<IBTItem>();
         private List<string> PickerItems = new List<string>();
+        private List<string> DoneItems = new List<string>();
         private IBTHeader CurrentHeader;
         private ExtendedEntry _currententry;
+        private string authDets = "DK198110007|5635796|C:\\Users\\Russell - Manifold\\Desktop\\FDB2020";
         public InPage()
         {
             InitializeComponent();
@@ -192,29 +194,59 @@ namespace WHTransfer
         private async Task Complete()
         {
             try
-            {
+            {              
+                foreach (IBTItem i in lines)
+                {
+                    if (!DoneItems.Contains(i.ItemCode)) {
+                        DoneItems.Add(i.ItemCode);
+                        int k = lines.Where(x => x.ItemCode == i.ItemCode).Sum(c=>c.ItemQtyOut);
+                        RestSharp.RestClient client2 = new RestSharp.RestClient();
+                        string path2 = "WHTransfer";
+                        client2.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path2);
+                        {
+                            string str2 = $"POST?authDetails={authDets}&itemCode={i.ItemCode}&InOrOut=true&JnlDate={DateTime.Now.ToString("dd MMM yyyy")}&JobCode={i.iTrfID}&Desc={i.iTrfID}&Ref={DateTime.Now.ToString("ddMMMyyyy")+"-"+i.iTrfID}&Qty={k}&Store={i.WH}";
+                            var Request2 = new RestSharp.RestRequest();
+                            Request2.Resource = str2;
+                            Request2.Method = RestSharp.Method.POST;
+                            var cancellationTokenSource2 = new CancellationTokenSource();
+                            var res2 = await client2.ExecuteTaskAsync(Request2, cancellationTokenSource2.Token);
+                            if (!(res2.IsSuccessful && res2.Content != null))
+                            {
+                                await DisplayAlert("Error!", "Could not delete record", "Okay");
+                                return;
+                            }
+                        }
+                    }
+                }
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "IBTHeader";
                 client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
                 {
-                    string str = $"PUT?qry=UPDATE tblIBTHeader SET Active=false WHERE TrfId={CurrentHeader.ID}";
+                    string str = $"DELETE?coid={CurrentHeader.ID}";
                     var Request = new RestSharp.RestRequest();
                     Request.Resource = str;
-                    Request.Method = RestSharp.Method.POST;
+                    Request.Method = RestSharp.Method.DELETE;
                     var cancellationTokenSource = new CancellationTokenSource();
                     var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
                     if (!(res.IsSuccessful && res.Content != null))
                     {
-                        await DisplayAlert("Error!","Could Not Send to the api","Okay");
+                        await DisplayAlert("Error!", "Could not delete record", "Okay");
                         return;
                     }
                 }
             }
             catch
             {
-                await DisplayAlert("Error!","Could not connect to the api","Okay");
             }
+            await DisplayAlert("Complete!","All items have been saved","Okay");
             await Navigation.PopToRootAsync();
+        }
+        private async void Button_Clicked(object sender, EventArgs e)
+        {
+            btnComplete.BackgroundColor = Color.Red;
+            IsDone();                                
+            await Task.Delay(3000);
+            btnComplete.BackgroundColor = Color.Green;
         }
     }
 }

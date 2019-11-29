@@ -38,7 +38,7 @@ namespace WHTransfer
                 case"Yes":
                     if (await completeOrder())
                     {
-                        await GoodsRecieveingApp.App.Database.Delete((await GoodsRecieveingApp.App.Database.GetIBTHeaders()).First());
+                        await GoodsRecieveingApp.App.Database.DeleteAllHeaders();
                         await DisplayAlert("Complete!","All the data has been saved","Okay");
                         await Navigation.PopToRootAsync();
                         return;
