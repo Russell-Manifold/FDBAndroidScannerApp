@@ -5,20 +5,20 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace ScannerFDB
-{
-   
+{    
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
         public MainPage()
         {
-            InitializeComponent();                     
+            InitializeComponent();
         }
-
+       
         private void Button_Clicked_Goods_Receving(object sender, EventArgs e)
         {
             Navigation.PushAsync(new GoodsRecieveingApp.MainPage());
@@ -36,6 +36,11 @@ namespace ScannerFDB
         private async void Button_Clicked_WareHouseTransfer(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new WHTransfer.MainPage());
+        }
+
+        private async void Button_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new PickAndPack.MainPage());
         }
     }
 }

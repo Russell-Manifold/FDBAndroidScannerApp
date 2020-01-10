@@ -19,7 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepackagingMoblie", "Repack
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WHTransfer.Android", "WHTransfer\WHTransfer.Android\WHTransfer.Android.csproj", "{AB465D7F-6EC7-4120-9ECE-6D34151AA2B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WHTransfer", "WHTransfer\WHTransfer\WHTransfer.csproj", "{65543309-DA9D-465E-A266-8A636E709995}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WHTransfer", "WHTransfer\WHTransfer\WHTransfer.csproj", "{65543309-DA9D-465E-A266-8A636E709995}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PickAndPack.Android", "PickAndPack\PickAndPack.Android\PickAndPack.Android.csproj", "{4A073B78-61CE-458F-A646-00C92079245D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PickAndPack", "PickAndPack\PickAndPack\PickAndPack.csproj", "{4052E80A-F068-4460-B2D6-5ACA8A0CE260}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +77,16 @@ Global
 		{65543309-DA9D-465E-A266-8A636E709995}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65543309-DA9D-465E-A266-8A636E709995}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65543309-DA9D-465E-A266-8A636E709995}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A073B78-61CE-458F-A646-00C92079245D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A073B78-61CE-458F-A646-00C92079245D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A073B78-61CE-458F-A646-00C92079245D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{4A073B78-61CE-458F-A646-00C92079245D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A073B78-61CE-458F-A646-00C92079245D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A073B78-61CE-458F-A646-00C92079245D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{4052E80A-F068-4460-B2D6-5ACA8A0CE260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4052E80A-F068-4460-B2D6-5ACA8A0CE260}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4052E80A-F068-4460-B2D6-5ACA8A0CE260}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4052E80A-F068-4460-B2D6-5ACA8A0CE260}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

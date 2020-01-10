@@ -16,26 +16,13 @@ namespace Data.DataAccess
             database.CreateTableAsync<BOMItem>().Wait();
             database.CreateTableAsync<DocHeader>().Wait();
             database.CreateTableAsync<DocLine>().Wait();
-            database.CreateTableAsync<DBInfo>().Wait();
             database.CreateTableAsync<User>().Wait();
             database.CreateTableAsync<IBTItem>().Wait();
             database.CreateTableAsync<IBTHeader>().Wait();
         }
-        public Task<DBInfo> GetAuthentication()
-        {
-            return database.Table<DBInfo>().FirstOrDefaultAsync();
-        }
         public Task<DocHeader> GetHeader(string docNum)
         {
             return database.Table<DocHeader>().Where(x=>x.DocNum==docNum).FirstOrDefaultAsync();
-        }
-        public Task<int> SaveAuthAsync(DBInfo info)
-        {
-            return database.InsertAsync(info);
-        }
-        public Task<int> DeleteOldInfoAsync()
-        {
-            return database.Table<DBInfo>().DeleteAsync();
         }
         public Task<int> DeleteOldHeaders()
         {
@@ -94,10 +81,6 @@ namespace Data.DataAccess
             return database.InsertAsync(data);
         }
         public Task<int> Insert(DocHeader data)
-        {
-            return database.InsertAsync(data);
-        }
-        public Task<int> Insert(DBInfo data)
         {
             return database.InsertAsync(data);
         }

@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
+             Title="Pick and Pack"
+             mc:Ignorable="d"
+             x:Class="PickAndPack.MainPage">
+    <ScrollView>
+        <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0">
+            <StackLayout Orientation="Horizontal">
+                <Label x:Name="lblUserCode" Text="User :" HorizontalOptions="CenterAndExpand" FontSize="Large" HorizontalTextAlignment="Center"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False" x:Name="txfUserCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfUserCode_TextChanged"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
+                <Label x:Name="lblPOCode" Text="PO Number:" IsVisible="False" FontSize="Large" HorizontalTextAlignment="Center"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfPOCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfPOCode_TextChanged" IsVisible="False" />
+            </StackLayout>
+            <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
+            <StackLayout Orientation="Horizontal">
+                <Label x:Name="lblCompany" IsVisible="False" HorizontalOptions="FillAndExpand" FontSize="Large" />
+            </StackLayout>
+            <Button Text="Pack Items" Clicked="ButtonAccepted_Clicked" VerticalOptions="EndAndExpand" ImageSource="ItemAccept.png" BackgroundColor="Transparent" FontSize="Large"/>
+            <Button Text="List All Items" Clicked="ButtonViewS_Clicked" VerticalOptions="EndAndExpand" ImageSource="ViewAll.png" BackgroundColor="Transparent" FontSize="Large"/>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

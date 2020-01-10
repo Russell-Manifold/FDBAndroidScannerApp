@@ -17,7 +17,6 @@ namespace RepackagingMoblie
     {
         private ExtendedEntry _currententry;
         private string ItemBarcode;
-        private string auth = "DK198110007|5635796|C:/FDBManifoldData/FDB2020";
         public Custom()
         {
             InitializeComponent();
@@ -47,7 +46,7 @@ namespace RepackagingMoblie
                         string path = "FindDescAndCode";
                         client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
                         {
-                            string str = $"GET?authDetails={auth}&qrystr=ACCPRD|4|" + txfBarcode.Text;
+                            string str = $"GET?qrystr=ACCPRD|4|" + txfBarcode.Text;
                             var Request = new RestSharp.RestRequest();
                             Request.Resource = str;
                             Request.Method = RestSharp.Method.GET;

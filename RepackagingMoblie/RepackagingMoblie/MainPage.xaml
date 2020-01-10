@@ -9,7 +9,7 @@
              Title="Unpacking">
 
     <StackLayout>
-        <Label Text="Pack Barcode:"/>
+        <Label Text="Pack Barcode:" FontSize="Large"/>
         <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfPackbarcode" TextChanged="TxfPackbarcode_TextChanged"/>
         <Label x:Name="lblDesc"/>
         <Label x:Name="lblQTY"/>

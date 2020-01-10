@@ -15,7 +15,6 @@ namespace WHTransfer
     public partial class OutItems : ContentPage
     {
         private ExtendedEntry _currententry;
-        private readonly string auth = "DK198110007|5635796|C:/FDBManifoldData/FDB2020";
         public static List<IBTItem> items=new List<IBTItem>();
         public OutItems()
         {
@@ -76,7 +75,7 @@ namespace WHTransfer
                     client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
                     {
                         string qry = $"ACCPRD|4|{txfScannedItem.Text}";
-                        string str = $"GET?authDetails={auth}&qrystr={qry}";
+                        string str = $"GET?qrystr={qry}";
                         var Request = new RestSharp.RestRequest(str,RestSharp.Method.GET);
                         var cancellationTokenSource = new CancellationTokenSource();
                         var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);

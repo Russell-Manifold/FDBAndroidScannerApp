@@ -14,8 +14,7 @@ namespace ScannerFDB
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AdminPage : ContentPage
-    {
-        private string auth = "DK198110007|5635796|C:/FDBManifoldData/FDB2020";
+    {       
         public AdminPage(int lvl)
         {
             InitializeComponent();
@@ -44,7 +43,7 @@ namespace ScannerFDB
                 string path = "Find";
                 client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
                 {
-                    string str = $"GET?authDetails={auth}&qrystr=ACCBOML|0|0&posInString=0&searchValue=0";
+                    string str = $"GET?qrystr=ACCBOML|0|0&posInString=0&searchValue=0";
                     var Request = new RestSharp.RestRequest();
                     Request.Resource = str;
                     Request.Method = RestSharp.Method.GET;
@@ -65,7 +64,7 @@ namespace ScannerFDB
                                 string path1 = "GetField";
                                 client1.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path1);
                                 {
-                                    string str1 = $"GET?authDetails={auth}&qrystr=ACCPRD|0|{ s.Split('|')[3] }|3";
+                                    string str1 = $"GET?qrystr=ACCPRD|0|{ s.Split('|')[3] }|3";
                                     var Request1 = new RestSharp.RestRequest();
                                     Request1.Resource = str1;
                                     Request1.Method = RestSharp.Method.GET;
@@ -100,5 +99,6 @@ namespace ScannerFDB
         {
             await Navigation.PushAsync(new CreateUser());
         }
+       
     }
 }

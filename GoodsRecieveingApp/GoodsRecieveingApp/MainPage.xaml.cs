@@ -18,8 +18,6 @@ namespace GoodsRecieveingApp
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-        private string auth = "DK198110007|5635796|C:/FDBManifoldData/FDB2020";
-        //DK198110007|5635796|C:\Users\Russell - Manifold\Desktop\FDB2020
         private string CurrentUser="";
         private ExtendedEntry _currententry;
         public MainPage()
@@ -28,13 +26,11 @@ namespace GoodsRecieveingApp
             txfUserCode.Focused += Entry_Focused;
             txfPOCode.Focused += Entry_Focused;
         }
-
         protected override void OnAppearing()
         {
             base.OnAppearing();
             txfUserCode.Focus();
-        }
-
+        }       
         private async void TxfUserCode_TextChanged(object sender, TextChangedEventArgs e)
         {
             await Task.Delay(200);
@@ -74,7 +70,7 @@ namespace GoodsRecieveingApp
                     Request.Resource = str;
                     Request.Method = RestSharp.Method.GET;
                     var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                     if (res.IsSuccessful && res.Content != null)
                     {
                         DataSet myds = new DataSet();
@@ -169,12 +165,12 @@ namespace GoodsRecieveingApp
                     string path = "GetDocument";
                     client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
                     {
-                        string str = $"GET?authDetails={auth}&qrystr=ACCHISTL|6|{code}";
+                        string str = $"GET?qrystr=ACCHISTL|6|{code}";
                         var Request = new RestSharp.RestRequest();
                         Request.Resource = str;
                         Request.Method = RestSharp.Method.GET;
                         var cancellationTokenSource = new CancellationTokenSource();
-                        var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                        var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                         if (res.Content.ToString().Contains("OrderNumber"))
                         {
                             DataSet myds = new DataSet();
@@ -217,7 +213,6 @@ namespace GoodsRecieveingApp
             }
             return false;
         }
- 
         private async void ButtonViewS_Clicked(object sender, EventArgs e)
         {
             try

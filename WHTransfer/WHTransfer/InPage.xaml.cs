@@ -22,7 +22,6 @@ namespace WHTransfer
         private List<string> DoneItems = new List<string>();
         private IBTHeader CurrentHeader;
         private ExtendedEntry _currententry;
-        private string authDets = "DK198110007|5635796|C:\\Users\\Russell - Manifold\\Desktop\\FDB2020";
         public InPage()
         {
             InitializeComponent();
@@ -204,7 +203,7 @@ namespace WHTransfer
                         string path2 = "WHTransfer";
                         client2.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path2);
                         {
-                            string str2 = $"POST?authDetails={authDets}&itemCode={i.ItemCode}&InOrOut=true&JnlDate={DateTime.Now.ToString("dd MMM yyyy")}&JobCode={i.iTrfID}&Desc={i.iTrfID}&Ref={DateTime.Now.ToString("ddMMMyyyy")+"-"+i.iTrfID}&Qty={k}&Store={i.WH}";
+                            string str2 = $"POST?itemCode={i.ItemCode}&InOrOut=true&JnlDate={DateTime.Now.ToString("dd MMM yyyy")}&JobCode={i.iTrfID}&Desc={i.iTrfID}&Ref={DateTime.Now.ToString("ddMMMyyyy")+"-"+i.iTrfID}&Qty={k}&Store={i.WH}";
                             var Request2 = new RestSharp.RestRequest();
                             Request2.Resource = str2;
                             Request2.Method = RestSharp.Method.POST;
