@@ -51,7 +51,7 @@ namespace RepackagingMoblie
             }
             else
             {
-                await DisplayAlert("Error!", "Please enter a BOM barcode", "Okay");
+                await DisplayAlert("Error!", "Please scan a barcode of items unpacked", "OK");
             }
 
         }
@@ -62,15 +62,17 @@ namespace RepackagingMoblie
                 try
                 {
                     BOMItem bi = await GoodsRecieveingApp.App.Database.GetBOMItem(txfPackbarcode.Text);
-                    lblDesc.Text = bi.ItemDesc;
-                    lblQTY.Text = "There are " + bi.Qty + " items on this BOM";
+                    lblDesc.Text = "Item: " + bi.ItemDesc;
+                    lblQTY.Text = "Qty: " + bi.Qty;
                     docLines.Add(new DocLine { ItemBarcode = bi.PackBarcode,ItemCode=bi.ItemCode, ItemDesc = "1ItemFromMain", ItemQty = bi.Qty });
+                    btnGoToRepack.IsVisible = true;
                 }
                 catch
                 {
-                    await DisplayAlert("Error!", "No BOM with this code was found", "Okay");
+                    await DisplayAlert("Error!", "No Packing Code Found", "OK");
                     txfPackbarcode.Text = "";
                     txfPackbarcode.Focus();
+                    btnGoToRepack.IsVisible = false;
                 }
             }
         }

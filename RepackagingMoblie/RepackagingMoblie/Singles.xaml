@@ -9,12 +9,12 @@
              Title="Single Items">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Please Scan the items:"/>
+            <Label Text="Scan repacked the items:" FontSize="Large"/>
             <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfBarcode" TextChanged="TxfBarcode_TextChanged"/>
             <ActivityIndicator x:Name="Loader" IsRunning="True" IsVisible="False"/>
-            <Label x:Name="lblBarcode"/>
-            <Label x:Name="lblItemDesc"/>
-            <Label x:Name="lblItemQTY"/>
+            <Label x:Name="lblBarcode" FontSize="Medium"/>
+            <Label x:Name="lblItemDesc"  FontSize="Medium"/>
+            <Label x:Name="lblItemQTY"  FontSize="Medium"/>
             <Button Text="Complete" x:Name="btnComplete" Clicked="BtnComplete_Clicked"/>
         </StackLayout>
     </ContentPage.Content>

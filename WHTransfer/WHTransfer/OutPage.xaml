@@ -4,19 +4,19 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             Title="Release Items"
+             Title="Set Up Transfer"
              x:Class="WHTransfer.OutPage">
     <ContentPage.Content>
         <StackLayout>
             <StackLayout x:Name="LayoutHeader">
-                <Label Text="Continue with a previous one or start new:" FontSize="Large"/>
-                <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
-                    <Button Text="Continue" x:Name="btnContinue" Clicked="BtnContinue_Clicked" FontSize="Large"/>
-                    <Button Text="Start New" x:Name="btnStartNewHeader" Clicked="BtnStartNewHeader_Clicked" FontSize="Large"/>
+                <Label Text="Continue with a previous one or start new:" FontSize="Large" HorizontalTextAlignment="Center"/>
+                <StackLayout VerticalOptions="FillAndExpand">
+                    <Button Text="Continue with existing" x:Name="btnContinue" Clicked="BtnContinue_Clicked" VerticalOptions="FillAndExpand" FontSize="Medium" ImageSource="resumeimg.png" BackgroundColor="Transparent" />
+                    <Button Text="Start New Transfer" x:Name="btnStartNewHeader" Clicked="BtnStartNewHeader_Clicked" VerticalOptions="FillAndExpand" FontSize="Medium" ImageSource="StartNew.png" BackgroundColor="Transparent"/>
                 </StackLayout>
             </StackLayout>
             <StackLayout x:Name="StartNewLayout" IsVisible="False">
-                <Label Text="From Warehouse"/>
+                <Label Text="From Warehouse" FontSize="Large"/>
                 <Picker x:Name="pickerFromWH" SelectedIndexChanged="PickerFromWH_SelectedIndexChanged">
                     <Picker.Items>
                         <x:String>
@@ -27,7 +27,7 @@
                         </x:String>
                     </Picker.Items>
                 </Picker>
-                <Label Text="To WareHouse"/>
+                <Label Text="To WareHouse" FontSize="Large"/>
                 <Picker x:Name="pickerToWH" SelectedIndexChanged="PickerToWH_SelectedIndexChanged" IsEnabled="False">
                     <Picker.Items>
                         <x:String>
@@ -38,11 +38,11 @@
                         </x:String>
                     </Picker.Items>
                 </Picker>
-                <Label Text="From Date:" x:Name="lblDatePickFrom"/>
+                <Label Text="From Date:" x:Name="lblDatePickFrom" FontSize="Large"/>
                 <DatePicker x:Name="DatePickerFrom" Unfocused="DatePickerFrom_Unfocused" IsEnabled="False"/>
-                <Label Text="Receving Date:" x:Name="lblDatePickRec"/>
+                <Label Text="Receving Date:" x:Name="lblDatePickRec" FontSize="Large"/>
                 <DatePicker x:Name="DatePickerRec" Unfocused="DatePickerRec_Unfocused" IsEnabled="False"/>
-                <Button x:Name="btnAdd" Text="Add IBT Header" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand" IsEnabled="False" Clicked="Button_Clicked"/>
+                <Button x:Name="btnAdd" Text="Start Transfer" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand" IsEnabled="False" Clicked="Button_Clicked" FontSize="Large"  ImageSource="WHTrf.png" BackgroundColor="Transparent" TextColor="Black"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

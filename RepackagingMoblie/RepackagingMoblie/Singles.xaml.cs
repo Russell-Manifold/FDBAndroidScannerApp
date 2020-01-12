@@ -62,7 +62,7 @@ namespace RepackagingMoblie
         void setQTY(string barcode)
         {
             int i = MainPage.docLines.FindAll(x => x.isRejected == false && x.ItemBarcode == barcode&&x.ItemQty==1).Count;
-            lblItemQTY.Text = "You have scanned " + i + " items with this barcode to be accepted";
+            lblItemQTY.Text = i + " items scanned as repacked";
         }
         public async Task<bool> FindItem()
         {

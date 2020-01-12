@@ -23,12 +23,12 @@ namespace WHTransfer
             RecDate = DatePickerRec.Date.ToString("dd MMM yyyy");
             if (FromWH==null||ToWH==null||FromDate==null||RecDate==null||FromWH == "" || ToWH == "" || FromDate == "" || RecDate == "")
             {
-                await DisplayAlert("Error!", "Please Make sure to enter all the fields", "Okay");
+                await DisplayAlert("Error!", "Please enter ALL the fields", "OK");
             }
             else
             {
                 await GoodsRecieveingApp.App.Database.Insert(new IBTHeader { TrfDate = DateTime.Now.ToString("dd MMM yyyy"), FromWH = FromWH, ToWH = ToWH, FromDate = FromDate, RecDate = RecDate, Active = true });
-                await DisplayAlert("Complete!", "Your IBT Header has been Created", "Okay");
+                await DisplayAlert("Complete!", "Transfer Successfully Started", "OK");
                 await Navigation.PushAsync(new OutItems());
             }
         }
@@ -92,6 +92,8 @@ namespace WHTransfer
             try
             {
                 IBTHeader current = (await GoodsRecieveingApp.App.Database.GetIBTHeaders()).First();
+                DatePickerFrom.Date = DateTime.Today;
+                DatePickerRec.Date = DateTime.Today;
             }
             catch
             {

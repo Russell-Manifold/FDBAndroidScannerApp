@@ -8,7 +8,8 @@
              Title="Repacking">
     <ContentPage.Content>
         <StackLayout>
-            <Label x:Name="lblBOMInfo"/>
+            <Label x:Name="lblRepackHeader" FontSize="Large" HorizontalOptions="Center" TextDecorations="Underline">Repacking Progress</Label>
+            <Label x:Name="lblBOMInfo" FontSize="Large" TextColor="red"/>
             <Button Text="Single Units" x:Name="btnSingles" Clicked="BtnSingles_Clicked" VerticalOptions="FillAndExpand"/>
             <Button Text="Custom QTY" x:Name="btnCustom" Clicked="BtnCustom_Clicked" VerticalOptions="FillAndExpand"/>
             <Button Text="Damaged Goods" x:Name="btnDamaged" Clicked="BtnDamaged_Clicked" VerticalOptions="FillAndExpand"/>

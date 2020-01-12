@@ -21,11 +21,11 @@ namespace RepackagingMoblie
             base.OnAppearing();
             try
             {
-                lblBOMInfo.Text = "You have accounted for " +MainPage.docLines.FindAll(x => x.ItemDesc != "1ItemFromMain").Sum(x => x.ItemQty) + " items in the BOM of " + +MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemQty + " items";
+                lblBOMInfo.Text = "You have repacked " +MainPage.docLines.FindAll(x => x.ItemDesc != "1ItemFromMain").Sum(x => x.ItemQty) + " / " + +MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemQty + " items";
             }
             catch
             {
-                lblBOMInfo.Text = "You have accounted for 0 items in the BOM of " + MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemQty;
+                lblBOMInfo.Text = "0/" + MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemQty + " Repacked";
             }
         }
         private async void BtnSingles_Clicked(object sender, EventArgs e)
@@ -56,12 +56,13 @@ namespace RepackagingMoblie
             if (MainPage.docLines.Find(x=>x.ItemDesc=="1ItemFromMain").ItemQty==MainPage.docLines.FindAll(x=>x.ItemDesc!= "1ItemFromMain").Sum(x=>x.ItemQty))
             {
                 // send all to API for printing MainPage.PackCodes
-                await DisplayAlert("Done!", "Your repacking has been completed", "Okay");
+                lblBOMInfo.TextColor = System.Drawing.Color.Gray;
+                 await DisplayAlert("Done!", "Repacking Complete", "OK");
                 await Navigation.PopToRootAsync();
             }
             else
             {
-                await DisplayAlert("Error!", "Not all items have been accounted for in the BOM", "Okay");
+                await DisplayAlert("Error!", "Not all items have been repacked!", "OK");
             }
         }
     }
