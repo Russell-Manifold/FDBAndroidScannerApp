@@ -25,7 +25,7 @@ namespace WHTransfer
         public InPage()
         {
             InitializeComponent();
-            txfScannedItem.Focused += Entry_Focused;          
+            //txfScannedItem.Focused += Entry_Focused;          
         }
         protected async override void OnAppearing()
         {
@@ -53,25 +53,25 @@ namespace WHTransfer
 
             }
         }
-        private async void TxfScannedItem_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            await Task.Delay(100);
-            if(txfScannedItem.Text.Length>1){
-                if (!CheckItem(txfScannedItem.Text))
-                {
-                    await DisplayAlert("Error!", "Please make sure this item is on this order and hasnt been scanned yet", "Okay");
-                }
-                else
-                {
-                    IsDone().ConfigureAwait(false);
-                    await Task.Delay(100);
-                    ListViewItems.ItemsSource = null;
-                    ListViewItems.ItemsSource = lines;
-                }
-                txfScannedItem.Text = "";
-                txfScannedItem.Focus();
-            }
-        }
+        //private async void TxfScannedItem_TextChanged(object sender, TextChangedEventArgs e)
+        //{
+        //    await Task.Delay(100);
+        //    if(txfScannedItem.Text.Length>1){
+        //        if (!CheckItem(txfScannedItem.Text))
+        //        {
+        //            await DisplayAlert("Error!", "Please make sure this item is on this order and hasnt been scanned yet", "Okay");
+        //        }
+        //        else
+        //        {
+        //            IsDone().ConfigureAwait(false);
+        //            await Task.Delay(100);
+        //            ListViewItems.ItemsSource = null;
+        //            ListViewItems.ItemsSource = lines;
+        //        }
+        //        txfScannedItem.Text = "";
+        //        txfScannedItem.Focus();
+        //    }
+        //}
         private bool CheckItem(string barcode)
         {
             try
@@ -135,7 +135,7 @@ namespace WHTransfer
             lblInfo.Text = "Transfer number :"+CurrentHeader.ID+" started on date :"+CurrentHeader.TrfDate;
             ListViewItems.ItemsSource = lines;
             isLoading.IsVisible = false;
-            txfScannedItem.Focus();
+            //txfScannedItem.Focus();
         }
         private async Task<bool> GetLines(int trf)
         {
