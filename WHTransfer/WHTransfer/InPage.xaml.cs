@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Data;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -25,7 +25,8 @@ namespace WHTransfer
         public InPage()
         {
             InitializeComponent();
-            //txfScannedItem.Focused += Entry_Focused;          
+            txfScannedItems.Focused += Entry_Focused;
+            txfScannedItems.Focus();
         }
         protected async override void OnAppearing()
         {
@@ -53,25 +54,26 @@ namespace WHTransfer
 
             }
         }
-        //private async void TxfScannedItem_TextChanged(object sender, TextChangedEventArgs e)
-        //{
-        //    await Task.Delay(100);
-        //    if(txfScannedItem.Text.Length>1){
-        //        if (!CheckItem(txfScannedItem.Text))
-        //        {
-        //            await DisplayAlert("Error!", "Please make sure this item is on this order and hasnt been scanned yet", "Okay");
-        //        }
-        //        else
-        //        {
-        //            IsDone().ConfigureAwait(false);
-        //            await Task.Delay(100);
-        //            ListViewItems.ItemsSource = null;
-        //            ListViewItems.ItemsSource = lines;
-        //        }
-        //        txfScannedItem.Text = "";
-        //        txfScannedItem.Focus();
-        //    }
-        //}
+        private async void TxfScannedItem_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            await Task.Delay(100);
+            if (txfScannedItems.Text.Length > 1)
+            {
+                if (!CheckItem(txfScannedItems.Text))
+                {
+                    await DisplayAlert("Error!", "Please make sure this item is on this order and hasnt been scanned yet", "Okay");
+                }
+                else
+                {
+                    _=IsDone();
+                    await Task.Delay(100);
+                    ListViewItems.ItemsSource = null;
+                    ListViewItems.ItemsSource = lines;
+                }
+                txfScannedItems.Text = "";
+                txfScannedItems.Focus();
+            }
+        }
         private bool CheckItem(string barcode)
         {
             try
@@ -98,7 +100,7 @@ namespace WHTransfer
                     Request.Resource = str;
                     Request.Method = RestSharp.Method.GET;
                     var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                     if (res.IsSuccessful && res.Content != null)
                     {
                         DataSet myds = new DataSet();
@@ -150,7 +152,7 @@ namespace WHTransfer
                     Request.Resource = str;
                     Request.Method = RestSharp.Method.GET;
                     var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                     if (res.IsSuccessful && res.Content != null)
                     {
                         DataSet myds = new DataSet();
@@ -208,7 +210,7 @@ namespace WHTransfer
                             Request2.Resource = str2;
                             Request2.Method = RestSharp.Method.POST;
                             var cancellationTokenSource2 = new CancellationTokenSource();
-                            var res2 = await client2.ExecuteTaskAsync(Request2, cancellationTokenSource2.Token);
+                            var res2 = await client2.ExecuteAsync(Request2, cancellationTokenSource2.Token);
                             if (!(res2.IsSuccessful && res2.Content != null))
                             {
                                 await DisplayAlert("Error!", "Could not delete record", "Okay");
@@ -226,7 +228,7 @@ namespace WHTransfer
                     Request.Resource = str;
                     Request.Method = RestSharp.Method.DELETE;
                     var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                     if (!(res.IsSuccessful && res.Content != null))
                     {
                         await DisplayAlert("Error!", "Could not delete record", "Okay");
@@ -243,8 +245,7 @@ namespace WHTransfer
         private async void Button_Clicked(object sender, EventArgs e)
         {
             btnComplete.BackgroundColor = Color.Red;
-            IsDone();                                
-            await Task.Delay(3000);
+            await IsDone();                                
             btnComplete.BackgroundColor = Color.Green;
         }
     }

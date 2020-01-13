@@ -25,7 +25,7 @@ namespace PickAndPack
         {
             InitializeComponent();
             txfUserCode.Focused += Entry_Focused;
-            txfPOCode.Focused += Entry_Focused;
+            txfSOCode.Focused += Entry_Focused;
         }
         protected override void OnAppearing()
         {
@@ -44,11 +44,11 @@ namespace PickAndPack
                     LodingIndiactor.IsVisible = false;
                     txfUserCode.IsVisible = false;
                     lblUserCode.IsVisible = false;
-                    txfPOCode.IsVisible = true;
-                    lblPOCode.IsVisible = true;
-                    txfPOCode.Text = "";
+                    txfSOCode.IsVisible = true;
+                    lblSOCode.IsVisible = true;
+                    txfSOCode.Text = "";
                     await Task.Delay(100);
-                    txfPOCode.Focus();
+                    txfSOCode.Focus();
                 }
                 else
                 {
@@ -99,18 +99,16 @@ namespace PickAndPack
             }
             return false;
         }
-        private async void TxfPOCode_TextChanged(object sender, TextChangedEventArgs e)
+        private async void TxfSOCode_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (txfPOCode.Text.Length == 8)
+            if (txfSOCode.Text.Length == 8)
             {
                 LodingIndiactor.IsVisible = true;
-                if (await GetItems(txfPOCode.Text.ToUpper()))
+                if (await GetItems(txfSOCode.Text.ToUpper()))
                 {
-                    DocLine d = await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(txfPOCode.Text.ToUpper());
-                    lblCompany.Text = d.SupplierName + " - " + txfPOCode.Text.ToUpper();
-                    lblCompany.IsVisible = true;
-                    txfPOCode.IsVisible = false;
-                    lblPOCode.IsVisible = false;
+                    DocLine d = await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(txfSOCode.Text.ToUpper());                   
+                    txfSOCode.IsVisible = false;
+                    lblSOCode.IsVisible = false;
                     try
                     {
                         await GoodsRecieveingApp.App.Database.Delete(await GoodsRecieveingApp.App.Database.GetHeader(d.DocNum));
@@ -119,28 +117,28 @@ namespace PickAndPack
                     {
 
                     }
-                    await GoodsRecieveingApp.App.Database.Insert(new DocHeader { DocNum = txfPOCode.Text, User = txfUserCode.Text, AccName = d.SupplierName, AcctCode = d.SupplierCode });
+                    await GoodsRecieveingApp.App.Database.Insert(new DocHeader { DocNum = txfSOCode.Text, User = txfUserCode.Text, AccName = d.SupplierName, AcctCode = d.SupplierCode });
                     LodingIndiactor.IsVisible = false;
                     //await DisplayAlert("Done", "All the data has been loaded for this order", "OK");                       
                 }
                 else
                 {
-                    txfPOCode.Text = "";
-                    txfPOCode.Focus();
+                    txfSOCode.Text = "";
+                    txfSOCode.Focus();
                 }
             }
         }
-        private async void ButtonAccepted_Clicked(object sender, EventArgs e)
+        private async void btnScanItems_Clicked(object sender, EventArgs e)
         {
 
             try
             {
-                DocLine dl = await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(txfPOCode.Text.ToUpper());
-                await Navigation.PushAsync(new ScanAcc(dl));
+                DocLine dl = await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(txfSOCode.Text.ToUpper());
+                await Navigation.PushAsync(new ScannItems(dl));
             }
             catch
             {
-                await DisplayAlert("Error", "Could not load info of the entered PO", "Try Again");
+                await DisplayAlert("Error", "Could not load info of the entered SO", "Try Again");
             }
         }      
         private async Task<bool> GetItems(string code)
@@ -207,15 +205,15 @@ namespace PickAndPack
         {
             try
             {
-                await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(txfPOCode.Text.ToUpper());
-                await Navigation.PushAsync(new ViewStock(txfPOCode.Text.ToUpper()));
+                await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(txfSOCode.Text.ToUpper());
+                await Navigation.PushAsync(new ViewItems(txfSOCode.Text.ToUpper()));
             }
             catch
             {
                 await DisplayAlert("Error", "Could not load info of the entered PO", "Try Again");
             }
         }
-        private async void TxfPOCode_Focused(object sender, FocusEventArgs e)
+        private async void TxfSOCode_Focused(object sender, FocusEventArgs e)
         {
             if (txfUserCode.Text == "" || txfUserCode.Text == null)
             {

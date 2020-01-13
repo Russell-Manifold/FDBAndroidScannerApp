@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:controls="clr-namespace: Data.KeyboardContol;assembly=Data"
+             xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
              mc:Ignorable="d"
              Title="Recieve Items"
              x:Class="WHTransfer.InPage">
@@ -15,7 +15,7 @@
             <StackLayout IsVisible="False" x:Name="LayoutMain">
                 <Label x:Name="lblInfo" FontSize="Large"/>
                 <Label Text="Scan all items:" FontSize="Large"/>
-                <!--<controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScannedItem" TextChanged="TxfScannedItem_TextChanged"/>-->
+                <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScannedItems" TextChanged="TxfScannedItem_TextChanged"/>
                 <ListView x:Name="ListViewItems" HasUnevenRows="True">
                     <ListView.Footer>
                         <Button Text="Complete" Clicked="Button_Clicked" x:Name="btnComplete" BackgroundColor="Green"/>
