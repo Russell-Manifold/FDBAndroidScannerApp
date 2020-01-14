@@ -14,7 +14,7 @@
         <Label Text="Selected Pack Code" FontSize="Large" Padding="20"/>
         <Label x:Name="lblDesc" FontSize="Large"/>
         <Label x:Name="lblQTY" FontSize="Large"/>
-        <Button Text="Go to Repacking" x:Name="btnGoToRepack" Clicked="BtnGoToRepack_Clicked" ImageSource="pickpack.png" BackgroundColor="Transparent" FontSize="Large" IsVisible="False"/>
+        <Button Text="Go to Repacking" x:Name="btnGoToRepack" Clicked="BtnGoToRepack_Clicked" ImageSource="pickpack.png" BackgroundColor="Transparent" FontSize="Large" IsVisible="False" VerticalOptions="EndAndExpand"/>
     </StackLayout>
 
 </ContentPage>

@@ -30,16 +30,16 @@ namespace RepackagingMoblie
         }
         private async void BtnSingles_Clicked(object sender, EventArgs e)
         {
-            string output = await DisplayActionSheet("Would you like to scan the same barcode or different?","Same","Different");
-            switch (output)
-            {
-                case "Same":
+            //string output = await DisplayActionSheet("Would you like to scan the same barcode or different?","Same","Different");
+            //switch (output)
+            //{
+            //    case "Same":
                     await Navigation.PushAsync(new Singles());
-                    break;
-                case "Different":
-                    await Navigation.PushAsync(new Singles());
-                    break;
-            }
+                //    break;
+                //case "Different":
+                //    await Navigation.PushAsync(new Singles());
+                //    break;
+            //}
         }
 
         private async void BtnCustom_Clicked(object sender, EventArgs e)

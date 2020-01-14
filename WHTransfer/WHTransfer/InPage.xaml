@@ -15,7 +15,7 @@
             <StackLayout IsVisible="False" x:Name="LayoutMain">
                 <Label x:Name="lblInfo" FontSize="Large"/>
                 <Label Text="Scan all items:" FontSize="Large"/>
-                <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScannedItem" TextChanged="TxfScannedItem_TextChanged"/>
+                <!--<controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScannedItem" TextChanged=""/>-->
                 <ListView x:Name="ListViewItems" HasUnevenRows="True">
                     <ListView.Footer>
                         <Button Text="Complete" Clicked="Button_Clicked" x:Name="btnComplete" BackgroundColor="Green"/>
