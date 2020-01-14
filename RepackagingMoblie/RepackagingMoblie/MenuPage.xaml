@@ -6,14 +6,17 @@
              mc:Ignorable="d"
              x:Class="RepackagingMoblie.MenuPage"
              Title="Repacking">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="" Clicked="Button_Clicked_Home" IconImageSource="home.PNG"/>
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
             <Label x:Name="lblRepackHeader" FontSize="Large" HorizontalOptions="Center" TextDecorations="Underline">Repacking Progress</Label>
             <Label x:Name="lblBOMInfo" FontSize="Large" TextColor="red"/>
-            <Button Text="Single Units" x:Name="btnSingles" Clicked="BtnSingles_Clicked" VerticalOptions="FillAndExpand"/>
-            <Button Text="Custom QTY" x:Name="btnCustom" Clicked="BtnCustom_Clicked" VerticalOptions="FillAndExpand"/>
-            <Button Text="Damaged Goods" x:Name="btnDamaged" Clicked="BtnDamaged_Clicked" VerticalOptions="FillAndExpand"/>
-            <Button Text="Finish" x:Name="btnComplete" Clicked="BtnComplete_Clicked" VerticalOptions="FillAndExpand"/>
+            <Button Text="Single Units" x:Name="btnSingles" Clicked="BtnSingles_Clicked" VerticalOptions="FillAndExpand" ImageSource="repacksing.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
+            <Button Text="Custom QTY" x:Name="btnCustom" Clicked="BtnCustom_Clicked" VerticalOptions="FillAndExpand" ImageSource="repack.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
+            <Button Text="Damaged Goods" x:Name="btnDamaged" Clicked="BtnDamaged_Clicked" VerticalOptions="FillAndExpand" ImageSource="ItemAcceptDamaged.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
+            <Button Text="Finish" x:Name="btnComplete" Clicked="BtnComplete_Clicked" VerticalOptions="FillAndExpand" ImageSource="TickSmall.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

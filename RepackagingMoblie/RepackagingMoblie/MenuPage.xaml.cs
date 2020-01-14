@@ -65,5 +65,10 @@ namespace RepackagingMoblie
                 await DisplayAlert("Error!", "Not all items have been repacked!", "OK");
             }
         }
+
+        private async void Button_Clicked_Home(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new MainPage());
+        }
     }
 }

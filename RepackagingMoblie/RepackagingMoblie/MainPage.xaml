@@ -7,7 +7,10 @@
              mc:Ignorable="d"
              x:Class="RepackagingMoblie.MainPage"
              Title="Unpacking">
-
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="" Clicked="Button_Clicked_Home" IconImageSource="home.PNG"/>
+    </ContentPage.ToolbarItems>
+    <ContentPage.Content>
     <StackLayout>
         <Label Text="Scan Barcode of pack to be Unpacked:" FontSize="Large" HorizontalTextAlignment="Center"/>
         <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfPackbarcode" TextChanged="TxfPackbarcode_TextChanged" HorizontalTextAlignment="Center"/>
@@ -16,5 +19,5 @@
         <Label x:Name="lblQTY" FontSize="Large"/>
         <Button Text="Go to Repacking" x:Name="btnGoToRepack" Clicked="BtnGoToRepack_Clicked" ImageSource="pickpack.png" BackgroundColor="Transparent" FontSize="Large" IsVisible="False" VerticalOptions="EndAndExpand"/>
     </StackLayout>
-
+</ContentPage.Content>
 </ContentPage>
