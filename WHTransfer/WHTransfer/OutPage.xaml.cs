@@ -72,7 +72,7 @@ namespace WHTransfer
                     ToWH = "";
                     pickerToWH.SelectedIndex = -1;
                     pickerToWH.Focus();
-                    await DisplayAlert("Error!", "You cannot transfer from and to the same warehouse", "Okay");
+                    await DisplayAlert("Error!", "You cannot transfer from and to the same warehouse", "OK");
                 }
                 else
                 {

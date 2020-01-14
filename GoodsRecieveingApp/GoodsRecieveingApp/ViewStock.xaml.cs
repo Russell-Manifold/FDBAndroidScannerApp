@@ -86,7 +86,7 @@ namespace GoodsRecieveingApp
         {
             if (await Check())
             {
-                await DisplayAlert("Complete!", "The recieving for this PO is complete", "OK");
+                await DisplayAlert("Complete!", "Successfully Received", "OK");
                 //send GRV back to Pastel database
             }
             else

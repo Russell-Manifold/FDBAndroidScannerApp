@@ -62,7 +62,7 @@ namespace RepackagingMoblie
         void setQTY(string barcode)
         {
             int i = MainPage.docLines.FindAll(x => x.isRejected == false && x.ItemBarcode == barcode&&x.ItemQty==1).Count;
-            lblItemQTY.Text = i + " items scanned as repacked";
+            lblItemQTY.Text = "QTY: " + i + " items repacked";
         }
         public async Task<bool> FindItem()
         {
@@ -71,7 +71,7 @@ namespace RepackagingMoblie
             {
                 BOMItem bi = await GoodsRecieveingApp.App.Database.GetBOMItem(txfBarcode.Text);
                 Loader.IsVisible = false;
-                await DisplayAlert("Error!", "You cannot add a BOM as a single item", "OKay");
+                await DisplayAlert("Error!", "You cannot add a Pack Barcode as a single item", "OK");
             }
             catch
             {
@@ -100,7 +100,7 @@ namespace RepackagingMoblie
                             else
                             {
                                 Loader.IsVisible = false;
-                                await DisplayAlert("Error!","This is not the same product type from this BOM","Okay");
+                                await DisplayAlert("Error!","This is not the same product type from this Barcode","OK");
                                 lblItemDesc.Text = "";
                                 lblItemQTY.Text = "";
                                 return false;
@@ -113,7 +113,7 @@ namespace RepackagingMoblie
                 {
                     lblItemDesc.Text = "No Item With This Code";
                     Loader.IsVisible = false;
-                    await DisplayAlert("Error!", "There was no item or pack found with this code", "Okay");
+                    await DisplayAlert("Error!", "There was no item or pack found with this code", "OK");
                 }              
             }
             return false;

@@ -79,7 +79,7 @@ namespace ScannerFDB
                             }                                                                                                        
                         }
                         LodingIndiactor.IsVisible = false;
-                        await DisplayAlert("Complete","All of the BOM's have been fetched","OK");
+                        await DisplayAlert("Complete","All items successfully updated","OK");
                     }
                 }
             }

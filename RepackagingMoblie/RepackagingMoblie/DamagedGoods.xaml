@@ -15,7 +15,7 @@
             <Label x:Name="lblBarcode"/>
             <Label x:Name="lblItemDesc"/>
             <Label x:Name="lblItemQTY"/>
-            <Button Text="Complete" x:Name="btnComplete" Clicked="BtnComplete_Clicked"/>
+            <Button Text="Complete" x:Name="btnComplete" Clicked="BtnComplete_Clicked" VerticalOptions="EndAndExpand" ImageSource="TickSmallO.png" BackgroundColor="Transparent" FontSize="Medium" TextColor="Orange"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

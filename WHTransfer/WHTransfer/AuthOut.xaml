@@ -12,7 +12,7 @@
             <Label Text="Please scan your User Barcode:" x:Name="lblUserCode"/>
             <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfUserCode" TextChanged="TxfUserCode_TextChanged"/>
             <ActivityIndicator IsVisible="False" IsRunning="True" x:Name="Loading"/>
-            <Button Text="Done" x:Name="btnDone" Clicked="BtnDone_Clicked" IsEnabled="False"/>
+            <Button Text="Done" x:Name="btnDone" Clicked="BtnDone_Clicked" IsEnabled="False" ImageSource="TickSmall.png" BackgroundColor="Transparent" FontSize="Medium" TextColor="Green"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

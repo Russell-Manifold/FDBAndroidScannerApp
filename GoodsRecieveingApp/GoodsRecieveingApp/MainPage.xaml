@@ -23,11 +23,12 @@
         </StackLayout>
         <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
         <StackLayout Orientation="Horizontal">
-            <Label x:Name="lblCompany" IsVisible="False" HorizontalOptions="FillAndExpand" FontSize="Large" />
-        </StackLayout>
-        <Button Text="Accepted Items" Clicked="ButtonAccepted_Clicked" VerticalOptions="EndAndExpand" ImageSource="ItemAccept.png" BackgroundColor="Transparent" FontSize="Large"/>
-            <Button Text="Receive As Damaged" Clicked="ButtonRejected_Clicked" VerticalOptions="EndAndExpand" ImageSource="ItemAcceptDamaged.png" BackgroundColor="Transparent" FontSize="Large"/>
-            <Button Text="List All Items" Clicked="ButtonViewS_Clicked" VerticalOptions="EndAndExpand" ImageSource="ViewAll.png" BackgroundColor="Transparent" FontSize="Large"/>
+                <Label x:Name="lblCompany" IsVisible="False" HorizontalOptions="CenterAndExpand" FontSize="Large" />
+                <Label x:Name="lblPONum" IsVisible="False" HorizontalOptions="CenterAndExpand" FontSize="Large" />
+            </StackLayout>
+            <Button x:Name="btnAccept" Text="Accepted Items" Clicked="ButtonAccepted_Clicked" VerticalOptions="EndAndExpand" ImageSource="ItemAccept.png" BackgroundColor="Transparent" FontSize="Large" IsVisible="False"/>
+            <Button x:Name="btnRej" Text="Receive As Damaged" Clicked="ButtonRejected_Clicked" VerticalOptions="EndAndExpand" ImageSource="ItemAcceptDamaged.png" BackgroundColor="Transparent" FontSize="Large" IsVisible="False"/>
+            <Button x:Name="btnAll" Text="List All Items" Clicked="ButtonViewS_Clicked" VerticalOptions="EndAndExpand" ImageSource="ViewAll.png" BackgroundColor="Transparent" FontSize="Large" IsVisible="False"/>
     </StackLayout>
     </ScrollView>
 </ContentPage>

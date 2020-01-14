@@ -47,7 +47,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button Text="Complete" x:Name="btnComplete" Clicked="BtnComplete_Clicked"/>
+            <Button Text="Complete" x:Name="btnComplete" Clicked="BtnComplete_Clicked" ImageSource="TickSmall.png" BackgroundColor="Transparent" FontSize="Medium" TextColor="Green" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

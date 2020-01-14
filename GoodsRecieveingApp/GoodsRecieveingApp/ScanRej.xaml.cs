@@ -25,7 +25,7 @@ namespace GoodsRecieveingApp
             InitializeComponent();
             txfRejCode.Focused += Entry_Focused;
             UsingDoc = d;
-            lblMainRej.Text = UsingDoc.SupplierName + " - " + UsingDoc.SupplierCode;           
+            lblMainRej.Text = UsingDoc.SupplierName + " - " + UsingDoc.DocNum;           
         }
         private void ButtonRej_Clicked(object sender, EventArgs e)
         {

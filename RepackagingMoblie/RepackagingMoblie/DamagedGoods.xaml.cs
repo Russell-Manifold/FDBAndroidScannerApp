@@ -70,7 +70,7 @@ namespace RepackagingMoblie
             {
                 BOMItem bi = await GoodsRecieveingApp.App.Database.GetBOMItem(txfBarcode.Text);
                 Loader.IsVisible = false;
-                await DisplayAlert("Error!", "You cannot add a BOM please scan items as singles", "OKay");
+                await DisplayAlert("Error!", "You cannot add a BOM please scan items as singles", "OK");
             }
             catch
             {
@@ -99,7 +99,7 @@ namespace RepackagingMoblie
                             else
                             {
                                 Loader.IsVisible = false;
-                                await DisplayAlert("Error!", "This is not the same product type from this BOM", "Okay");
+                                await DisplayAlert("Error!", "This is not the same product type from this BOM", "OK");
                                 lblItemDesc.Text = "";
                                 lblItemQTY.Text = "";
                                 return false;
@@ -111,7 +111,7 @@ namespace RepackagingMoblie
                 {
                     lblItemDesc.Text = "No Item With This Code";
                     Loader.IsVisible = false;
-                    await DisplayAlert("Error!", "There was no item or pack found with this code", "Okay");
+                    await DisplayAlert("Error!", "There was no item or pack found with this code", "OK");
                 }
             }
             return false;

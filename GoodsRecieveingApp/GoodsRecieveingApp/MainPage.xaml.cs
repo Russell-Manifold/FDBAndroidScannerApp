@@ -52,7 +52,7 @@ namespace GoodsRecieveingApp
                 {
                     LodingIndiactor.IsVisible = false;
                     txfUserCode.Text = "";
-                    await DisplayAlert("Error!", "Invalid User", "Okay");
+                    await DisplayAlert("Error!", "Invalid User", "OK");
                     txfUserCode.Focus();
                 }
             }
@@ -105,10 +105,16 @@ namespace GoodsRecieveingApp
                 if (await GetItems(txfPOCode.Text.ToUpper()))
                 {
                     DocLine d = await App.Database.GetOneSpecificDocAsync(txfPOCode.Text.ToUpper());
-                    lblCompany.Text = d.SupplierName + " - " + txfPOCode.Text.ToUpper();
+                    lblCompany.Text = d.SupplierName.ToUpper();
+                    lblPONum.Text = txfPOCode.Text.ToUpper();
                     lblCompany.IsVisible = true;
+                    lblPONum.IsVisible = true;
                     txfPOCode.IsVisible = false;
                     lblPOCode.IsVisible = false;
+                    btnAccept.IsVisible = true;
+                    btnRej.IsVisible = true;
+                    btnAll.IsVisible = true;
+                        
                     try
                     {
                         await App.Database.Delete(await App.Database.GetHeader(d.DocNum));

@@ -9,13 +9,13 @@
              Title="Custom Size">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Scan the item Barcode"/>
-            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfBarcode" TextChanged="TxfBarcode_TextChanged"/>
+            <Label Text="Scan the item Barcode" FontSize="Large" HorizontalTextAlignment="Center"/>
+            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfBarcode" TextChanged="TxfBarcode_TextChanged" FontSize="Large"/>
             <ActivityIndicator x:Name="Loader" IsVisible="False" IsRunning="True"/>
             <Label x:Name="lblItemDesc"/>
-            <Label Text="Enter the item QTY"/>
-            <Entry x:Name="txfQTY" Keyboard="Numeric"/>
-            <Button Text="Add" x:Name="btnAdd" Clicked="BtnAdd_Clicked"/>
+            <Label Text="Enter the item QTY" FontSize="Large" HorizontalTextAlignment="Center"/>
+            <Entry x:Name="txfQTY" Keyboard="Numeric" FontSize="Large" WidthRequest="50" HorizontalTextAlignment="Center"/>
+            <Button Text="Add" x:Name="btnAdd" Clicked="BtnAdd_Clicked" VerticalOptions="EndAndExpand" ImageSource="TickSmall.png" BackgroundColor="Transparent" FontSize="Medium" TextColor="Green"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

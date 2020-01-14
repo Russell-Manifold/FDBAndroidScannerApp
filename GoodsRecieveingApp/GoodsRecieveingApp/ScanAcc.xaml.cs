@@ -25,7 +25,7 @@ namespace GoodsRecieveingApp
             InitializeComponent();
             txfAccCode.Focused += Entry_Focused;
             UsingDoc = d;
-            lblMainAcc.Text = UsingDoc.SupplierName + " - " + UsingDoc.SupplierCode;
+            lblMainAcc.Text = UsingDoc.SupplierName + " - " + UsingDoc.DocNum;
         }
         protected async override void OnAppearing()
         {
@@ -49,7 +49,7 @@ namespace GoodsRecieveingApp
                     }
                     catch
                     {
-                        await DisplayAlert("Error!", "There is no item with this tag", "OK");
+                        await DisplayAlert("Error!", "There is no item with this barcode", "OK");
                         txfAccCode.Text = "";
                         return;
                     }

@@ -30,7 +30,7 @@
                 <StackLayout>
                     <ListView x:Name="lstItems" ItemSelected="LstItems_ItemSelected">
                         <ListView.Footer>
-                            <Button x:Name="btnComplete" Text="Complete" BackgroundColor="Green" TextColor="Black" Clicked="BtnComplete_Clicked"/>
+                            <Button x:Name="btnComplete" Text="Complete" BackgroundColor="Green" TextColor="Black" Clicked="BtnComplete_Clicked" ImageSource="TickSmall.png" FontSize="Large"/>
                         </ListView.Footer>
                         <ListView.ItemTemplate>
                             <DataTemplate>

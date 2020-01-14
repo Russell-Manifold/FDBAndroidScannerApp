@@ -36,7 +36,7 @@ namespace RepackagingMoblie
                 {
                     BOMItem bi = await GoodsRecieveingApp.App.Database.GetBOMItem(txfBarcode.Text);
                     Loader.IsVisible = false;
-                    await DisplayAlert("Error!", "You cannot add a BOM as a single item", "OKay");
+                    await DisplayAlert("Error!", "You cannot add a BOM as a single item", "OK");
                 }
                 catch
                 {
@@ -63,7 +63,7 @@ namespace RepackagingMoblie
                                 else
                                 {
                                     Loader.IsVisible = false;
-                                    await DisplayAlert("Error!", "This is not the same product type from this BOM", "Okay");
+                                    await DisplayAlert("Error!", "This is not the same product type from this BOM", "OK");
                                     txfBarcode.Text = "";
                                     txfBarcode.Focus();
                                     return;
@@ -75,7 +75,7 @@ namespace RepackagingMoblie
                     {
                         lblItemDesc.Text = "No Item With This Code";
                         Loader.IsVisible = false;
-                        await DisplayAlert("Error!", "There was no item found with this code", "Okay");
+                        await DisplayAlert("Error!", "There was no item found with this code", "OK");
                         txfBarcode.Text = "";
                         txfBarcode.Focus();
                         return;
@@ -98,7 +98,7 @@ namespace RepackagingMoblie
                     MainPage.PackCodes.Add("F0" + txfQTY.Text + ItemBarcode.Substring(ItemBarcode.Length - 6, 5));
                 }
                 
-                DisplayAlert("Done!", "Items have been saved", "Okay");
+                DisplayAlert("Done!", "Items have been saved", "OK");
                 Navigation.PopAsync();
             }          
         }

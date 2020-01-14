@@ -54,7 +54,7 @@ namespace PickAndPack
                 {
                     LodingIndiactor.IsVisible = false;
                     txfUserCode.Text = "";
-                    await DisplayAlert("Error!", "Invalid User", "Okay");
+                    await DisplayAlert("Error!", "Invalid User", "OK");
                     txfUserCode.Focus();
                 }
             }

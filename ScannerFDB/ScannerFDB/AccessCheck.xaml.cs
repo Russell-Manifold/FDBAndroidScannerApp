@@ -88,7 +88,7 @@ namespace ScannerFDB
             catch
             {
                 AccessLoading.IsVisible = false;
-                await DisplayAlert("Error!", "Invalid User Access", "Okay");                             
+                await DisplayAlert("Error!", "Invalid User Access", "OK");                             
             }
             return false;
         }

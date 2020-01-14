@@ -39,46 +39,46 @@ namespace ScannerFDB
                     case "Default":
                         if (await AddUser(txfUserName.Text,txfEmpNum.Text,1))
                         {
-                            await DisplayAlert("Complete", "The User has been added", "Okay");                            
+                            await DisplayAlert("Complete", "The User has been added", "OK");                            
                         }
                         else
                         {
-                            await DisplayAlert("Error!", "The User has not been added", "Okay");
+                            await DisplayAlert("Error!", "The User has not been added", "OK");
                         }                       
                         break;
                     case "Pick and Pack Manager":
                         if (await AddUser(txfUserName.Text, txfEmpNum.Text, 2))
                         {
-                            await DisplayAlert("Complete", "The User has been added", "Okay");
+                            await DisplayAlert("Complete", "The User has been added", "OK");
                         }
                         else
                         {
-                            await DisplayAlert("Error!", "The User has not been added", "Okay");
+                            await DisplayAlert("Error!", "The User has not been added", "OK");
                         }                       
                         break;
                     case "Warehouse Manager":
                         if (await AddUser(txfUserName.Text, txfEmpNum.Text, 3))
                         {
-                            await DisplayAlert("Complete", "The User has been added", "Okay");
+                            await DisplayAlert("Complete", "The User has been added", "OK");
                         }
                         else
                         {
-                            await DisplayAlert("Error!", "The User has not been added", "Okay");
+                            await DisplayAlert("Error!", "The User has not been added", "OK");
                         }                       
                         break;
                     case "Super User":
                         if (await AddUser(txfUserName.Text, txfEmpNum.Text, 4))
                         {
-                            await DisplayAlert("Complete", "The User has been added", "Okay");
+                            await DisplayAlert("Complete", "The User has been added", "OK");
                         }
                         else
                         {
-                            await DisplayAlert("Error!", "The User has not been added", "Okay");
+                            await DisplayAlert("Error!", "The User has not been added", "OK");
                         }                       
                         break;
                     
                     default:
-                        await DisplayAlert("Error", "The access level you have entered is invalid", "Okay");
+                        await DisplayAlert("Error", "The access level you have entered is invalid", "OK");
                         break;
                 }
             }

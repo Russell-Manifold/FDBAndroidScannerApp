@@ -39,11 +39,11 @@ namespace WHTransfer
                     if (await completeOrder())
                     {
                         await GoodsRecieveingApp.App.Database.DeleteAllHeaders();
-                        await DisplayAlert("Complete!","All the data has been saved","Okay");
+                        await DisplayAlert("Complete!","All the data has been saved","OK");
                         await Navigation.PopToRootAsync();
                         return;
                     }
-                    await DisplayAlert("Error!", "There was a problem with sending the IBT", "Okay");
+                    await DisplayAlert("Error!", "There was a problem with sending the IBT", "OK");
                     break;
                 case "No":
                     break;
@@ -120,7 +120,7 @@ namespace WHTransfer
                 }                
                 catch
                 {
-                    await DisplayAlert("Error!","There was an error in inserting the lines","OKay");
+                    await DisplayAlert("Error!","There was an error in inserting the lines","OK");
                     return false;
                 }
             }
@@ -144,7 +144,7 @@ namespace WHTransfer
                         return;
                     }
                     Loading.IsVisible = false;
-                    await DisplayAlert("Error!","Invalid access or user code","Okay");
+                    await DisplayAlert("Error!","Invalid access or user code","OK");
                     txfUserCode.Text = "";
                     txfUserCode.Focus();
 
@@ -158,7 +158,7 @@ namespace WHTransfer
                         return;
                     }
                     Loading.IsVisible = false;
-                    await DisplayAlert("Error!", "Invalid access or user code", "Okay");
+                    await DisplayAlert("Error!", "Invalid access or user code", "OK");
                     txfUserCode.Text = "";
                     txfUserCode.Focus();
                 }
