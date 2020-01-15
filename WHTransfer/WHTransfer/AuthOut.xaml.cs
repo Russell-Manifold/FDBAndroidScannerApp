@@ -18,8 +18,8 @@ namespace WHTransfer
     public partial class AuthOut : ContentPage
     {
         private ExtendedEntry _currententry;
-        private string UserName="",AdminName="",WH;
-        private int UserCode, AdminCode,ColID;
+        private string AdminName, WH;
+        private int AdminCode,ColID;
         public AuthOut()
         {
             InitializeComponent();
@@ -40,7 +40,10 @@ namespace WHTransfer
                     {
                         await GoodsRecieveingApp.App.Database.DeleteAllHeaders();
                         await DisplayAlert("Complete!","All the data has been saved","OK");
-                        await Navigation.PopToRootAsync();
+                        Navigation.RemovePage(Navigation.NavigationStack[2]);
+                        Navigation.RemovePage(Navigation.NavigationStack[3]);
+                        Navigation.RemovePage(Navigation.NavigationStack[4]);
+                        await Navigation.PopAsync();
                         return;
                     }
                     await DisplayAlert("Error!", "There was a problem with sending the IBT", "OK");
@@ -73,12 +76,12 @@ namespace WHTransfer
                 string path = "IBTHeader";
                 client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
                 {
-                    string str = $"POST?TrfDate={DateTime.Now.ToString("dd MMM yyyy")}&FromWH={header.FromWH}&ToWH={header.ToWH}&FromDate={header.FromDate}&RecDate={header.RecDate}&PickerUser={UserCode}&AuthUser={AdminCode}&Active=true";
+                    string str = $"POST?TrfDate={DateTime.Now.ToString("dd MMM yyyy")}&FromWH={header.FromWH}&ToWH={header.ToWH}&FromDate={header.FromDate}&RecDate={header.RecDate}&PickerUser={GoodsRecieveingApp.MainPage.UserCode}&AuthUser={AdminCode}&Active=true";
                     var Request = new RestSharp.RestRequest();
                     Request.Resource = str;
                     Request.Method = RestSharp.Method.POST;
                     var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                     if (res.IsSuccessful && res.Content != null)
                     {
                         ColID = Convert.ToInt32(res.Content.Replace('\\', ' ').Replace('"', ' '));
@@ -95,7 +98,7 @@ namespace WHTransfer
         }
         private void UpdateRecords()
         {
-            OutItems.items.Select(x=> { x.PickerUser = UserCode;x.AuthUser = AdminCode; x.iTrfID=ColID; x.WH=WH; return x;}).ToList();
+            OutItems.items.Select(x=> { x.PickerUser = GoodsRecieveingApp.MainPage.UserCode;x.AuthUser = AdminCode; x.iTrfID=ColID; x.WH=WH; return x;}).ToList();
         }
         private async Task<bool> InsertLines()
         {
@@ -110,7 +113,7 @@ namespace WHTransfer
                         string str = $"POST?ScanBarcode={i.ScanBarcode}&ItemBarcode={i.ItemBarcode}&ItemCode={i.ItemCode}&ItemDesc={i.ItemDesc}&ItemQtyOut={i.ItemQtyOut}&ItemQtyIn={i.ItemQtyIn}&PickerUser={i.PickerUser}&AuthUser={i.AuthUser}&PickDateTime={i.PickDateTime.ToString("dd MMM yyyy")}&WH={i.WH}&iTrfId={i.iTrfID}";
                         var Request = new RestRequest(str, Method.POST);
                         var cancellationTokenSource = new CancellationTokenSource();
-                        var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                        var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                         cancellationTokenSource.Dispose();
                         if (!(res.IsSuccessful && res.Content.Contains("Complete")))
                         {
@@ -132,36 +135,17 @@ namespace WHTransfer
             if (txfUserCode.Text.Length>1)
             {
                 Loading.IsVisible = true;
-                if (lblUserCode.Text == "Please scan your User Barcode:")
-                {
-                    if (await CheckUser(txfUserCode.Text,false))
-                    {
-                        Loading.IsVisible = false;
-                        UserName = txfUserCode.Text;
-                        txfUserCode.Text = "";
-                        lblUserCode.Text = "Please scan your Admin Barcode:";
-                        txfUserCode.Focus();
-                        return;
-                    }
-                    Loading.IsVisible = false;
-                    await DisplayAlert("Error!","Invalid access or user code","OK");
-                    txfUserCode.Text = "";
-                    txfUserCode.Focus();
-
-                } else if (lblUserCode.Text == "Please scan your Admin Barcode:")
-                {
-                    if (UserName!=txfUserCode.Text&&await CheckUser(txfUserCode.Text, true))
-                    {
-                        AdminName = txfUserCode.Text;
-                        btnDone.IsEnabled = true;
-                        Loading.IsVisible = false;
-                        return;
-                    }
+                if (txfUserCode.Text!=GoodsRecieveingApp.MainPage.UserName&&await CheckUser(txfUserCode.Text) !=GoodsRecieveingApp.MainPage.UserCode) 
+                { 
+                     AdminName = txfUserCode.Text;
+                     btnDone.IsEnabled = true;
+                     Loading.IsVisible = false;
+                     return;
+                }
                     Loading.IsVisible = false;
                     await DisplayAlert("Error!", "Invalid access or user code", "OK");
                     txfUserCode.Text = "";
-                    txfUserCode.Focus();
-                }
+                    txfUserCode.Focus();               
             }
         }
         private async void Entry_Focused(object sender, FocusEventArgs e)
@@ -180,7 +164,7 @@ namespace WHTransfer
                 }
             }
         }
-        private async Task<bool> CheckUser(string usercode,bool isAdmin)
+        private async Task<int> CheckUser(string usercode)
         {
             try
             {
@@ -191,7 +175,7 @@ namespace WHTransfer
                     string str = $"GET?UserName={usercode}";
                     var Request = new RestRequest(str, Method.GET);
                     var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                     cancellationTokenSource.Dispose();
                     if (res.IsSuccessful && res.Content != null)
                     {
@@ -201,22 +185,16 @@ namespace WHTransfer
                         {
                             try
                             {
-                                if (Convert.ToInt32(row["AccessLevel"]) > 0 && !isAdmin)
+                                if (Convert.ToInt32(row["AccessLevel"]) > 3)
                                 {
-                                    UserCode =Convert.ToInt32(row["Id"].ToString());
+                                    AdminCode =Convert.ToInt32(row["Id"].ToString());
                                     myds.Dispose();
-                                    return true;
-                                }
-                                else if (Convert.ToInt32(row["AccessLevel"]) > 1 && isAdmin)
-                                {
-                                    AdminCode = Convert.ToInt32(row["Id"].ToString());
-                                    myds.Dispose();
-                                    return true;
+                                    return AdminCode;
                                 }
                                 else
                                 {
                                     myds.Dispose();
-                                    return false;
+                                    return GoodsRecieveingApp.MainPage.UserCode;
                                 }
                             }
                             catch (Exception ex)
@@ -231,7 +209,7 @@ namespace WHTransfer
             catch
             {
             }
-            return false;
+            return GoodsRecieveingApp.MainPage.UserCode;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace ScannerFDB
         public App()
         {
             InitializeComponent();
-            MainPage mp = new MainPage();
+            LoginPage mp = new LoginPage();
             var nav = new NavigationPage(mp);
             nav.BarBackgroundColor = Color.Blue;
             nav.BarTextColor = Color.White;

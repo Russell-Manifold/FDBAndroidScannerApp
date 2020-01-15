@@ -16,9 +16,13 @@ namespace ScannerFDB
     {
         public MainPage()
         {
-            InitializeComponent();
+            InitializeComponent();            
         }
-       
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            this.Title = "Hi "+GoodsRecieveingApp.MainPage.UserName;
+        }
         private void Button_Clicked_Goods_Receving(object sender, EventArgs e)
         {
             Navigation.PushAsync(new GoodsRecieveingApp.MainPage());
@@ -26,7 +30,7 @@ namespace ScannerFDB
 
         private async void Button_Clicked_Admin(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new AccessCheck());
+            await Navigation.PushAsync(new AdminPage(GoodsRecieveingApp.MainPage.AccessLevel));
         }
 
         private async void Button_Clicked_Repacking(object sender, EventArgs e)

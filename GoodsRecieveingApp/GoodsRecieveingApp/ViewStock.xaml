@@ -28,7 +28,7 @@
             <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
             <ScrollView BackgroundColor="AliceBlue">
                 <StackLayout>
-                    <ListView x:Name="lstItems" ItemSelected="LstItems_ItemSelected">
+                    <ListView x:Name="lstItems" ItemSelected="LstItems_ItemSelected" HasUnevenRows="True">
                         <ListView.Footer>
                             <Button x:Name="btnComplete" Text="Complete" BackgroundColor="Green" TextColor="Black" Clicked="BtnComplete_Clicked" ImageSource="TickSmall.png" FontSize="Large"/>
                         </ListView.Footer>

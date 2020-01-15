@@ -7,35 +7,28 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using GoodsRecieveingApp;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace ScannerFDB
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class AccessCheck : ContentPage
+    public partial class LoginPage : ContentPage
     {
         private ExtendedEntry _currententry;
-        public AccessCheck()
+        public LoginPage()
         {
             InitializeComponent();
             txfUserBarcode.Focused += Entry_Focused;
         }
-        protected override void OnAppearing()
+        protected async override void OnAppearing()
         {
-            base.OnAppearing();      
+            base.OnAppearing();
+            txfUserBarcode.Text = "";
+            await Task.Delay(200);
             txfUserBarcode.Focus();
         }
-        private async void TxfUserBarcode_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            await Task.Delay(200);
-            if (!await CheckUser())
-            {
-                txfUserBarcode.Text = "";
-                txfUserBarcode.Focus();
-            }
-        }     
         private async void Entry_Focused(object sender, FocusEventArgs e)
         {
             await Task.Delay(110);
@@ -50,8 +43,21 @@ namespace ScannerFDB
                 {
 
                 }
-                                
+
             }
+        }
+        private async void TxfUserBarcode_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            await Task.Delay(200);
+            if (!(txfUserBarcode.Text.Length<2))
+            {
+                if (!await CheckUser())
+                {
+                    txfUserBarcode.Text = "";
+                    txfUserBarcode.Focus();
+                }
+            }
+            
         }
         private async Task<bool> CheckUser()
         {
@@ -67,29 +73,37 @@ namespace ScannerFDB
                     var cancellationTokenSource = new CancellationTokenSource();
                     var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                     cancellationTokenSource.Dispose();
-                    if (res.IsSuccessful && res.Content != null)
+                    if (res.IsSuccessful && res.Content.Contains("UserName"))
                     {
-                        int userAcccess = 0;
                         DataSet myds = new DataSet();
                         myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
                         foreach (DataRow row in myds.Tables[0].Rows)
                         {
-                            userAcccess = Convert.ToInt32(row["AccessLevel"].ToString());
-                        }                            
-                        if (userAcccess > 1)
+                            GoodsRecieveingApp.MainPage.AccessLevel = Convert.ToInt32(row["AccessLevel"].ToString());
+                            GoodsRecieveingApp.MainPage.UserName = row["UserName"].ToString();
+                            GoodsRecieveingApp.MainPage.UserCode = Convert.ToInt32(row["Id"].ToString());
+                        }
+                        if (GoodsRecieveingApp.MainPage.AccessLevel > 0)
                         {
-                            await Navigation.PushAsync(new AdminPage(userAcccess));
+                            await Navigation.PushAsync(new MainPage());
                             AccessLoading.IsVisible = false;
                             return true;
                         }
+                    }
+                    else
+                    {
+                        AccessLoading.IsVisible = false;
+                        await DisplayAlert("Error!", "Invalid User Access", "OK");
                     }
                 }
             }
             catch
             {
                 AccessLoading.IsVisible = false;
-                await DisplayAlert("Error!", "Invalid User Access", "OK");                             
+                await DisplayAlert("Error!", "Invalid User Access", "OK");
             }
+            AccessLoading.IsVisible = false;
+            await DisplayAlert("Error!", "Invalid User Access", "OK");
             return false;
         }
     }

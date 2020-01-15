@@ -104,6 +104,7 @@
     <Compile Include="ExtendedEntryRenderer.cs" />
     <Compile Include="GlobalLayoutListener.cs" />
     <Compile Include="MainActivity.cs" />
+    <Compile Include="Messager.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SoftwareKeyboardServiceDroid.cs" />

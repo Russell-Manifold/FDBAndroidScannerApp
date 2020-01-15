@@ -55,7 +55,8 @@ namespace GoodsRecieveingApp
                     }
                 list.Add(dc);                
             }
-            lstItems.ItemsSource = list.OrderBy(x=>x.ItemQty);
+            list.RemoveAll(x => x.ItemCode.Length < 2);
+            lstItems.ItemsSource = list.OrderBy(x=>x.ItemDesc);
         }
         private async void LstItems_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {

@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Data.Model;
+using Data.Message;
 using Xamarin.Essentials;
 using System.Data;
 using Data.KeyboardContol;
@@ -18,85 +19,87 @@ namespace GoodsRecieveingApp
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-        private string CurrentUser="";
+        public static string UserName="";
+        public static int AccessLevel=0;
+        public static int UserCode = 0;
+        IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;
         public MainPage()
         {
             InitializeComponent();
-            txfUserCode.Focused += Entry_Focused;
             txfPOCode.Focused += Entry_Focused;
         }
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            txfUserCode.Focus();
+            txfPOCode.Focus();
         }       
-        private async void TxfUserCode_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            await Task.Delay(200);
-            CurrentUser = txfUserCode.Text;
-            if (CurrentUser.Length>1)
-            {
-                LodingIndiactor.IsVisible = true;
-                if (await userCheck()) {
-                    LodingIndiactor.IsVisible = false;
-                    txfUserCode.IsVisible = false;
-                    lblUserCode.IsVisible = false;
-                    txfPOCode.IsVisible = true;
-                    lblPOCode.IsVisible = true;
-                    txfPOCode.Text = "";
-                    await Task.Delay(100);
-                    txfPOCode.Focus();
-                }
-                else
-                {
-                    LodingIndiactor.IsVisible = false;
-                    txfUserCode.Text = "";
-                    await DisplayAlert("Error!", "Invalid User", "OK");
-                    txfUserCode.Focus();
-                }
-            }
-        }
-        private async Task<bool> userCheck()
-        {
-            try
-            {
-                RestSharp.RestClient client = new RestSharp.RestClient();
-                string path = "GetUser";
-                client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
-                {
-                    string str = $"GET?UserName={CurrentUser}";
-                    var Request = new RestSharp.RestRequest();
-                    Request.Resource = str;
-                    Request.Method = RestSharp.Method.GET;
-                    var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                    if (res.IsSuccessful && res.Content != null)
-                    {
-                        DataSet myds = new DataSet();
-                        myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
-                        foreach (DataRow row in myds.Tables[0].Rows)
-                        {
-                            try
-                            {
-                                if (Convert.ToInt32(row["AccessLevel"])>0)
-                                {
-                                    return true;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine(ex);
-                            }
-                        }
-                    }
-                }
-            }
-            catch
-            {                
-            }          
-            return false;
-        }
+        //private async void TxfUserCode_TextChanged(object sender, TextChangedEventArgs e)
+        //{
+        //    await Task.Delay(200);
+        //    CurrentUser = txfUserCode.Text;
+        //    if (CurrentUser.Length>1)
+        //    {
+        //        LodingIndiactor.IsVisible = true;
+        //        if (await userCheck()) {
+        //            LodingIndiactor.IsVisible = false;
+        //            txfUserCode.IsVisible = false;
+        //            lblUserCode.IsVisible = false;
+        //            txfPOCode.IsVisible = true;
+        //            lblPOCode.IsVisible = true;
+        //            txfPOCode.Text = "";
+        //            await Task.Delay(100);
+        //            txfPOCode.Focus();
+        //        }
+        //        else
+        //        {
+        //            LodingIndiactor.IsVisible = false;
+        //            txfUserCode.Text = "";
+        //            await DisplayAlert("Error!", "Invalid User", "OK");
+        //            txfUserCode.Focus();
+        //        }
+        //    }
+        //}
+        //private async Task<bool> userCheck()
+        //{
+        //    try
+        //    {
+        //        RestSharp.RestClient client = new RestSharp.RestClient();
+        //        string path = "GetUser";
+        //        client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+        //        {
+        //            string str = $"GET?UserName={CurrentUser}";
+        //            var Request = new RestSharp.RestRequest();
+        //            Request.Resource = str;
+        //            Request.Method = RestSharp.Method.GET;
+        //            var cancellationTokenSource = new CancellationTokenSource();
+        //            var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+        //            if (res.IsSuccessful && res.Content != null)
+        //            {
+        //                DataSet myds = new DataSet();
+        //                myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+        //                foreach (DataRow row in myds.Tables[0].Rows)
+        //                {
+        //                    try
+        //                    {
+        //                        if (Convert.ToInt32(row["AccessLevel"])>0)
+        //                        {
+        //                            return true;
+        //                        }
+        //                    }
+        //                    catch (Exception ex)
+        //                    {
+        //                        Console.WriteLine(ex);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch
+        //    {                
+        //    }          
+        //    return false;
+        //}
         private async void TxfPOCode_TextChanged(object sender, TextChangedEventArgs e)
         {       
             if (txfPOCode.Text.Length == 8)
@@ -123,7 +126,7 @@ namespace GoodsRecieveingApp
                     {
 
                     }                      
-                    await App.Database.Insert(new DocHeader {DocNum= txfPOCode.Text,User=txfUserCode.Text,AccName=d.SupplierName,AcctCode=d.SupplierCode});
+                    await App.Database.Insert(new DocHeader {DocNum= txfPOCode.Text,User= UserName, AccName=d.SupplierName,AcctCode=d.SupplierCode});
                     LodingIndiactor.IsVisible = false;
                     //await DisplayAlert("Done", "All the data has been loaded for this order", "OK");                       
                 }
@@ -136,7 +139,6 @@ namespace GoodsRecieveingApp
         }     
         private async void ButtonAccepted_Clicked(object sender, EventArgs e)
         {
-
             try
             {
                 DocLine dl = await App.Database.GetOneSpecificDocAsync(txfPOCode.Text.ToUpper());
@@ -171,7 +173,7 @@ namespace GoodsRecieveingApp
                     string path = "GetDocument";
                     client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
                     {
-                        string str = $"GET?qrystr=ACCHISTL|6|{code}";
+                        string str = $"GET?qrystr=ACCHISTL|6|{code}|106";
                         var Request = new RestSharp.RestRequest();
                         Request.Resource = str;
                         Request.Method = RestSharp.Method.GET;
@@ -223,6 +225,7 @@ namespace GoodsRecieveingApp
         {
             try
             {
+                message.DisplayMessage("Loading....",false);
                 await App.Database.GetOneSpecificDocAsync(txfPOCode.Text.ToUpper());
                 await Navigation.PushAsync(new ViewStock(txfPOCode.Text.ToUpper()));
             }
@@ -230,15 +233,7 @@ namespace GoodsRecieveingApp
             {
                 await DisplayAlert("Error","Could not load info of the entered PO","Try Again");
             }           
-        }
-        private async void TxfPOCode_Focused(object sender, FocusEventArgs e)
-        {
-            if (txfUserCode.Text==""|| txfUserCode.Text == null)
-            {
-                await DisplayAlert("Error!","Please Scan a user barcode","OK");
-                txfUserCode.Focus();
-            }                   
-        }       
+        }             
         private async Task<bool> RemoveAllOld(string docNum)
         {
             try

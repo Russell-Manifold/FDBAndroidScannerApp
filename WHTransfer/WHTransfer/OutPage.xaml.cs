@@ -16,6 +16,10 @@ namespace WHTransfer
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class OutPage : ContentPage
     {
+        public OutPage()
+        {
+            InitializeComponent();
+        }
         private string FromWH,ToWH,FromDate,RecDate;
         private async void Button_Clicked(object sender, EventArgs e)
         {
@@ -81,11 +85,7 @@ namespace WHTransfer
                     DatePickerFrom.IsEnabled = true;
                 }
             }
-        }
-        public OutPage()
-        {
-            InitializeComponent();
-        }      
+        }           
         protected async override void OnAppearing()
         {
             base.OnAppearing();
