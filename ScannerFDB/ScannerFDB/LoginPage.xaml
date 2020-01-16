@@ -15,4 +15,4 @@
             <Image Source="MainIconLogin.png"  HeightRequest="140" VerticalOptions="EndAndExpand"/>
         </StackLayout>
     </ContentPage.Content>
-</ContentPage>
+</ContentPage> 

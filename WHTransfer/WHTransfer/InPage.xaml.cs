@@ -35,7 +35,7 @@ namespace WHTransfer
             await FetchHeaders();
             pickerHeaders.IsEnabled = true;
             isLoading.IsVisible = false;
-            await Task.Delay(300);
+            await Task.Delay(500);
             txfScannedItem.Focus();
         }
         private async void Entry_Focused(object sender, FocusEventArgs e)
