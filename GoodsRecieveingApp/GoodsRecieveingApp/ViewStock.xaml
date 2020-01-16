@@ -6,6 +6,9 @@
              mc:Ignorable="d"
              x:Class="GoodsRecieveingApp.ViewStock"
              Title="View List">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="" Clicked="ToolbarItem_Clicked"  IconImageSource="home.PNG"/>
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
             <Grid>

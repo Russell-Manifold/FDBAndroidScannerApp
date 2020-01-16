@@ -211,5 +211,9 @@ namespace GoodsRecieveingApp
 
             }
         }
+       private async void ToolbarItem_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new ViewStock(UsingDoc.DocNum.ToUpper()));
+        }
     }
 }

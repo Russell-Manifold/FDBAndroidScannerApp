@@ -22,7 +22,7 @@
                 <Label Grid.Row="0" Grid.Column="0" Text="Description" FontSize="15" FontAttributes="Bold"/>
                 <Label Grid.Row="0" Grid.Column="1" Text="ORD Qty" FontSize="15" FontAttributes="Bold"/>
                 <Label Grid.Row="0" Grid.Column="2" Text="Scan Qty" FontSize="15" FontAttributes="Bold"/>
-                <Label Grid.Row="0" Grid.Column="3" Text="BAL" FontSize="15" FontAttributes="Bold"/>
+                <Label Grid.Row="0" Grid.Column="3" Text="BAL" FontSize="15" FontAttributes="Bold"/> 
                 <Label Grid.Row="0" Grid.Column="4" Text="Pallet" FontSize="15" FontAttributes="Bold"/>
             </Grid>
             <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
@@ -30,7 +30,7 @@
                 <StackLayout>
                     <ListView x:Name="lstItems" ItemSelected="LstItems_ItemSelected" HasUnevenRows="True">
                         <ListView.Footer>
-                            <Button x:Name="btnComplete" Text="Complete" BackgroundColor="Green" TextColor="Black" Clicked="BtnComplete_Clicked"/>
+                            <Button x:Name="btnComplete" Text="Complete" BackgroundColor="Green" TextColor="Black" Clicked="BtnComplete_Clicked" ImageSource="TickSmall.png" FontSize="Large"/>
                         </ListView.Footer>
                         <ListView.ItemTemplate>
                             <DataTemplate>

@@ -7,6 +7,9 @@
              mc:Ignorable="d"
              x:Class="GoodsRecieveingApp.ScanAcc"
              Title="Accept Stock">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="" Clicked="ToolbarItem_Clicked"  IconImageSource="ViewAll.PNG"/>
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
             <Label x:Name="lblMainAcc" Text="{Binding name}" FontSize="20"/>
