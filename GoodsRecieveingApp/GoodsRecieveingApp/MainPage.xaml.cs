@@ -126,7 +126,7 @@ namespace GoodsRecieveingApp
                     {
 
                     }                      
-                    await App.Database.Insert(new DocHeader {DocNum= txfPOCode.Text,User= UserName, AccName=d.SupplierName,AcctCode=d.SupplierCode});
+                    await App.Database.Insert(new DocHeader {DocNum= txfPOCode.Text,PackerUser= UserCode, AccName=d.SupplierName,AcctCode=d.SupplierCode});
                     LodingIndiactor.IsVisible = false;
                     //await DisplayAlert("Done", "All the data has been loaded for this order", "OK");                       
                 }
@@ -223,9 +223,9 @@ namespace GoodsRecieveingApp
         }
         private async void ButtonViewS_Clicked(object sender, EventArgs e)
         {
+            message.DisplayMessage("Loading....", false);          
             try
-            {
-                message.DisplayMessage("Loading....",false);
+            {              
                 await App.Database.GetOneSpecificDocAsync(txfPOCode.Text.ToUpper());
                 await Navigation.PushAsync(new ViewStock(txfPOCode.Text.ToUpper()));
             }

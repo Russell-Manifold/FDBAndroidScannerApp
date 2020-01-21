@@ -8,7 +8,7 @@
              x:Class="GoodsRecieveingApp.MainPage"
              Title="Goods Receiving">
     <ScrollView>
-      <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0">                  
+      <StackLayout x:Name="MainStack" Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0">                  
         <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
                 <Label x:Name="lblPOCode" Text="PO Number:"  FontSize="Large" HorizontalTextAlignment="Center"/>
         </StackLayout>

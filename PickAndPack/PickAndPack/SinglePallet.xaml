@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Title="Single Pallet"
+             x:Class="PickAndPack.SinglePallet">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="ViewAll" x:Name="btnViewSO" Clicked="btnViewSO_Clicked"/>
+    </ContentPage.ToolbarItems>
+    <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0">
+        <StackLayout x:Name="SOCodeLayout">
+            <Label x:Name="lblSOCode" Text="SO Number:"  FontSize="Large" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
+            <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfSOCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfSOCode_TextChanged" />
+        </StackLayout>
+        <StackLayout x:Name="ItemCodeLayout" IsVisible="False">
+            <Label x:Name="lblItemCodes" Text="Scan Items:"  FontSize="Large" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
+            <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfItemCode" HorizontalOptions="FillAndExpand" MaxLength="14" Completed="txfItemCode_Completed" />
+        </StackLayout>
+        <StackLayout Orientation="Horizontal" IsVisible="False" x:Name="AddSoLayout">
+            <StackLayout Orientation="Vertical">
+                <Label x:Name="lblCusName" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
+                <Label x:Name="lblCode" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
+            </StackLayout>
+            <Button x:Name="btnAddSoNumber" Text="Add" Clicked="btnAddSoNumber_Clicked"/>
+        </StackLayout>
+        <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
+        <StackLayout x:Name="GridLayout" IsVisible="False">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100*" />
+                    <ColumnDefinition Width="30*" />
+                    <ColumnDefinition Width="30*" />
+                    <ColumnDefinition Width="30*" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Text="Description" FontSize="15" FontAttributes="Bold"/>
+                <Label Grid.Row="0" Grid.Column="1" Text="ORD Qty" FontSize="15" FontAttributes="Bold"/>
+                <Label Grid.Row="0" Grid.Column="2" Text="Scan Qty" FontSize="15" FontAttributes="Bold"/>
+                <Label Grid.Row="0" Grid.Column="3" Text="BAL" FontSize="15" FontAttributes="Bold"/>
+            </Grid>
+            <StackLayout>
+                <ListView x:Name="lstItems" ItemSelected="lstItems_ItemSelected" HasUnevenRows="True">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout>
+                                    <StackLayout.Triggers>
+                                        <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="Yes">
+                                            <Setter Property="BackgroundColor" Value="#53f57e"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="No">
+                                            <Setter Property="BackgroundColor" Value="#f5a940"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="NotStarted">
+                                            <Setter Property="BackgroundColor" Value="Transparent"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="Wrong">
+                                            <Setter Property="BackgroundColor" Value="#f50505"/>
+                                        </DataTrigger>
+                                    </StackLayout.Triggers>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100*" />
+                                            <ColumnDefinition Width="30*" />
+                                            <ColumnDefinition Width="30*" />
+                                            <ColumnDefinition Width="30*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding ItemDesc}" TextColor="Black"/>
+                                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding ItemQty}" TextColor="Black"/>
+                                        <Label Grid.Row="0" Grid.Column="2" Text="{Binding ScanAccQty}" TextColor="Black"/>
+                                        <Label Grid.Row="0" Grid.Column="3" Text="{Binding Balacnce}" TextColor="Black"/>
+                                    </Grid>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+        </StackLayout>
+    </StackLayout>
+</ContentPage>

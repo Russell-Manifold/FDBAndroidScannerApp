@@ -1,5 +1,4 @@
 ﻿using Data.Model;
-using Rg.Plugins.Popup.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +42,7 @@ namespace ScannerFDB
                     Request.Resource = str;
                     Request.Method = RestSharp.Method.GET;
                     var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                     if (res.IsSuccessful)
                     {
                         await GoodsRecieveingApp.App.Database.DeleteBOMData();
@@ -64,7 +63,7 @@ namespace ScannerFDB
                                     Request1.Resource = str1;
                                     Request1.Method = RestSharp.Method.GET;
                                     var cancellationTokenSource1 = new CancellationTokenSource();
-                                    var res1 = await client1.ExecuteTaskAsync(Request1, cancellationTokenSource1.Token);
+                                    var res1 = await client1.ExecuteAsync(Request1, cancellationTokenSource1.Token);
                                     if (res1.IsSuccessful)
                                     {
                                         item.ItemDesc = res1.Content.Split('|')[1].Substring(0,(res1.Content.Split('|')[1].Length-1));

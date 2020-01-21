@@ -12,6 +12,13 @@ namespace Data.Model
         public string  DocNum { get; set; }
         public string AcctCode { get; set; }
         public string AccName { get; set; }
-        public string User { get; set; }
+        public int DocContolUser { get; set; }
+        public DateTime DocumentDate { get; set; }
+        public int PackerUser { get; set; }
+        public int PickerUser { get; set; }
+        public int AuthUser { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+
     }
 }

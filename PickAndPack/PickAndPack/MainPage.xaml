@@ -7,19 +7,10 @@
              Title="Pick and Pack"
              mc:Ignorable="d"
              x:Class="PickAndPack.MainPage">
-    <ScrollView>
-        <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0">
-            <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">
-                <Label x:Name="lblSOCode" Text="SO Number:"  FontSize="Large" HorizontalTextAlignment="Center"/>
-            </StackLayout>
-            <StackLayout Orientation="Horizontal">
-                <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfSOCode" HorizontalOptions="FillAndExpand" MaxLength="8" TextChanged="TxfSOCode_TextChanged" />
-            </StackLayout>
-            <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
-            <Label IsVisible="False" x:Name="lblCusName" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
-            <Label IsVisible="False" x:Name="lblCode" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
-            <Button Text="Scan Items" Clicked="btnScanItems_Clicked" VerticalOptions="EndAndExpand" ImageSource="ItemAccept.png" BackgroundColor="Transparent" FontSize="Large"/>
-            <Button Text="List All Items" Clicked="ButtonViewS_Clicked" VerticalOptions="EndAndExpand" ImageSource="ViewAll.png" BackgroundColor="Transparent" FontSize="Large"/>
-        </StackLayout>
-    </ScrollView>
+    <StackLayout>
+        <Button x:Name="btnSingleOrder" Text="Single Order Multi Pallet" Clicked="btnSingleOrder_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
+        <Button Text="Single Pallet Multi Order" x:Name="btnSinglePallet" Clicked="btnSinglePallet_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
+        <Button Text="Collecting Picking Slips" x:Name="btnPickingSlips" Clicked="btnPickingSlips_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
+    </StackLayout>
 </ContentPage>
+    
