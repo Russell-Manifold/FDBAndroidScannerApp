@@ -62,20 +62,7 @@ namespace PickAndPack
                     txfSOCode.Focus();
                 }
             }
-        }
-        private async void btnScanItems_Clicked(object sender, EventArgs e)
-        {
-
-            try
-            {
-                DocLine dl = await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(txfSOCode.Text.ToUpper());
-                await Navigation.PushAsync(new ScannItems(dl));
-            }
-            catch
-            {
-                await DisplayAlert("Error", "Could not load info of the entered SO", "Try Again");
-            }
-        }
+        }      
         private async Task<bool> GetItems(string code)
         {
             if (await RemoveAllOld(code))
@@ -170,12 +157,10 @@ namespace PickAndPack
 
             }
         }
-
         private void txfItemCode_Completed(object sender, EventArgs e)
         {
 
         }
-
         private async void btnAddSoNumber_Clicked(object sender, EventArgs e)
         {
             string res = await DisplayActionSheet("Open a new Sales Order", "YES", "NO");
@@ -187,10 +172,9 @@ namespace PickAndPack
                 GridLayout.IsVisible = false;
             }
         }
-
         private async void btnViewSO_Clicked(object sender, EventArgs e)
         {
-            if (!(txfSOCode.Text.Length < 3))
+            if (txfSOCode.Text != null || !(txfSOCode.Text.Length < 3))
             {
                 message.DisplayMessage("Loading...", false);
                 try
@@ -208,22 +192,18 @@ namespace PickAndPack
                 await DisplayAlert("Error", "No SO Entered", "OK");
             }
         }
-
         private void btnPrevPallet_Clicked(object sender, EventArgs e)
         {
 
         }
-
         private void btnNextPallet_Clicked(object sender, EventArgs e)
         {
         
         }
-
         private void lstItems_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
 
         }
-
         private void btnComplete_Clicked(object sender, EventArgs e)
         {
 

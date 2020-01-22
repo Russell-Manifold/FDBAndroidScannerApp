@@ -22,5 +22,6 @@ namespace Data.Model
         public int ScanRejQty { get; set; }
         public int Balacnce { get; set; }
         public string Complete { get; set; }
+        public int PalletNum { get; set; }
     }
 }
