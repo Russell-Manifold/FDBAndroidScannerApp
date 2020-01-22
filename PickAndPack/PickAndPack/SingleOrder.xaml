@@ -7,6 +7,9 @@
              mc:Ignorable="d"
              x:Class="PickAndPack.SingleOrder">
     <ContentPage.ToolbarItems>
+        <ToolbarItem Text="-" x:Name="btnPrevPallet" Clicked="btnPrevPallet_Clicked"/>
+        <ToolbarItem Text="Pallet 1 " x:Name="lblPalletNum"/>
+        <ToolbarItem Text="+" x:Name="btnNextPallet" Clicked="btnNextPallet_Clicked"/>
         <ToolbarItem Text="ViewAll" x:Name="btnViewSO" Clicked="btnViewSO_Clicked"/>
     </ContentPage.ToolbarItems>
     <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0">

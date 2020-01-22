@@ -194,6 +194,7 @@ namespace PickAndPack
                 {
                     Vibration.Vibrate();
                     message.DisplayMessage("Error! No Item with this code", true);
+                    txfItemCode.Text = "";
                     return;
                 }
                 if(await CheckOrderItemCode(bi.ItemCode))
@@ -278,6 +279,16 @@ namespace PickAndPack
                     
                     break;
             }
+        }
+
+        private void btnPrevPallet_Clicked(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnNextPallet_Clicked(object sender, EventArgs e)
+        {
+
         }
     }
 }
