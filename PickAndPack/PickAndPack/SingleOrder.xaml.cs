@@ -50,32 +50,54 @@ namespace PickAndPack
         }
         private async void txfSOCode_Completed(object sender, EventArgs e)
         {
-            LodingIndiactor.IsVisible = true;
-            if (await GetItems(txfSOCode.Text.ToUpper()))
+            if (txfSOCode.Text.Length != 0)
             {
-                DocLine d = new DocLine();
-                try
+                LodingIndiactor.IsVisible = true;
+                if (await GetItems(txfSOCode.Text.ToUpper()))
                 {
-                    d = await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(txfSOCode.Text);
-                    txfSOCode.IsVisible = false;
-                    await GoodsRecieveingApp.App.Database.Delete(await GoodsRecieveingApp.App.Database.GetHeader(d.DocNum));
-                }
-                catch
-                {
+                    DocLine d = new DocLine();                                                
+                    d = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.PalletNum == 0 && x.ItemQty == 0&&x.ItemCode.Length!=0).FirstOrDefault();
+                    if (d!=null)
+                    {
+                        LodingIndiactor.IsVisible = false;
+                        Vibration.Vibrate();
+                        message.DisplayMessage("This Sales Order is being scanned onto a single pallet already!", true);
+                        lblSOCode.Text = "SO Number:";
+                        txfSOCode.Text = "";
+                        txfSOCode.Focus();
+                        return;
+                    }
+                    d = new DocLine();
+                    try
+                    {
+                        d = await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(txfSOCode.Text);
+                        txfSOCode.IsVisible = false;
+                        await GoodsRecieveingApp.App.Database.Delete(await GoodsRecieveingApp.App.Database.GetHeader(d.DocNum));
+                    }
+                    catch
+                    {
 
+                    }
+                    await GoodsRecieveingApp.App.Database.Insert(new DocHeader { DocNum = txfSOCode.Text, PackerUser = GoodsRecieveingApp.MainPage.UserCode, AccName = d.SupplierName, AcctCode = d.SupplierCode });
+                    LodingIndiactor.IsVisible = false;
+                    lblPalletNumber.Text = "1";
+                    ToolbarItem item = new ToolbarItem
+                    {
+                        IconImageSource = "ViewAll.png",
+                        Order = ToolbarItemOrder.Primary
+                    };
+                    item.Clicked += btnViewSO_Clicked;
+                    this.ToolbarItems.Add(item);
+                    ItemCodeLayout.IsVisible = true;
+                    GridLayout.IsVisible = true;
+                    await RefreshList();
+                    txfItemCode.Focus();
                 }
-                await GoodsRecieveingApp.App.Database.Insert(new DocHeader { DocNum = txfSOCode.Text, PackerUser = GoodsRecieveingApp.MainPage.UserCode, AccName = d.SupplierName, AcctCode = d.SupplierCode });
-                LodingIndiactor.IsVisible = false;
-                lblPalletForOrder.Text = "1";
-                PalletLayout.IsVisible = true;
-                ItemCodeLayout.IsVisible = true;
-                GridLayout.IsVisible = true;
-                txfItemCode.Focus();
-            }
-            else
-            {               
-                txfSOCode.Text = "";
-                txfSOCode.Focus();
+                else
+                {
+                    txfSOCode.Text = "";
+                    txfSOCode.Focus();
+                }
             }
         }
         private async Task<bool> GetItems(string code)
@@ -111,6 +133,7 @@ namespace PickAndPack
                                     Doc.ItemDesc = row["ItemDesc"].ToString();
                                     Doc.ScanAccQty = 0;
                                     Doc.ScanRejQty = 0;
+                                    Doc.PalletNum =0;// Convert.ToInt32(row["PalletNumber"].ToString().Trim());
                                     Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
                                     lblSOCode.Text = Doc.DocNum+"-"+Doc.SupplierName;
                                     await GoodsRecieveingApp.App.Database.Insert(Doc);
@@ -167,87 +190,79 @@ namespace PickAndPack
                     message.DisplayMessage("Error!Could not load SO", false);
                 }                           
         }
-        private async void btnAddPallet_Clicked(object sender, EventArgs e)
-        {           
-            int palletNum = Convert.ToInt32(lblPalletForOrder.Text.ToString());
-            foreach (DocLine dl in await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text))
-            {
-                if (dl.PalletNum==palletNum)
-                {
-                    lblPalletForOrder.Text = (palletNum+1)+"";
-                    return;
-                }   
-            }
-            Vibration.Vibrate();
-            message.DisplayMessage("Error!- You cant go to the next pallet if this one has no items",false);
-        }
         private async void txfItemCode_Completed(object sender, EventArgs e)
         {
-            if (txfItemCode.Text.Length==8)
+            if (txfItemCode.Text.Length != 0)
             {
-                BOMItem bi = new BOMItem();
-                try
+                if (txfItemCode.Text.Length == 8)
                 {
-                     bi = await GoodsRecieveingApp.App.Database.GetBOMItem(txfItemCode.Text);
-                }
-                catch
-                {
-                    Vibration.Vibrate();
-                    message.DisplayMessage("Error! No Item with this code", true);
-                    txfItemCode.Text = "";
-                    return;
-                }
-                if(await CheckOrderItemCode(bi.ItemCode))
-                {
-                    List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.ItemCode == bi.ItemCode).ToList();
-                    int i = docs.Sum(x=>x.ScanAccQty);
-                    if (i + bi.Qty <= docs.Where(x => x.ScanAccQty == 0).First().ItemQty)
+                    BOMItem bi = new BOMItem();
+                    try
                     {
-                        DocLine docline = new DocLine { Balacnce = 0, Complete = "Yes", DocNum = txfSOCode.Text, isRejected = false, ItemBarcode = docs.Where(x => x.ScanAccQty == 0).First().ItemBarcode, ItemDesc = docs.Where(x => x.ScanAccQty == 0).First().ItemDesc, ItemCode = docs.Where(x => x.ScanAccQty == 0).First().ItemCode, ItemQty = bi.Qty, PalletNum = Convert.ToInt32(lblPalletForOrder.Text), ScanAccQty = bi.Qty, WarehouseID = docs.Where(x => x.ScanAccQty == 0).First().WarehouseID, SupplierCode = docs.Where(x => x.ScanAccQty == 0).First().SupplierCode, SupplierName = docs.Where(x => x.ScanAccQty == 0).First().SupplierName };
-                        await GoodsRecieveingApp.App.Database.Insert(docline);
-                        await RefreshList();
+                        bi = await GoodsRecieveingApp.App.Database.GetBOMItem(txfItemCode.Text);
+                    }
+                    catch
+                    {
+                        Vibration.Vibrate();
+                        message.DisplayMessage("Error! No Item with this code", true);
+                        txfItemCode.Text = "";
+                        txfItemCode.Focus();
+                        return;
+                    }
+                    if (await CheckOrderItemCode(bi.ItemCode))
+                    {
+                        List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.ItemCode == bi.ItemCode).ToList();
+                        int i = docs.Sum(x => x.ScanAccQty);
+                        if (i + bi.Qty <= docs.Where(x => x.ScanAccQty == 0).First().ItemQty)
+                        {
+                            DocLine docline = new DocLine { Balacnce = 0, Complete = "No", DocNum = txfSOCode.Text, isRejected = false, ItemBarcode = docs.Where(x => x.ScanAccQty == 0).First().ItemBarcode, ItemDesc = docs.Where(x => x.ScanAccQty == 0).First().ItemDesc, ItemCode = docs.Where(x => x.ScanAccQty == 0).First().ItemCode, ItemQty = 0, PalletNum = Convert.ToInt32(lblPalletNumber.Text), ScanAccQty = bi.Qty, WarehouseID = docs.Where(x => x.ScanAccQty == 0).First().WarehouseID, SupplierCode = docs.Where(x => x.ScanAccQty == 0).First().SupplierCode, SupplierName = docs.Where(x => x.ScanAccQty == 0).First().SupplierName };
+                            await GoodsRecieveingApp.App.Database.Insert(docline);
+                            await RefreshList();
+                        }
+                        else
+                        {
+                            Vibration.Vibrate();
+                            message.DisplayMessage("All of this item have been scanned for this order", true);
+                        }
                     }
                     else
                     {
                         Vibration.Vibrate();
-                        message.DisplayMessage("All of this item have been scanned for this order", true);
+                        message.DisplayMessage("This Item is not on this order", true);
                     }
                 }
                 else
                 {
-                    Vibration.Vibrate();
-                    message.DisplayMessage("This Item is not on this order", true);
-                }
-            }
-            else
-            {
-                if (await CheckOrderBarcode(txfItemCode.Text))
-                {
-                    List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.ItemBarcode == txfItemCode.Text).ToList();
-                    int i = docs.Sum(x => x.ScanAccQty);
-                    if (i+1<=docs.Where(x => x.ScanAccQty == 0).First().ItemQty)
+                    if (await CheckOrderBarcode(txfItemCode.Text))
                     {
-                        DocLine docline = new DocLine { Balacnce = 0, Complete = "Yes", DocNum = txfSOCode.Text, isRejected = false,ItemBarcode=txfItemCode.Text,ItemDesc=docs.Where(x=>x.ScanAccQty==0).First().ItemDesc, ItemCode = docs.Where(x => x.ScanAccQty == 0).First().ItemCode,ItemQty=1,PalletNum=Convert.ToInt32(lblPalletForOrder.Text),ScanAccQty=1, WarehouseID=docs.Where(x => x.ScanAccQty == 0).First().WarehouseID,SupplierCode= docs.Where(x => x.ScanAccQty == 0).First().SupplierCode, SupplierName = docs.Where(x => x.ScanAccQty == 0).First().SupplierName };
-                        await GoodsRecieveingApp.App.Database.Insert(docline);
-                        await RefreshList();
+                        List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.ItemBarcode == txfItemCode.Text).ToList();
+                        int i = docs.Sum(x => x.ScanAccQty);
+                        if (i + 1 <= docs.Where(x => x.ScanAccQty == 0).First().ItemQty)
+                        {
+                            DocLine docline = new DocLine { Balacnce = 0, Complete = "No", DocNum = txfSOCode.Text, isRejected = false, ItemBarcode = txfItemCode.Text, ItemDesc = docs.Where(x => x.ScanAccQty == 0).First().ItemDesc, ItemCode = docs.Where(x => x.ScanAccQty == 0).First().ItemCode, ItemQty = 0, PalletNum = Convert.ToInt32(lblPalletNumber.Text), ScanAccQty = 1, WarehouseID = docs.Where(x => x.ScanAccQty == 0).First().WarehouseID, SupplierCode = docs.Where(x => x.ScanAccQty == 0).First().SupplierCode, SupplierName = docs.Where(x => x.ScanAccQty == 0).First().SupplierName };
+                            await GoodsRecieveingApp.App.Database.Insert(docline);
+                            await RefreshList();
+                        }
+                        else
+                        {
+                            Vibration.Vibrate();
+                            message.DisplayMessage("All of this item have been scanned for this order", true);
+                        }
                     }
                     else
                     {
                         Vibration.Vibrate();
-                        message.DisplayMessage("All of this item have been scanned for this order", true);
+                        message.DisplayMessage("This Item is not on this order", true);
                     }
                 }
-                else
-                {
-                    Vibration.Vibrate();
-                    message.DisplayMessage("This Item is not on this order", true);
-                }
+                txfItemCode.Text = "";
+                txfItemCode.Focus();
             }
         }
         async Task<bool> CheckOrderBarcode(string Code)
         {
             List<DocLine> docs =(await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x=>x.ItemBarcode==Code).ToList();
-            if (docs == null)
+            if (docs.Count == 0)
                 return false;
 
             return true;
@@ -263,32 +278,71 @@ namespace PickAndPack
         async Task RefreshList()
         {
             lstItems.ItemsSource = null;
-            lstItems.ItemsSource = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x=>x.PalletNum==Convert.ToInt32(lblPalletForOrder.Text));
+            List<DocLine> docs= (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.PalletNum == Convert.ToInt32(lblPalletNumber.Text)).ToList();
+            if (docs == null)
+                return;
+            List<DocLine> displayDocs = new List<DocLine>();
+            foreach(string s in docs.Select(x=>x.ItemDesc).Distinct())
+            {
+                DocLine TempDoc = docs.Where(x => x.ItemDesc == s).First();
+                TempDoc.ScanAccQty = docs.Where(x => x.ItemDesc == s).Sum(x => x.ScanAccQty);
+                TempDoc.ItemQty = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x=>x.ScanAccQty==0&& x.ItemDesc == s).First().ItemQty;
+                TempDoc.Balacnce=TempDoc.ItemQty- (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x=>x.ItemDesc == s).Sum(x=>x.ScanAccQty);
+                if (TempDoc.Balacnce==0)
+                {
+                    TempDoc.Complete = "Yes";
+                }
+                displayDocs.Add(TempDoc);
+            }
+            lstItems.ItemsSource = displayDocs;
         }
         private async void lstItems_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
             DocLine dl = e.SelectedItem as DocLine;
-            string output = await DisplayActionSheet("Confirm:-Reset QTY to zero?", "YES", "NO");
+            string output = await DisplayActionSheet("Reset Qty to zero for this item on this pallet?", "YES", "NO");
             switch (output)
             {
                 case "NO":
                     break;
-                case "YES":
-                        await GoodsRecieveingApp.App.Database.Delete(dl);
-                        await RefreshList();
-                    
+                case "YES":                    
+                        await GoodsRecieveingApp.App.Database.DeleteAllWithItemWithFilter(dl);
+                        await RefreshList();                    
                     break;
             }
         }
-
-        private void btnPrevPallet_Clicked(object sender, EventArgs e)
+        private async void btnPrevPallet_Clicked(object sender, EventArgs e)
         {
-
+            int palletNum = 0;
+            palletNum = Convert.ToInt32(lblPalletNumber.Text);
+            if (palletNum==1)
+            {
+                Vibration.Vibrate();
+                message.DisplayMessage("This is the first pallet", false);
+            }
+            else
+            {
+                lblPalletNumber.Text = ""+(palletNum - 1);
+                await RefreshList();
+            }
+            txfItemCode.Focus();
         }
-
-        private void btnNextPallet_Clicked(object sender, EventArgs e)
+        private async void btnNextPallet_Clicked(object sender, EventArgs e)
         {
-
+            int palletNum = 0;
+            palletNum = Convert.ToInt32(lblPalletNumber.Text);
+            foreach (DocLine dl in await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text))
+            {
+                if (dl.PalletNum == palletNum)
+                {
+                    lblPalletNumber.Text =""+(palletNum + 1);
+                    await RefreshList();
+                    txfItemCode.Focus();
+                    return;
+                }
+            }
+            Vibration.Vibrate();
+            message.DisplayMessage("You must put at least one item on this pallet", false);
+            txfItemCode.Focus();
         }
     }
 }

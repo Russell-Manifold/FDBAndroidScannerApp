@@ -86,7 +86,7 @@ namespace RepackagingMoblie
                         Request.Resource = str;
                         Request.Method = RestSharp.Method.GET;
                         var cancellationTokenSource = new CancellationTokenSource();
-                        var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                        var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                         if (res.IsSuccessful && res.Content.Split('|')[0].Contains("0"))
                         {
                             if(res.Content.Split('|')[2]==MainPage.docLines.Find(x=>x.ItemDesc== "1ItemFromMain").ItemCode)

@@ -32,6 +32,13 @@ namespace Data.DataAccess
         {
             return database.DeleteAsync(d);
         }
+        public async Task DeleteAllWithItemWithFilter(DocLine d)
+        {
+            foreach (DocLine doc in await database.Table<DocLine>().Where(x => x.DocNum == d.DocNum&&x.ItemDesc==d.ItemDesc&&x.PalletNum==d.PalletNum).ToListAsync())
+            {
+                await database.DeleteAsync(doc);
+            }
+        }
         public Task<int> Delete(DocHeader h)
         {
             return database.DeleteAsync(h);

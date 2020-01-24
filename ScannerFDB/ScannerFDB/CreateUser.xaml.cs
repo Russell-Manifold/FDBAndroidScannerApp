@@ -96,7 +96,7 @@ namespace ScannerFDB
                     Request.Resource = str;
                     Request.Method = RestSharp.Method.POST;
                     var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                     if (res.IsSuccessful && res.Content.Contains("User has been added"))
                     {
                         return true;

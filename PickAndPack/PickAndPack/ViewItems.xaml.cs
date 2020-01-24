@@ -25,37 +25,33 @@ namespace PickAndPack
             lstItems.ItemsSource = null;
             List<DocLine> lines = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode);
             List<DocLine> list = new List<DocLine>();
-            foreach (DocLine dc in lines.Where(x => x.ItemQty != 0))
+            foreach (string s in lines.Select(x => x.ItemDesc).Distinct())
             {
-                foreach (DocLine dl in lines.Where(x => x.ItemQty == 0))
+                foreach (int i in lines.Where(x=>x.ItemDesc==s&&x.ItemQty==0).Select(x => x.PalletNum).Distinct())
                 {
-                    if (dc.ItemCode == dl.ItemCode)
+                    DocLine TDoc = lines.Where(x => x.ItemDesc == s&&x.PalletNum==i).First();
+                    DocLine TempDoc = new DocLine() {PalletNum=TDoc.PalletNum,ItemDesc=TDoc.ItemDesc};
+                    TempDoc.ScanAccQty = (lines.Where(x => x.ItemDesc == s && x.PalletNum == i).Sum(x => x.ScanAccQty));
+                    TempDoc.ItemQty = (lines.Where(x => x.ItemDesc == s && x.ItemQty != 0).First().ItemQty);
+                    TempDoc.Balacnce = TempDoc.ItemQty - (lines.Where(x => x.ItemDesc == s).Sum(x => x.ScanAccQty));
+                    if (TempDoc.Balacnce == 0)
                     {
-                        dc.ScanAccQty += dl.ScanAccQty;
-                        dc.ScanRejQty += dl.ScanRejQty;
+                        TempDoc.Complete = "Yes";
                     }
-                }
-                dc.Balacnce = dc.ItemQty - (dc.ScanAccQty + dc.ScanRejQty);
-                if (dc.Balacnce == 0 && dc.ItemQty != 0)
-                {
-                    dc.Complete = "Yes";
-                }
-                else if (dc.Balacnce == dc.ItemQty)
-                {
-                    dc.Complete = "NotStarted";
-                }
-                else if (dc.Balacnce < 0)
-                {
-                    dc.Complete = "Wrong";
-                }
-                else
-                {
-                    dc.Complete = "No";
-                }
-                list.Add(dc);
+                    else if (TempDoc.Balacnce == TempDoc.ItemQty)
+                    {
+                        TempDoc.Complete = "NotStarted";
+                    }
+                    else
+                    {
+                        TempDoc.Complete = "No";
+                    }
+                    list.Add(TempDoc);
+                }               
             }
-            list.RemoveAll(x => x.ItemCode.Length < 2);
-            lstItems.ItemsSource = list.OrderBy(x => x.ItemDesc);
+            //list.RemoveAll(x => x.ItemCode.Length < 2);
+            //lstItems.ItemsSource = list.OrderBy(x => new { x.ItemDesc , x.PalletNum } );
+            lstItems.ItemsSource = list;
         }
         private async void LstItems_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {

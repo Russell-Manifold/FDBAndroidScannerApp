@@ -78,7 +78,7 @@ namespace WHTransfer
                         string str = $"GET?qrystr={qry}";
                         var Request = new RestSharp.RestRequest(str,RestSharp.Method.GET);
                         var cancellationTokenSource = new CancellationTokenSource();
-                        var res = await client.ExecuteTaskAsync(Request, cancellationTokenSource.Token);
+                        var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                         cancellationTokenSource.Dispose();
                         if (res.IsSuccessful && res.Content != null)
                         {
