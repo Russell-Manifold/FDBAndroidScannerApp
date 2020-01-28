@@ -47,73 +47,7 @@ namespace GoodsRecieveingApp
         {
             base.OnAppearing();
             txfPOCode.Focus();
-        }       
-        //private async void TxfUserCode_TextChanged(object sender, TextChangedEventArgs e)
-        //{
-        //    await Task.Delay(200);
-        //    CurrentUser = txfUserCode.Text;
-        //    if (CurrentUser.Length>1)
-        //    {
-        //        LodingIndiactor.IsVisible = true;
-        //        if (await userCheck()) {
-        //            LodingIndiactor.IsVisible = false;
-        //            txfUserCode.IsVisible = false;
-        //            lblUserCode.IsVisible = false;
-        //            txfPOCode.IsVisible = true;
-        //            lblPOCode.IsVisible = true;
-        //            txfPOCode.Text = "";
-        //            await Task.Delay(100);
-        //            txfPOCode.Focus();
-        //        }
-        //        else
-        //        {
-        //            LodingIndiactor.IsVisible = false;
-        //            txfUserCode.Text = "";
-        //            await DisplayAlert("Error!", "Invalid User", "OK");
-        //            txfUserCode.Focus();
-        //        }
-        //    }
-        //}
-        //private async Task<bool> userCheck()
-        //{
-        //    try
-        //    {
-        //        RestSharp.RestClient client = new RestSharp.RestClient();
-        //        string path = "GetUser";
-        //        client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
-        //        {
-        //            string str = $"GET?UserName={CurrentUser}";
-        //            var Request = new RestSharp.RestRequest();
-        //            Request.Resource = str;
-        //            Request.Method = RestSharp.Method.GET;
-        //            var cancellationTokenSource = new CancellationTokenSource();
-        //            var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-        //            if (res.IsSuccessful && res.Content != null)
-        //            {
-        //                DataSet myds = new DataSet();
-        //                myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
-        //                foreach (DataRow row in myds.Tables[0].Rows)
-        //                {
-        //                    try
-        //                    {
-        //                        if (Convert.ToInt32(row["AccessLevel"])>0)
-        //                        {
-        //                            return true;
-        //                        }
-        //                    }
-        //                    catch (Exception ex)
-        //                    {
-        //                        Console.WriteLine(ex);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch
-        //    {                
-        //    }          
-        //    return false;
-        //}
+        }              
         private async void TxfPOCode_TextChanged(object sender, TextChangedEventArgs e)
         {       
             if (txfPOCode.Text.Length == 8)
@@ -179,21 +113,19 @@ namespace GoodsRecieveingApp
         {
             if (await RemoveAllOld(code))
             {
-                var current = Connectivity.NetworkAccess;
-                var profiles = Connectivity.ConnectionProfiles;
-                if (current == NetworkAccess.Internet)
+                if (Connectivity.NetworkAccess == NetworkAccess.Internet)
                 {
                     RestSharp.RestClient client = new RestSharp.RestClient();
                     string path = "GetDocument";
                     client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
                     {
-                        string str = $"GET?qrystr=ACCHISTL|6|{code}|106";
+                        string str = $"GET?qrystr=ACCHISTL|6|{code}|106|"+MainPage.UserCode;
                         var Request = new RestSharp.RestRequest();
                         Request.Resource = str;
                         Request.Method = RestSharp.Method.GET;
                         var cancellationTokenSource = new CancellationTokenSource();
                         var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                        if (res.Content.ToString().Contains("OrderNumber"))
+                        if (res.Content.ToString().Contains("DocNum"))
                         {
                             DataSet myds = new DataSet();
                             myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
@@ -202,10 +134,10 @@ namespace GoodsRecieveingApp
                                 try
                                 {
                                     var Doc = new DocLine();
-                                    Doc.DocNum = row["OrderNumber"].ToString();
+                                    Doc.DocNum = row["DocNum"].ToString();
                                     Doc.SupplierCode = row["SupplierCode"].ToString();
                                     Doc.SupplierName = row["SupplierName"].ToString();
-                                    Doc.ItemBarcode = row["Barcode"].ToString();
+                                    Doc.ItemBarcode = row["ItemBarcode"].ToString();
                                     Doc.ItemCode = row["ItemCode"].ToString();
                                     Doc.ItemDesc = row["ItemDesc"].ToString();
                                     Doc.ScanAccQty = 0;

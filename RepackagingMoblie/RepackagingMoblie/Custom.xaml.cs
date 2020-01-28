@@ -86,21 +86,31 @@ namespace RepackagingMoblie
         }
         private void BtnAdd_Clicked(object sender, EventArgs e)
         {
-            if(lblItemDesc.Text!=null&&lblItemDesc.Text!=""&&lblItemDesc.Text!="No Item With This Code" && txfQTY.Text != null && txfQTY.Text != ""&&Convert.ToInt32(txfQTY.Text)>1 && Convert.ToInt32(txfQTY.Text) < 100)
+            if(lblItemDesc.Text!=null&&lblItemDesc.Text!=""&&lblItemDesc.Text!="No Item With This Code" && txfQTY.Text != null && txfQTY.Text != ""&&Convert.ToInt32(txfQTY.Text)>=1 && Convert.ToInt32(txfQTY.Text) < 100)
             {
-                MainPage.docLines.Add(new DocLine { ItemBarcode = txfBarcode.Text, ItemDesc = lblItemDesc.Text, isRejected = false, ItemQty = Convert.ToInt32(txfQTY.Text) });
-                if (Convert.ToInt32(txfQTY.Text)>9)
+                if (MainPage.docLines.Where(x => x.ItemDesc == "1ItemFromMain").Select(x => x.ItemQty).FirstOrDefault() >= Convert.ToInt32(txfQTY.Text)+MainPage.docLines.Where(x => x.ItemDesc != "1ItemFromMain").Sum(x=>x.ItemQty))
                 {
-                    MainPage.PackCodes.Add("F" + txfQTY.Text + ItemBarcode.Substring(ItemBarcode.Length - 6, 5));
+                    MainPage.docLines.Add(new DocLine { ItemBarcode = txfBarcode.Text, ItemDesc = lblItemDesc.Text, isRejected = false, ItemQty = Convert.ToInt32(txfQTY.Text) });
+                    if (Convert.ToInt32(txfQTY.Text) > 9)
+                    {
+                        MainPage.PackCodes.Add("F" + txfQTY.Text + ItemBarcode.Substring(ItemBarcode.Length - 6, 5));
+                    }
+                    else
+                    {
+                        MainPage.PackCodes.Add("F0" + txfQTY.Text + ItemBarcode.Substring(ItemBarcode.Length - 6, 5));
+                    }
+                    DisplayAlert("Done!", "Items have been saved", "OK");
+                    Navigation.PopAsync();
                 }
                 else
                 {
-                    MainPage.PackCodes.Add("F0" + txfQTY.Text + ItemBarcode.Substring(ItemBarcode.Length - 6, 5));
-                }
-                
-                DisplayAlert("Done!", "Items have been saved", "OK");
-                Navigation.PopAsync();
-            }          
+                    DisplayAlert("Error", "Too many items have been scanned ", "OK");
+                }              
+            }
+            else
+            {
+                DisplayAlert("Error","Please make sure all fields have been filled in","OK");
+            }
         }
         private async void Entry_Focused(object sender, FocusEventArgs e)
         {

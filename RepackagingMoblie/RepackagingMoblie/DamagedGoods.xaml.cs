@@ -90,11 +90,20 @@ namespace RepackagingMoblie
                         {
                             if (res.Content.Split('|')[2] == MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemCode)
                             {
-                                lblItemDesc.Text = res.Content.Split('|')[3];
-                                MainPage.docLines.Add(new DocLine { ItemBarcode = txfBarcode.Text, ItemDesc = lblItemDesc.Text, isRejected = true, ItemQty = 1 });
-                                setQTY(txfBarcode.Text);
-                                Loader.IsVisible = false;
-                                return true;
+                                if (MainPage.docLines.Where(x => x.ItemDesc == "1ItemFromMain").Select(x => x.ItemQty).FirstOrDefault() >= 1 + MainPage.docLines.Where(x => x.ItemDesc != "1ItemFromMain").Sum(x => x.ItemQty))
+                                {
+                                    lblItemDesc.Text = res.Content.Split('|')[3];
+                                    MainPage.docLines.Add(new DocLine { ItemBarcode = txfBarcode.Text, ItemDesc = lblItemDesc.Text, isRejected = true, ItemQty = 1 });
+                                    setQTY(txfBarcode.Text);
+                                    Loader.IsVisible = false;
+                                    return true;
+                                }
+                                else
+                                {
+                                    await DisplayAlert("Error","Too Many items have been Scanned","OK");
+                                    Loader.IsVisible = false;
+                                    return false;
+                                } 
                             }
                             else
                             {

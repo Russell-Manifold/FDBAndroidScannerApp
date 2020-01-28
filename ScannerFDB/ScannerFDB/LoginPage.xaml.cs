@@ -82,9 +82,6 @@ namespace ScannerFDB
                             GoodsRecieveingApp.MainPage.UserName = row["UserName"].ToString();
                             GoodsRecieveingApp.MainPage.UserCode = Convert.ToInt32(row["Id"].ToString());
 
-                           GoodsRecieveingApp.MainPage.UserName = row["UserName"].ToString();
-                            GoodsRecieveingApp.MainPage.UserCode = Convert.ToInt32(row["Id"].ToString());
-
                             GoodsRecieveingApp.MainPage.fReceive = Convert.ToBoolean(row["fReceive"]);
                             GoodsRecieveingApp.MainPage.fRepack = Convert.ToBoolean(row["fRepack"]);
                             GoodsRecieveingApp.MainPage.fInvCount = Convert.ToBoolean(row["fInvCount"]);

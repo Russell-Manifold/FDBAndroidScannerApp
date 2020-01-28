@@ -19,6 +19,7 @@ namespace PickAndPack
     {
         IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;
+        List<string> allSo = new List<string>();
         bool isNewPallet = false;
         public SinglePallet()
         {
@@ -42,13 +43,13 @@ namespace PickAndPack
                     string path = "GetDocument";
                     client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
                     {
-                        string str = $"GET?qrystr=ACCHISTL|6|{code}|102";
+                        string str = $"GET?qrystr=ACCHISTL|6|{code}|102|"+GoodsRecieveingApp.MainPage.UserCode;
                         var Request = new RestSharp.RestRequest();
                         Request.Resource = str;
                         Request.Method = RestSharp.Method.GET;
                         var cancellationTokenSource = new CancellationTokenSource();
                         var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                        if (res.Content.ToString().Contains("OrderNumber"))
+                        if (res.Content.ToString().Contains("DocNum"))
                         {
                             DataSet myds = new DataSet();
                             myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
@@ -57,25 +58,32 @@ namespace PickAndPack
                                 try
                                 {
                                     var Doc = new DocLine();
-                                    Doc.DocNum = row["OrderNumber"].ToString();
+                                    Doc.DocNum = row["DocNum"].ToString();
                                     Doc.SupplierCode = row["SupplierCode"].ToString();
                                     Doc.SupplierName = row["SupplierName"].ToString();
-                                    Doc.ItemBarcode = row["Barcode"].ToString();
+                                    Doc.ItemBarcode = row["ItemBarcode"].ToString();
                                     Doc.ItemCode = row["ItemCode"].ToString();
                                     Doc.ItemDesc = row["ItemDesc"].ToString();
                                     Doc.ScanAccQty = 0;
                                     Doc.ScanRejQty = 0;
-                                    Doc.PalletNum = 0;// Convert.ToInt32(row["PalletNumber"].ToString().Trim());
+                                    Doc.PalletNum = 0;//Convert.ToInt32(row["PalletNumber"].ToString().Trim());
+                                                      //if (Doc.PalletNum>0)
+                                                      //isNewPallet = false;
                                     Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
                                     lblCode.Text = Doc.DocNum;
                                     lblCusName.Text = Doc.SupplierName;
                                     await GoodsRecieveingApp.App.Database.Insert(Doc);
                                 }
-                                catch (Exception ex)
+                                catch (Exception )
                                 {
-                                    Console.WriteLine(ex);
+                                    LodingIndiactor.IsVisible = false;
+                                    Vibration.Vibrate();
+                                    message.DisplayMessage("Error In Server!!", true);
+                                    return false;
                                 }
                             }
+                            //if(isNewPallet)
+                            //await PalletCreate();
                             return true;
                         }
                         else
@@ -282,6 +290,7 @@ namespace PickAndPack
                     };
                     item.Clicked += btnViewSO_Clicked;
                     this.ToolbarItems.Add(item);
+                    allSo.Add(txfSOCode.Text);
                     await RefreshList();
                     txfItemCode.Focus();
                 }
@@ -343,6 +352,80 @@ namespace PickAndPack
             txfSOCode.Focused += Entry_Focused;
             LoadLayout.IsVisible = false;
             MainLayout.IsVisible = true;
+        }
+        private async Task PalletCreate()
+        {
+            RestSharp.RestClient client = new RestSharp.RestClient();
+            string path = "DocumentSQLConnection";
+            client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+            {
+                string qry = "INSERT INTO PalletTransaction(SONum,PalletID) VALUES('" + txfSOCode.Text + "',((SELECT MAX(PalletID) FROM PalletTransaction)+1))";
+                string str = $"Post?qry={qry}";
+                var Request = new RestSharp.RestRequest();
+                Request.Resource = str;
+                Request.Method = RestSharp.Method.POST;
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content != null)
+                {
+                }
+            }
+        }
+        private async void btnSave_Clicked(object sender, EventArgs e)
+        {
+            message.DisplayMessage("Saving....", true);
+            if (await SaveData())
+                await Navigation.PopAsync();
+            else
+                message.DisplayMessage("Error!!! Could Not Save!", true);
+        }
+        private async Task<bool> SaveData()
+        {
+            var ds = new DataSet();
+            try
+            {
+                var t1 = new DataTable();
+                DataRow row = null;
+                t1.Columns.Add("DocNum");
+                t1.Columns.Add("ItemBarcode");
+                t1.Columns.Add("Balance");
+                t1.Columns.Add("PalletNum");
+                foreach (string s in allSo)
+                {                                                         
+                    List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(s)).Where(x => x.ItemQty == 0).ToList();
+                    foreach (string str in docs.Select(x => x.ItemDesc).Distinct())
+                    {
+                        foreach (int ints in docs.Select(x => x.PalletNum).Distinct())
+                        {
+                            row = t1.NewRow();
+                            row["DocNum"] = docs.Select(x=>x.DocNum).FirstOrDefault();
+                            row["ItemBarcode"] = docs.Where(x => x.PalletNum == ints && x.ItemDesc == str).Select(x => x.ItemBarcode).FirstOrDefault();
+                            row["Balance"] = docs.Where(x => x.PalletNum == ints && x.ItemDesc == str).Sum(x => x.ScanAccQty);
+                            row["PalletNum"] = ints;
+                            t1.Rows.Add(row);
+                        }
+                    }
+                }
+                ds.Tables.Add(t1);
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
+            string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
+            RestSharp.RestClient client = new RestSharp.RestClient();
+            client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/");
+            {
+                var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
+                Request.RequestFormat = RestSharp.DataFormat.Json;
+                Request.AddJsonBody(myds);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content != null)
+                {
+                }
+            }
+            return true;
         }
     }
 }
