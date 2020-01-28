@@ -187,44 +187,47 @@ namespace GoodsRecieveingApp
                     string path = "GetDocument";
                     client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
                     {
-                        string str = $"GET?qrystr=ACCHISTL|6|{code}|106";
+                        string str = $"GET?qrystr=ACCHISTL|6|{code}|106|" + GoodsRecieveingApp.MainPage.UserCode;
                         var Request = new RestSharp.RestRequest();
                         Request.Resource = str;
                         Request.Method = RestSharp.Method.GET;
                         var cancellationTokenSource = new CancellationTokenSource();
-                        var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                        if (res.Content.ToString().Contains("OrderNumber"))
-                        {
-                            DataSet myds = new DataSet();
-                            myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
-                            foreach (DataRow row in myds.Tables[0].Rows)
+                        try { 
+                           var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                            if (res.Content.ToString().Contains("DocNum"))
                             {
-                                try
+                                DataSet myds = new DataSet();
+                                myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                                foreach (DataRow row in myds.Tables[0].Rows)
                                 {
-                                    var Doc = new DocLine();
-                                    Doc.DocNum = row["OrderNumber"].ToString();
-                                    Doc.SupplierCode = row["SupplierCode"].ToString();
-                                    Doc.SupplierName = row["SupplierName"].ToString();
-                                    Doc.ItemBarcode = row["Barcode"].ToString();
-                                    Doc.ItemCode = row["ItemCode"].ToString();
-                                    Doc.ItemDesc = row["ItemDesc"].ToString();
-                                    Doc.ScanAccQty = 0;
-                                    Doc.ScanRejQty = 0;
-                                    Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
-                                    await App.Database.Insert(Doc);
+                                    try
+                                    {
+                                        var Doc = new DocLine();
+                                        Doc.DocNum = row["DocNum"].ToString();
+                                        Doc.SupplierCode = row["SupplierCode"].ToString();
+                                        Doc.SupplierName = row["SupplierName"].ToString();
+                                        Doc.ItemBarcode = row["ItemBarcode"].ToString();
+                                        Doc.ItemCode = row["ItemCode"].ToString();
+                                        Doc.ItemDesc = row["ItemDesc"].ToString();
+                                        Doc.ScanAccQty = 0;
+                                        Doc.ScanRejQty = 0;
+                                        Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
+                                        await App.Database.Insert(Doc);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine(ex);
+                                    }
                                 }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine(ex);
-                                }
+                                return true;
                             }
-                            return true;
+                            else
+                            {
+                                LodingIndiactor.IsVisible = false;
+                                await DisplayAlert("Error", "There is no data in this PO", "OK");
+                            }
                         }
-                        else
-                        {
-                            LodingIndiactor.IsVisible = false;
-                            await DisplayAlert("Error", "There is no data in this PO", "OK");
-                        }
+                        catch (Exception ex) { }
                     }
                 }
                 else
