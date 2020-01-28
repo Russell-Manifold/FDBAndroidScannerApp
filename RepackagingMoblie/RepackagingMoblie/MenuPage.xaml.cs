@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Data.KeyboardContol;
+using Data.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -69,6 +72,18 @@ namespace RepackagingMoblie
         private async void Button_Clicked_Home(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new MainPage());
+        }
+        private async void Clear_Clicked(object sender, EventArgs e)
+        {
+            string output = await DisplayActionSheet("Confirm:- Clear repacking quantities and start again?", "YES", "NO");
+            switch (output)
+            {
+                case "NO":
+                    break;
+                case "YES":
+                    // delete repacking lines for this item
+                    break;
+            }
         }
     }
 }

@@ -8,7 +8,7 @@
              x:Class="RepackagingMoblie.MainPage"
              Title="Unpacking">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="" Clicked="Button_Clicked_Home" IconImageSource="home.PNG"/>
+        <ToolbarItem Clicked="Button_Clicked_Home" IconImageSource="home.PNG"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
     <StackLayout>

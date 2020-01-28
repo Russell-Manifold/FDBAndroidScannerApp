@@ -8,7 +8,7 @@
              x:Class="PickAndPack.SingleOrder">
     <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0">
         <StackLayout x:Name="SOCodeLayout">
-            <Label x:Name="lblSOCode" Text="SO Number:"  FontSize="Large" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
+            <Label x:Name="lblSOCode" Text="IO Number:"  FontSize="Large" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
             <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfSOCode" HorizontalOptions="FillAndExpand" MaxLength="8" Completed="txfSOCode_Completed"/>
         </StackLayout>
         <StackLayout x:Name="ItemCodeLayout" IsVisible="False">
@@ -78,9 +78,9 @@
                 </ListView>
             </StackLayout>
             <StackLayout Orientation="Horizontal">
-                <Button Text="-" FontSize="Large" x:Name="btnPrev" Clicked="btnPrevPallet_Clicked" BackgroundColor="Transparent"/>
-                <Label x:Name="lblPalletNumber" Text="1" FontSize="Large"/>
-                <Button Text="+" FontSize="Large" x:Name="btnNext" Clicked="btnNextPallet_Clicked" BackgroundColor="Transparent"/>
+                <Button FontSize="Large" x:Name="btnPrev" Clicked="btnPrevPallet_Clicked" BackgroundColor="Transparent" ImageSource="PalletAdd.png" HorizontalOptions="StartAndExpand" />
+                <Label x:Name="lblPalletNumber" Text="1" FontSize="40"  HorizontalOptions="CenterAndExpand"/>
+                <Button FontSize="Large" x:Name="btnNext" Clicked="btnNextPallet_Clicked" BackgroundColor="Transparent" ImageSource="PalletMinus.png" HorizontalOptions="EndAndExpand"/>
             </StackLayout>
         </StackLayout>
     </StackLayout>

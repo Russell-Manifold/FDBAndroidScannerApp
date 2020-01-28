@@ -62,7 +62,17 @@ namespace RepackagingMoblie
         void setQTY(string barcode)
         {
             int i = MainPage.docLines.FindAll(x => x.isRejected == false && x.ItemBarcode == barcode&&x.ItemQty==1).Count;
-            lblItemQTY.Text = "QTY: " + i + " items repacked";
+            try
+            {
+                lblBOMInfo.Text = "You have repacked " + MainPage.docLines.FindAll(x => x.ItemDesc != "1ItemFromMain").Sum(x => x.ItemQty) + " / " + +MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemQty + " items";
+            }
+            catch
+            {
+                lblBOMInfo.Text = "0/" + MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemQty + " Repacked";
+            }
+            if (MainPage.docLines.FindAll(x => x.ItemDesc != "1ItemFromMain").Sum(x => x.ItemQty) == MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemQty) {
+                imgProgress.Source = "Tick.png";
+            }
         }
         public async Task<bool> FindItem()
         {

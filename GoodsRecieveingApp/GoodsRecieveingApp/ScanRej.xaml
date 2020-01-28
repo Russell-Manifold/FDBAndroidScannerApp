@@ -12,7 +12,8 @@
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
-            <Label x:Name="lblMainRej" Text="{Binding name}" FontSize="25"/>
+            <Label x:Name="lblMainRej" Text="{Binding name}" FontSize="20" TextColor="Orange" FontAttributes="Bold"/>
+            <Label Text= "Scan Barcode" FontSize="20" TextDecorations="Underline" Padding="10" TextColor="Orange" FontAttributes="Bold"/>
             <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" MaxLength="14" HorizontalOptions="FillAndExpand" TextChanged="EntryRej_TextChanged" x:Name="txfRejCode" />
             <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblitemDescRej" FontSize="23"/>
             <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblBarCode" FontSize="20" VerticalOptions="Start"/>
@@ -26,9 +27,9 @@
                     <ColumnDefinition Width="100*"/>
                     <ColumnDefinition Width="50*"/>
                 </Grid.ColumnDefinitions>
-                <Label Text="Order Qty" FontSize="20" FontAttributes="Bold" Grid.Column="0" Grid.Row="0"/>
-                <Label Text="Scan Qty" FontSize="20" FontAttributes="Bold" Grid.Column="0" Grid.Row="1"/>
-                <Label Text="Balance" FontSize="20" FontAttributes="Bold" Grid.Column="0" Grid.Row="2"/>
+                <Label Text="Order Qty" FontSize="20" FontAttributes="Bold" Grid.Column="0" Grid.Row="0" TextColor="Orange"/>
+                <Label Text="Scan Qty" FontSize="20" FontAttributes="Bold" Grid.Column="0" Grid.Row="1" TextColor="Orange"/>
+                <Label Text="Balance" FontSize="20" FontAttributes="Bold" Grid.Column="0" Grid.Row="2" TextColor="Orange"/>
                 <Label x:Name="lblOrderQTY" FontSize="20" Grid.Column="1" Grid.Row="0"/>
                 <Label x:Name="lblScanQTY" FontSize="20" Grid.Column="1" Grid.Row="1"/>
                 <Label x:Name="lblBalance" FontSize="20" Grid.Column="1" Grid.Row="2"/>

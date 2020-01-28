@@ -22,7 +22,7 @@ namespace PickAndPack
     {
         public MainPage()
         {
-            InitializeComponent();           
+            InitializeComponent(); 
         }
 
         private async void btnSingleOrder_Clicked(object sender, EventArgs e)
@@ -38,6 +38,18 @@ namespace PickAndPack
         private async void btnPickingSlips_Clicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new PickSlips());
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            if (ScannerFDB.MainPage.PSCollect = true)
+            {
+                btnPickingSlips.IsVisible = true;
+            }
+            else {
+                btnPickingSlips.IsVisible = false;
+            }
         }
     }
 }

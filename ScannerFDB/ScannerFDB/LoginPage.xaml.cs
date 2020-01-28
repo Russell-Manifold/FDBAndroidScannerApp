@@ -79,16 +79,31 @@ namespace ScannerFDB
                         myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
                         foreach (DataRow row in myds.Tables[0].Rows)
                         {
-                            GoodsRecieveingApp.MainPage.AccessLevel = Convert.ToInt32(row["AccessLevel"].ToString());
                             GoodsRecieveingApp.MainPage.UserName = row["UserName"].ToString();
                             GoodsRecieveingApp.MainPage.UserCode = Convert.ToInt32(row["Id"].ToString());
+
+                            MainPage.UserName = row["UserName"].ToString();
+                            MainPage.UserCode = Convert.ToInt32(row["Id"].ToString());
+
+                            MainPage.fReceive = Convert.ToBoolean(row["fReceive"]);
+                            MainPage.fRepack = Convert.ToBoolean(row["fRepack"]);
+                            MainPage.fInvCount = Convert.ToBoolean(row["fInvCount"]);
+                            MainPage.fWhTrf = Convert.ToBoolean(row["fWhTrf"]);
+                            MainPage.fPickPack = Convert.ToBoolean(row["fPickPack"]);
+
+                            MainPage.AuthWHTrf = Convert.ToBoolean(row["AuthWHTrf"]);
+                            MainPage.AuthReceive = Convert.ToBoolean(row["AuthReceive"]);
+                            MainPage.AuthDispatch = Convert.ToBoolean(row["AuthDispatch"]);
+                            MainPage.PickChecker = Convert.ToBoolean(row["PickChecker"]);
+                            MainPage.SystAdmin = Convert.ToBoolean(row["SystAdmin"]);
+                            MainPage.CreateInvCount = Convert.ToBoolean(row["CreateInvCount"]);
+                            MainPage.CloseInvCount = Convert.ToBoolean(row["CloseInvCount"]);
+                            MainPage.PSCollect = Convert.ToBoolean(row["PSCollect"]);
                         }
-                        if (GoodsRecieveingApp.MainPage.AccessLevel > 0)
-                        {
                             await Navigation.PushAsync(new MainPage());
                             AccessLoading.IsVisible = false;
                             return true;
-                        }
+                        
                     }
                     else
                     {

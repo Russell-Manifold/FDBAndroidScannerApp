@@ -79,7 +79,7 @@ namespace RepackagingMoblie
 
         private async void Button_Clicked_Home(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new MainPage());
+            await Navigation.PushAsync(new ScannerFDB.MainPage());  
         }
     }
 }

@@ -36,7 +36,7 @@ namespace ScannerFDB
             {
                 switch (pickerLevel.SelectedItem.ToString())
                 {
-                    case "Default":
+                    case "Picker":
                         if (await AddUser(txfUserName.Text,txfEmpNum.Text,1))
                         {
                             await DisplayAlert("Complete", "The User has been added", "OK");                            
@@ -46,7 +46,7 @@ namespace ScannerFDB
                             await DisplayAlert("Error!", "The User has not been added", "OK");
                         }                       
                         break;
-                    case "Pick and Pack Manager":
+                    case "Pick and Pack Supervisor":
                         if (await AddUser(txfUserName.Text, txfEmpNum.Text, 2))
                         {
                             await DisplayAlert("Complete", "The User has been added", "OK");

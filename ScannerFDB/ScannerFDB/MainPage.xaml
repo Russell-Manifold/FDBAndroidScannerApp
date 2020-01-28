@@ -6,15 +6,16 @@
              mc:Ignorable="d"
              x:Class="ScannerFDB.MainPage">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Admin" Clicked="Button_Clicked_Admin" IconImageSource="settings.png"/>
+        <ToolbarItem x:Name="btnAdmin" Text="Admin" Clicked="Button_Clicked_Admin" IconImageSource="settings.png"/>
     </ContentPage.ToolbarItems>
     <ScrollView>
     <StackLayout>
-        <Button Text="Goods Receving" Clicked="Button_Clicked_Goods_Receving" VerticalOptions="EndAndExpand" ImageSource="ReceiveStck.png" BackgroundColor="Transparent" FontSize="Large" />
-        <Button Text="Repacking" Clicked="Button_Clicked_Repacking" VerticalOptions="EndAndExpand" ImageSource="repack.png" BackgroundColor="Transparent" FontSize="Large"/>
-        <Button Text="Inventory Count" Clicked="Button_Clicked_Repacking" VerticalOptions="EndAndExpand" ImageSource="InvCount.png" BackgroundColor="Transparent" FontSize="Large"/>
-        <Button Text="Warehouse Transfer" Clicked="Button_Clicked_WareHouseTransfer" VerticalOptions="EndAndExpand" ImageSource="WHTrf.png" BackgroundColor="Transparent" FontSize="Large"/>
-            <Button Text="Picking and Packing" Clicked="Button_Clicked" VerticalOptions="EndAndExpand" ImageSource="pickpack.png" BackgroundColor="Transparent" FontSize="Large"/>
+            <Label x:Name="lblUserLvl" Text="" IsVisible="False" />
+            <Button x:Name="btnReceive" Text="Goods Receving" Clicked="Button_Clicked_Goods_Receving" VerticalOptions="EndAndExpand" ImageSource="ReceiveStck.png" BackgroundColor="Transparent" FontSize="Large" />
+            <Button x:Name="btnRepack" Text="Repacking" Clicked="Button_Clicked_Repacking" VerticalOptions="EndAndExpand" ImageSource="repack.png" BackgroundColor="Transparent" FontSize="Large"/>
+            <Button x:Name="BtnInvCount" Text="Inventory Count" Clicked="Button_Clicked_Repacking" VerticalOptions="EndAndExpand" ImageSource="InvCount.png" BackgroundColor="Transparent" FontSize="Large"/>
+            <Button x:Name="btnWhTrf" Text="Warehouse Transfer" Clicked="Button_Clicked_WareHouseTransfer" VerticalOptions="EndAndExpand" ImageSource="WHTrf.png" BackgroundColor="Transparent" FontSize="Large"/>
+            <Button x:Name="btnPickPack" Text="Picking and Packing" Clicked="Button_Clicked" VerticalOptions="EndAndExpand" ImageSource="pickpack.png" BackgroundColor="Transparent" FontSize="Large"/>
         </StackLayout>
     </ScrollView>
 </ContentPage>

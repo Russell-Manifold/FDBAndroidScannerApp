@@ -333,12 +333,14 @@ namespace PickAndPack
         private void btnContinue_Clicked(object sender, EventArgs e)
         {
             isNewPallet = false;
+            txfSOCode.Focused += Entry_Focused;
             LoadLayout.IsVisible = false;
             MainLayout.IsVisible = true;
         }
         private void btnStartNew_Clicked(object sender, EventArgs e)
         {
             isNewPallet = true;
+            txfSOCode.Focused += Entry_Focused;
             LoadLayout.IsVisible = false;
             MainLayout.IsVisible = true;
         }

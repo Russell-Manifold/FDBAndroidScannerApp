@@ -8,9 +8,9 @@
              mc:Ignorable="d"
              x:Class="PickAndPack.MainPage">
     <StackLayout>
-        <Button x:Name="btnSingleOrder" Text="Single Order Multi Pallet" Clicked="btnSingleOrder_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
-        <Button Text="Single Pallet Multi Order" x:Name="btnSinglePallet" Clicked="btnSinglePallet_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
-        <Button Text="Collecting Picking Slips" x:Name="btnPickingSlips" Clicked="btnPickingSlips_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
+        <Button x:Name="btnSingleOrder" Text="Single Order Pallet" Clicked="btnSingleOrder_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand" ImageSource="OnePallet.png" BackgroundColor="Transparent"/>
+        <Button Text="Multi Order Pallet" x:Name="btnSinglePallet" Clicked="btnSinglePallet_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand" ImageSource="MultiOrderPallet.png" BackgroundColor="Transparent"/>
+        <Button Text="Collecting Picking Slips" x:Name="btnPickingSlips" Clicked="btnPickingSlips_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand" ImageSource="GetPickSlips.png" BackgroundColor="Transparent"/>
     </StackLayout>
 </ContentPage>
-    
+     

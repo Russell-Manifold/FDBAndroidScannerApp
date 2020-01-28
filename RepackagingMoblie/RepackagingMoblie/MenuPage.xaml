@@ -8,6 +8,7 @@
              Title="Repacking">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="" Clicked="Button_Clicked_Home" IconImageSource="home.PNG"/>
+        <ToolbarItem Text="" Clicked="Clear_Clicked"  IconImageSource="ingBan.PNG"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>

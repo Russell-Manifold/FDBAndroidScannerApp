@@ -22,6 +22,8 @@ namespace GoodsRecieveingApp
         public static string UserName="";
         public static int AccessLevel=0;
         public static int UserCode = 0;
+        
+
         IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;
         public MainPage()

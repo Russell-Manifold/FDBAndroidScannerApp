@@ -10,7 +10,7 @@
     <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0" >
         <StackLayout x:Name="MainLayout" IsVisible="False">
             <StackLayout x:Name="SOCodeLayout">
-                <Label x:Name="lblSOCode" Text="SO Number:"  FontSize="Large" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
+                <Label x:Name="lblSOCode" Text="IO Number:"  FontSize="Large" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
                 <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfSOCode" HorizontalOptions="FillAndExpand" MaxLength="8" Completed="txfSOCode_Completed"/>
             </StackLayout>
             <StackLayout Orientation="Horizontal" IsVisible="False" x:Name="AddSoLayout">
@@ -85,8 +85,8 @@
             </StackLayout>
         </StackLayout>
         <StackLayout x:Name="LoadLayout">
-            <Button Text="Start New Pallet" VerticalOptions="FillAndExpand" HorizontalOptions="Fill" x:Name="btnStartNew" Clicked="btnStartNew_Clicked"/>
-            <Button Text="Continue with existing" VerticalOptions="FillAndExpand" HorizontalOptions="Fill" x:Name="btnContinue" Clicked="btnContinue_Clicked"/>
+            <Button Text="Start New Pallet" VerticalOptions="StartAndExpand" x:Name="btnStartNew" Clicked="btnStartNew_Clicked" BackgroundColor="Transparent" ImageSource="NewPallet.PNG" FontSize="Large"/>
+            <Button Text="Continue with existing" VerticalOptions="EndAndExpand" x:Name="btnContinue" Clicked="btnContinue_Clicked" BackgroundColor="Transparent" ImageSource="AddToPallet.PNG" FontSize="Large"/>
         </StackLayout>
     </StackLayout>
 </ContentPage>
