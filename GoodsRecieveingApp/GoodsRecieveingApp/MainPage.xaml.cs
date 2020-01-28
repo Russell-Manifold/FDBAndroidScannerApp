@@ -19,10 +19,22 @@ namespace GoodsRecieveingApp
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-        public static string UserName="";
-        public static int AccessLevel=0;
+        public static string UserName = "";
+        public static int AccessLevel = 0;
         public static int UserCode = 0;
-        
+        public static Boolean fReceive = false;
+        public static Boolean fRepack = false;
+        public static Boolean fInvCount = false;
+        public static Boolean fWhTrf = false;
+        public static Boolean fPickPack = false;
+        public static Boolean AuthWHTrf = false;
+        public static Boolean AuthReceive = false;
+        public static Boolean AuthDispatch = false;
+        public static Boolean PickChecker = false;
+        public static Boolean SystAdmin = false;
+        public static Boolean CreateInvCount = false;
+        public static Boolean CloseInvCount = false;
+        public static Boolean PSCollect = false;
 
         IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;

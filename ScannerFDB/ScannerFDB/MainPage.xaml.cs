@@ -13,23 +13,7 @@ namespace ScannerFDB
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-        public static string UserName = "";
-        public static int AccessLevel = 0;
-        public static int UserCode = 0;
-        public static Boolean fReceive = false;
-        public static Boolean fRepack = false;
-        public static Boolean fInvCount = false;
-        public static Boolean fWhTrf = false;
-        public static Boolean fPickPack = false;
-        public static Boolean AuthWHTrf = false;
-        public static Boolean AuthReceive = false;
-        public static Boolean AuthDispatch = false;
-        public static Boolean PickChecker = false;
-        public static Boolean SystAdmin = false;
-        public static Boolean CreateInvCount = false;
-        public static Boolean CloseInvCount = false;
-        public static Boolean PSCollect = false;
-
+       
         public MainPage()
         {
             InitializeComponent();            
@@ -38,33 +22,30 @@ namespace ScannerFDB
         {
             base.OnAppearing();
             this.Title = "Hi "+GoodsRecieveingApp.MainPage.UserName;
-            if (GoodsRecieveingApp.MainPage.AccessLevel > 1)
-            {
-                btnAdmin.IsEnabled = true;
-            }
-            else
-            {
-                btnAdmin.IsEnabled = false;
-            }
-            if (MainPage.fReceive == true)
+            
+            if (GoodsRecieveingApp.MainPage.fReceive == true)
             {btnReceive.IsVisible = true;}
             else{btnReceive.IsVisible = false;}
 
-            if (MainPage.fRepack == true)
+            if (GoodsRecieveingApp.MainPage.fRepack == true)
             { btnRepack.IsVisible = true; }
             else { btnRepack.IsVisible = false; }
 
-            if (MainPage.fWhTrf == true)
+            if (GoodsRecieveingApp.MainPage.fWhTrf == true)
             { btnWhTrf.IsVisible = true; }
             else { btnWhTrf.IsVisible = false; }
 
-            if (MainPage.fInvCount == true)
+            if (GoodsRecieveingApp.MainPage.fInvCount == true)
             { BtnInvCount.IsVisible = true; }
             else { BtnInvCount.IsVisible = false; }
 
-            if (MainPage.fPickPack == true)
+            if (GoodsRecieveingApp.MainPage.fPickPack == true)
             { btnPickPack.IsVisible = true; }
             else { btnPickPack.IsVisible = false; }
+
+            if (GoodsRecieveingApp.MainPage.SystAdmin == true)
+            { btnAdmin.IsEnabled = true; }
+            else { btnAdmin.IsEnabled = false; }
         }
         private void Button_Clicked_Goods_Receving(object sender, EventArgs e)
         {
@@ -73,7 +54,7 @@ namespace ScannerFDB
 
         private async void Button_Clicked_Admin(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new AdminPage(GoodsRecieveingApp.MainPage.AccessLevel));
+            await Navigation.PushAsync(new AdminPage());
         }
 
         private async void Button_Clicked_Repacking(object sender, EventArgs e)

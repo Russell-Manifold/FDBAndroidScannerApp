@@ -82,23 +82,23 @@ namespace ScannerFDB
                             GoodsRecieveingApp.MainPage.UserName = row["UserName"].ToString();
                             GoodsRecieveingApp.MainPage.UserCode = Convert.ToInt32(row["Id"].ToString());
 
-                            MainPage.UserName = row["UserName"].ToString();
-                            MainPage.UserCode = Convert.ToInt32(row["Id"].ToString());
+                           GoodsRecieveingApp.MainPage.UserName = row["UserName"].ToString();
+                            GoodsRecieveingApp.MainPage.UserCode = Convert.ToInt32(row["Id"].ToString());
 
-                            MainPage.fReceive = Convert.ToBoolean(row["fReceive"]);
-                            MainPage.fRepack = Convert.ToBoolean(row["fRepack"]);
-                            MainPage.fInvCount = Convert.ToBoolean(row["fInvCount"]);
-                            MainPage.fWhTrf = Convert.ToBoolean(row["fWhTrf"]);
-                            MainPage.fPickPack = Convert.ToBoolean(row["fPickPack"]);
+                            GoodsRecieveingApp.MainPage.fReceive = Convert.ToBoolean(row["fReceive"]);
+                            GoodsRecieveingApp.MainPage.fRepack = Convert.ToBoolean(row["fRepack"]);
+                            GoodsRecieveingApp.MainPage.fInvCount = Convert.ToBoolean(row["fInvCount"]);
+                            GoodsRecieveingApp.MainPage.fWhTrf = Convert.ToBoolean(row["fWhTrf"]);
+                            GoodsRecieveingApp.MainPage.fPickPack = Convert.ToBoolean(row["fPickPack"]);
 
-                            MainPage.AuthWHTrf = Convert.ToBoolean(row["AuthWHTrf"]);
-                            MainPage.AuthReceive = Convert.ToBoolean(row["AuthReceive"]);
-                            MainPage.AuthDispatch = Convert.ToBoolean(row["AuthDispatch"]);
-                            MainPage.PickChecker = Convert.ToBoolean(row["PickChecker"]);
-                            MainPage.SystAdmin = Convert.ToBoolean(row["SystAdmin"]);
-                            MainPage.CreateInvCount = Convert.ToBoolean(row["CreateInvCount"]);
-                            MainPage.CloseInvCount = Convert.ToBoolean(row["CloseInvCount"]);
-                            MainPage.PSCollect = Convert.ToBoolean(row["PSCollect"]);
+                            GoodsRecieveingApp.MainPage.AuthWHTrf = Convert.ToBoolean(row["AuthWHTrf"]);
+                            GoodsRecieveingApp.MainPage.AuthReceive = Convert.ToBoolean(row["AuthReceive"]);
+                            GoodsRecieveingApp.MainPage.AuthDispatch = Convert.ToBoolean(row["AuthDispatch"]);
+                            GoodsRecieveingApp.MainPage.PickChecker = Convert.ToBoolean(row["PickChecker"]);
+                            GoodsRecieveingApp.MainPage.SystAdmin = Convert.ToBoolean(row["SystAdmin"]);
+                            GoodsRecieveingApp.MainPage.CreateInvCount = Convert.ToBoolean(row["CreateInvCount"]);
+                            GoodsRecieveingApp.MainPage.CloseInvCount = Convert.ToBoolean(row["CloseInvCount"]);
+                            GoodsRecieveingApp.MainPage.PSCollect = Convert.ToBoolean(row["PSCollect"]);
                         }
                             await Navigation.PushAsync(new MainPage());
                             AccessLoading.IsVisible = false;

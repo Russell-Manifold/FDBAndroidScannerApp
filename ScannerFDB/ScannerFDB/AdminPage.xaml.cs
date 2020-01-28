@@ -14,16 +14,9 @@ namespace ScannerFDB
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AdminPage : ContentPage
     {       
-        public AdminPage(int lvl)
+        public AdminPage()
         {
-            InitializeComponent();
-            switch (lvl)
-            {
-                case 2:
-                    //picking slip access
-                    btnAddUser.IsVisible = false;
-                    break;
-            }
+            InitializeComponent();           
         }
     
         private async void Button_Clicked(object sender, EventArgs e)
@@ -83,12 +76,10 @@ namespace ScannerFDB
                 await DisplayAlert("Error!!", "Please Reconnect to the internet", "OK");
             }
         }
-
         private void Button_Clicked_1(object sender, EventArgs e)
         {
 
         }
-
         private async void Add_User_Clicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new CreateUser());

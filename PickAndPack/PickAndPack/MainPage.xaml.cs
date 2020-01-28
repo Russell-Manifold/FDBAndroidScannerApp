@@ -43,7 +43,7 @@ namespace PickAndPack
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            if (ScannerFDB.MainPage.PSCollect = true)
+            if (GoodsRecieveingApp.MainPage.PSCollect == true)
             {
                 btnPickingSlips.IsVisible = true;
             }
