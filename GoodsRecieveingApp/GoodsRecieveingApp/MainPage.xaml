@@ -7,6 +7,9 @@
              mc:Ignorable="d"
              x:Class="GoodsRecieveingApp.MainPage"
              Title="Goods Receiving">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem  IconImageSource="home.PNG" x:Name="btnHome" Clicked="HomeClicked"/>
+    </ContentPage.ToolbarItems>
     <ScrollView>
       <StackLayout x:Name="MainStack" Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0">                  
         <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand">

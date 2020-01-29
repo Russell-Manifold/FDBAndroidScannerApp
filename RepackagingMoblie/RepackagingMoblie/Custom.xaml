@@ -7,6 +7,9 @@
              mc:Ignorable="d"
              x:Class="RepackagingMoblie.Custom"
              Title="Custom Size">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem  IconImageSource="home.PNG" x:Name="btnHome" Clicked="btnHome_Clicked"/>
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
             <Label Text="Scan the item Barcode" FontSize="Large" HorizontalTextAlignment="Center"/>

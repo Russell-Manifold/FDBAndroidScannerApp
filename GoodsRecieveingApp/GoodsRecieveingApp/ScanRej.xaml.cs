@@ -1,11 +1,12 @@
 ﻿using Data.KeyboardContol;
+using Data.Message;
 using Data.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using ZXing.Net.Mobile.Forms;
@@ -19,6 +20,7 @@ namespace GoodsRecieveingApp
         List<DocLine> currentDocs ;
         string lastItem;
         bool wrong;
+        IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;
         public ScanRej(DocLine d)
         {
@@ -29,7 +31,7 @@ namespace GoodsRecieveingApp
         }
         private void ButtonRej_Clicked(object sender, EventArgs e)
         {
-            DisplayAlert("Complete","All items have been scanned into Rejected stock","OK");
+            message.DisplayMessage("Rejected items added", true);
             Navigation.PopAsync();
         }
         protected async override void OnAppearing()
@@ -52,7 +54,8 @@ namespace GoodsRecieveingApp
                 }
                 catch
                 {
-                    await DisplayAlert("Error!", "There is no item with this tag", "OK");
+                    Vibration.Vibrate();
+                    message.DisplayMessage("There is no item with this code on this order", true);
                     return;
                 }
                 if (Check(bi.ItemCode))
@@ -65,7 +68,8 @@ namespace GoodsRecieveingApp
                 }
                 else
                 {
-                    await DisplayAlert("Error!!", "There was no item on the PO with this barcode", "OK");
+                    Vibration.Vibrate();
+                    message.DisplayMessage("There is no item on this PO with this code", true);
                     PicImage.IsVisible = true;
                     PicImage.ImageSource = "Wrong.png";
                 }
@@ -84,7 +88,8 @@ namespace GoodsRecieveingApp
                 }
                 else
                 {
-                    await DisplayAlert("Error!!","There was no item on the PO with this barcode","OK");
+                    Vibration.Vibrate();
+                    message.DisplayMessage("There was no item found with this code", true);
                     PicImage.IsVisible = true;
                     PicImage.ImageSource = "Wrong.png";
                 }
@@ -120,14 +125,8 @@ namespace GoodsRecieveingApp
             int OrderQty = currentDocs.Find(x => x.ItemCode == Icode && x.ItemQty != 0).ItemQty;
             lblitemDescRej.Text = currentDocs.Find(x => x.ItemCode == Icode && x.ItemQty != 0).ItemDesc + "\n" + txfRejCode.Text;
             int balance = OrderQty;
-            foreach (DocLine dl in currentDocs.Where(x => x.ItemCode == Icode && x.ItemQty != 0))
-            {
-                foreach (DocLine dc in currentDocs.Where(x => x.ItemCode == Icode && x.ItemQty == 0))
-                {
-                    scanQty += dc.ScanAccQty+dc.ScanRejQty;
-                    balance -= dc.ScanAccQty+dc.ScanRejQty;
-                }
-            }
+            scanQty = currentDocs.Where(x => x.ItemCode == Icode).Sum(x => x.ScanAccQty) + currentDocs.Where(x => x.ItemCode == Icode).Sum(x => x.ScanRejQty);
+            balance = balance - scanQty;
             lblBalance.Text = balance + "";
             lblScanQTY.Text = scanQty + "";
             lblOrderQTY.Text = OrderQty + "";

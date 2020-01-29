@@ -7,6 +7,9 @@
              mc:Ignorable="d"
              x:Class="RepackagingMoblie.DamagedGoods"
              Title="Damaged Goods">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem  IconImageSource="home.PNG" x:Name="btnHome" Clicked="btnHome_Clicked"/>
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
             <Label Text="Please scan the Item Code:"/>

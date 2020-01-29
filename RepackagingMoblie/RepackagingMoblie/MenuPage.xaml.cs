@@ -1,4 +1,5 @@
 ﻿using Data.KeyboardContol;
+using Data.Message;
 using Data.Model;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -15,6 +16,7 @@ namespace RepackagingMoblie
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MenuPage : ContentPage
     {
+        IMessage message = DependencyService.Get<IMessage>();
         public MenuPage()
         {
             InitializeComponent();
@@ -60,18 +62,28 @@ namespace RepackagingMoblie
             {
                 // send all to API for printing MainPage.PackCodes
                 lblBOMInfo.TextColor = System.Drawing.Color.Gray;
-                 await DisplayAlert("Done!", "Repacking Complete", "OK");
+                message.DisplayMessage("Repacking Complete!!", true);
                 await Navigation.PopToRootAsync();
             }
             else
             {
-                await DisplayAlert("Error!", "Not all items have been repacked!", "OK");
+                Vibration.Vibrate();
+                message.DisplayMessage("Not All items have benn packed", true);
             }
         }
 
         private async void Button_Clicked_Home(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new MainPage());
+            string output = await DisplayActionSheet("Exit before the repacking is complete", "YES", "NO");
+            switch (output)
+            {
+                case "NO":
+                    break;
+                case "YES":
+                    Navigation.RemovePage(Navigation.NavigationStack[2]);
+                    await Navigation.PopAsync();
+                    break;
+            }           
         }
         private async void Clear_Clicked(object sender, EventArgs e)
         {

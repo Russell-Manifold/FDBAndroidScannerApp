@@ -1,11 +1,12 @@
-﻿using Data.Model;
+﻿using Data.Message;
+using Data.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -15,6 +16,7 @@ namespace GoodsRecieveingApp
     public partial class ViewStock : ContentPage
     {
         string docCode ="";
+        IMessage message = DependencyService.Get<IMessage>();
         public ViewStock(string dl)
         {
             InitializeComponent();
@@ -27,16 +29,10 @@ namespace GoodsRecieveingApp
             List<DocLine> lines = await App.Database.GetSpecificDocsAsync(docCode);
             List<DocLine> list = new List<DocLine>();
             foreach (DocLine dc in lines.Where(x=>x.ItemQty!=0))
-            {              
-                    foreach (DocLine dl in lines.Where(x=>x.ItemQty==0))
-                    {
-                        if (dc.ItemCode == dl.ItemCode)
-                        {
-                            dc.ScanAccQty += dl.ScanAccQty;
-                            dc.ScanRejQty += dl.ScanRejQty;
-                        }
-                    }
-                    dc.Balacnce = dc.ItemQty - (dc.ScanAccQty+dc.ScanRejQty);
+            {
+                dc.ScanAccQty = lines.Where(c=>c.ItemCode==dc.ItemCode).Sum(x=>x.ScanAccQty);
+                dc.ScanRejQty = lines.Where(c => c.ItemCode == dc.ItemCode).Sum(x => x.ScanRejQty);
+                dc.Balacnce = dc.ItemQty - (dc.ScanAccQty + dc.ScanRejQty);
                     if (dc.Balacnce == 0 && dc.ItemQty != 0)
                     {
                         dc.Complete = "Yes";
@@ -87,12 +83,13 @@ namespace GoodsRecieveingApp
         {
             if (await Check())
             {
-                await DisplayAlert("Complete!", "Successfully Received", "OK");
+                message.DisplayMessage("Complete!!!", true);
                 //send GRV back to Pastel database
             }
             else
             {
-                await DisplayAlert("Errro!", "There is an error in the order, Please make sure all items are green", "OK");
+                Vibration.Vibrate();
+                message.DisplayMessage("Please make sure all items are GREEN!", true);
             }
         }
         private async Task<bool> Check()
@@ -114,10 +111,17 @@ namespace GoodsRecieveingApp
             }
             return true;
         }
-
         private async void ToolbarItem_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new MainPage());
+            if (Navigation.NavigationStack.Count== 4)
+            {
+                await Navigation.PopAsync();
+            }
+            else
+            {
+                Navigation.RemovePage(Navigation.NavigationStack[3]);
+                await Navigation.PopAsync();
+            }
         }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Data.KeyboardContol;
+using Data.Message;
 using Data.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace RepackagingMoblie
@@ -16,6 +18,7 @@ namespace RepackagingMoblie
         private ExtendedEntry _currententry;
         public static List<DocLine> docLines = new List<DocLine>();
         public static List<string> PackCodes = new List<string>();
+        IMessage message = DependencyService.Get<IMessage>();
         public MainPage()
         {
             InitializeComponent();
@@ -52,7 +55,8 @@ namespace RepackagingMoblie
             }
             else
             {
-                await DisplayAlert("Error!", "Please scan a barcode of items unpacked", "OK");
+                Vibration.Vibrate();
+                message.DisplayMessage("Please nake sure to scan a valid bardode", true);
             }
 
         }
@@ -70,7 +74,8 @@ namespace RepackagingMoblie
                 }
                 catch
                 {
-                    await DisplayAlert("Error!", "No Packing Code Found", "OK");
+                    Vibration.Vibrate();
+                    message.DisplayMessage("No pack code found", true);
                     txfPackbarcode.Text = "";
                     txfPackbarcode.Focus();
                     btnGoToRepack.IsVisible = false;

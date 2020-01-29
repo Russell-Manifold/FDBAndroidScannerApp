@@ -1,11 +1,12 @@
 ﻿using Data.KeyboardContol;
+using Data.Message;
 using Data.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using ZXing.Net.Mobile.Forms;
@@ -19,6 +20,7 @@ namespace GoodsRecieveingApp
         List<DocLine> currentDocs;
         string lastItem;
         bool wrong;
+        IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;
         public ScanAcc(DocLine d)
         {
@@ -49,7 +51,8 @@ namespace GoodsRecieveingApp
                     }
                     catch
                     {
-                        await DisplayAlert("Error!", "There is no item with this barcode", "OK");
+                        Vibration.Vibrate();
+                        message.DisplayMessage("There is no item with this barcode", true);
                         txfAccCode.Text = "";
                         return;
                     }
@@ -63,7 +66,8 @@ namespace GoodsRecieveingApp
                     }
                     else
                     {
-                        await DisplayAlert("Error!!", "There was no item on the PO with this barcode", "OK");
+                        Vibration.Vibrate();
+                        message.DisplayMessage("There is no item on this PO with this code", true);
                         PicImage.IsVisible = true;
                         PicImage.ImageSource = "Wrong.png";
                         txfAccCode.Text = "";
@@ -83,7 +87,8 @@ namespace GoodsRecieveingApp
                     }
                     else
                     {
-                        await DisplayAlert("Error!!", "There was no item on the PO with this barcode", "OK");
+                        Vibration.Vibrate();
+                        message.DisplayMessage("There is no item on this PO with this code", true);
                         PicImage.IsVisible = true;
                         PicImage.ImageSource = "Wrong.png";
                         txfAccCode.Text = "";
@@ -122,14 +127,8 @@ namespace GoodsRecieveingApp
             int OrderQty = currentDocs.Find(x => x.ItemCode == Icode && x.ItemQty != 0).ItemQty;
             lblitemDescAcc.Text = currentDocs.Find(x => x.ItemCode == Icode && x.ItemQty != 0).ItemDesc+"\n"+txfAccCode.Text;
             int balance = OrderQty;
-            foreach (DocLine dl in currentDocs.Where(x=>x.ItemCode== Icode && x.ItemQty!=0))
-            {
-                foreach(DocLine dc in currentDocs.Where(x => x.ItemCode == Icode && x.ItemQty == 0))
-                {
-                    scanQty +=dc.ScanAccQty+dc.ScanRejQty;
-                    balance -= dc.ScanAccQty+dc.ScanRejQty;
-                }
-            }            
+            scanQty = currentDocs.Where(x=>x.ItemCode==Icode).Sum(x=>x.ScanAccQty)+ currentDocs.Where(x => x.ItemCode == Icode).Sum(x => x.ScanRejQty);
+            balance = balance - scanQty;      
             lblBalance.Text = balance + "";
             lblScanQTY.Text = scanQty + "";
             lblOrderQTY.Text = OrderQty + "";

@@ -46,19 +46,6 @@ namespace ScannerFDB
 
             }
         }
-        private async void TxfUserBarcode_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            await Task.Delay(200);
-            if (!(txfUserBarcode.Text.Length<2))
-            {
-                if (!await CheckUser())
-                {
-                    txfUserBarcode.Text = "";
-                    txfUserBarcode.Focus();
-                }
-            }
-            
-        }
         private async Task<bool> CheckUser()
         {
             AccessLoading.IsVisible = true;
@@ -117,6 +104,17 @@ namespace ScannerFDB
             AccessLoading.IsVisible = false;
             await DisplayAlert("Error!", "Invalid User Access", "OK");
             return false;
+        }
+        private async void txfUserBarcode_Completed(object sender, EventArgs e)
+        {
+            if (!(txfUserBarcode.Text.Length < 2))
+            {
+                if (!await CheckUser())
+                {
+                    txfUserBarcode.Text = "";
+                    txfUserBarcode.Focus();
+                }
+            }
         }
     }
 }

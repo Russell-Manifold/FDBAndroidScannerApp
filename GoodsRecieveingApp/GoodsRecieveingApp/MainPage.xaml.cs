@@ -35,7 +35,6 @@ namespace GoodsRecieveingApp
         public static Boolean CreateInvCount = false;
         public static Boolean CloseInvCount = false;
         public static Boolean PSCollect = false;
-
         IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;
         public MainPage()
@@ -65,6 +64,12 @@ namespace GoodsRecieveingApp
                     btnAccept.IsVisible = true;
                     btnRej.IsVisible = true;
                     btnAll.IsVisible = true;
+                    ToolbarItem item = new ToolbarItem()
+                    {
+                        Text = "Save"                    
+                    };
+                    item.Clicked += SaveClicked;
+                    this.ToolbarItems.Add(item);
                         
                     try
                     {
@@ -73,8 +78,15 @@ namespace GoodsRecieveingApp
                     catch
                     {
 
-                    }                      
-                    await App.Database.Insert(new DocHeader {DocNum= txfPOCode.Text,PackerUser= UserCode, AccName=d.SupplierName,AcctCode=d.SupplierCode});
+                    }
+                    try
+                    {
+                        await App.Database.Insert(new DocHeader { DocNum = txfPOCode.Text, PackerUser = UserCode, AccName = d.SupplierName, AcctCode = d.SupplierCode });
+                    }
+                    catch
+                    {
+
+                    }
                     LodingIndiactor.IsVisible = false;
                     //await DisplayAlert("Done", "All the data has been loaded for this order", "OK");                       
                 }
@@ -94,7 +106,8 @@ namespace GoodsRecieveingApp
             }
             catch
             {
-                await DisplayAlert("Error", "Could not load info of the entered PO", "Try Again");
+                Vibration.Vibrate();
+                message.DisplayMessage("Could not Load PO",true);
             }
         }
         private async void ButtonRejected_Clicked(object sender, EventArgs e)
@@ -106,7 +119,8 @@ namespace GoodsRecieveingApp
             }
             catch
             {
-                await DisplayAlert("Error", "Could not load info of the entered PO", "Try Again");
+                Vibration.Vibrate();
+                message.DisplayMessage("Could not Load PO", true);
             }
         }
         private async Task<bool> GetItems(string code)
@@ -140,14 +154,30 @@ namespace GoodsRecieveingApp
                                     Doc.ItemBarcode = row["ItemBarcode"].ToString();
                                     Doc.ItemCode = row["ItemCode"].ToString();
                                     Doc.ItemDesc = row["ItemDesc"].ToString();
-                                    Doc.ScanAccQty = 0;
-                                    Doc.ScanRejQty = 0;
+                                    if (row["ScanAccQty"].ToString()!="")
+                                    {
+                                        Doc.ScanAccQty = Convert.ToInt32(row["ScanAccQty"].ToString());
+                                    }
+                                    else
+                                    {
+                                        Doc.ScanAccQty = 0;
+                                    }
+                                    if (row["ScanRejQty"].ToString()!="")
+                                    {
+                                        Doc.ScanRejQty = Convert.ToInt32(row["ScanRejQty"].ToString());
+                                    }
+                                    else
+                                    {
+                                        Doc.ScanRejQty = 0;
+                                    }                                    
                                     Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
+                                    Doc.PalletNum = 0;
                                     await App.Database.Insert(Doc);
                                 }
-                                catch (Exception ex)
+                                catch (Exception)
                                 {
-                                    Console.WriteLine(ex);
+                                    Vibration.Vibrate();
+                                    message.DisplayMessage("Error in storing items", true);
                                 }
                             }
                             return true;
@@ -155,14 +185,16 @@ namespace GoodsRecieveingApp
                         else
                         {
                             LodingIndiactor.IsVisible = false;
-                            await DisplayAlert("Error", "There is no data in this PO", "OK");
+                            Vibration.Vibrate();
+                            message.DisplayMessage("There is no data in this PO", true);
                         }
                     }
                 }
                 else
                 {
                     LodingIndiactor.IsVisible = false;
-                    await DisplayAlert("Error!!", "Please Reconnect to the internet", "OK");
+                    Vibration.Vibrate();
+                    message.DisplayMessage("Please connect to the internet", true);
                 }
             }
             return false;
@@ -177,14 +209,15 @@ namespace GoodsRecieveingApp
             }
             catch
             {
-                await DisplayAlert("Error","Could not load info of the entered PO","Try Again");
+                Vibration.Vibrate();
+                message.DisplayMessage("Could not Load PO", true);
             }           
         }             
         private async Task<bool> RemoveAllOld(string docNum)
         {
             try
             {
-                foreach (DocLine dl in (await App.Database.GetSpecificDocsAsync(docNum)).Where(x => x.ItemQty != 0))
+                foreach (DocLine dl in (await App.Database.GetSpecificDocsAsync(docNum)))
                 {
                     await App.Database.Delete(dl);
                 }
@@ -210,6 +243,92 @@ namespace GoodsRecieveingApp
 
                 }
 
+            }
+        }
+        private async void SaveClicked(object sender, EventArgs e)
+        {
+            message.DisplayMessage("Saving....",false);
+            if (await SaveData())
+            {
+                message.DisplayMessage("All data Saved", true);
+                await Navigation.PopAsync();
+            }
+            else
+            {
+                Vibration.Vibrate();
+                message.DisplayMessage("Error!!! Could Not Save!", true);
+            }                
+        }
+        private async void HomeClicked(object sender, EventArgs e)
+        {
+            if (txfPOCode.Text!=null)
+            {
+                string res = await DisplayActionSheet("Are you sure you want to exit before saving", "No", "Yes");
+                if (res == "Yes")
+                {
+                    await Navigation.PopAsync();
+                    return;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            await Navigation.PopAsync();
+        }
+        private async Task<bool> SaveData()
+        {
+            List<DocLine> docs = new List<DocLine>();
+            var ds = new DataSet();
+            try
+            {
+                var t1 = new DataTable();
+                DataRow row = null;
+                t1.Columns.Add("DocNum");
+                t1.Columns.Add("ItemBarcode");
+                t1.Columns.Add("ScanAccQty");
+                t1.Columns.Add("Balance");
+                t1.Columns.Add("ScanRejQty");
+                t1.Columns.Add("PalletNumber");
+                docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemQty==0).ToList();
+                if (docs.Count == 0)
+                    return true;
+                foreach (string str in docs.Select(x=>x.ItemCode).Distinct())
+                {
+                    int i = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
+                    row = t1.NewRow();
+                    row["DocNum"] = docs.FirstOrDefault().DocNum;
+                    row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
+                    row["ScanAccQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanAccQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
+                    row["Balance"] =0;
+                    row["ScanRejQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanRejQty)+(await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str&&x.ItemQty!=0).Sum(x=>x.ScanRejQty);
+                    row["PalletNumber"] = 0;
+                    t1.Rows.Add(row);
+                }                
+                ds.Tables.Add(t1);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
+            RestSharp.RestClient client = new RestSharp.RestClient();
+            client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/");
+            {
+                var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
+                Request.RequestFormat = RestSharp.DataFormat.Json;
+                Request.AddJsonBody(myds);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("COMPLETE"))
+                {
+                    await RemoveAllOld(docs.FirstOrDefault().DocNum);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
     }

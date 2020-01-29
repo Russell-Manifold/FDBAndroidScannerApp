@@ -377,9 +377,10 @@ namespace PickAndPack
             if (await SaveData())
                 await Navigation.PopAsync();
             else
+                Vibration.Vibrate();
                 message.DisplayMessage("Error!!! Could Not Save!", true);
         }
-        private async Task<bool> SaveData()
+        private async Task<bool> SaveData() 
         {
             var ds = new DataSet();
             try

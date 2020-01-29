@@ -1,4 +1,5 @@
 ﻿using Data.KeyboardContol;
+using Data.Message;
 using Data.Model;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -16,6 +17,7 @@ namespace RepackagingMoblie
     public partial class DamagedGoods : ContentPage
     {
         private ExtendedEntry _currententry;
+        IMessage message = DependencyService.Get<IMessage>();
         public DamagedGoods()
         {
             InitializeComponent();
@@ -70,7 +72,8 @@ namespace RepackagingMoblie
             {
                 BOMItem bi = await GoodsRecieveingApp.App.Database.GetBOMItem(txfBarcode.Text);
                 Loader.IsVisible = false;
-                await DisplayAlert("Error!", "You cannot add a BOM please scan items as singles", "OK");
+                Vibration.Vibrate();
+                message.DisplayMessage("You can't add a pack as a single item", true);
             }
             catch
             {
@@ -100,7 +103,8 @@ namespace RepackagingMoblie
                                 }
                                 else
                                 {
-                                    await DisplayAlert("Error","Too Many items have been Scanned","OK");
+                                    Vibration.Vibrate();
+                                    message.DisplayMessage("Too many items have been scanned", true);
                                     Loader.IsVisible = false;
                                     return false;
                                 } 
@@ -108,7 +112,8 @@ namespace RepackagingMoblie
                             else
                             {
                                 Loader.IsVisible = false;
-                                await DisplayAlert("Error!", "This is not the same product type from this BOM", "OK");
+                                Vibration.Vibrate();
+                                message.DisplayMessage("This is not the right product", true);
                                 lblItemDesc.Text = "";
                                 lblItemQTY.Text = "";
                                 return false;
@@ -120,10 +125,16 @@ namespace RepackagingMoblie
                 {
                     lblItemDesc.Text = "No Item With This Code";
                     Loader.IsVisible = false;
-                    await DisplayAlert("Error!", "There was no item or pack found with this code", "OK");
+                    Vibration.Vibrate();
+                    message.DisplayMessage("This item code could not be found", true);
                 }
             }
             return false;
+        }
+
+        private void btnHome_Clicked(object sender, EventArgs e)
+        {
+            Navigation.PopAsync();
         }
     }
 }
