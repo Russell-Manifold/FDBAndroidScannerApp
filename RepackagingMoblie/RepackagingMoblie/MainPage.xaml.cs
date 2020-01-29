@@ -41,6 +41,7 @@ namespace RepackagingMoblie
         protected override void OnAppearing()
         {
             base.OnAppearing();
+            txfPackbarcode.Text = "";       
             txfPackbarcode.Focus();
         }
         private async void BtnGoToRepack_Clicked(object sender, EventArgs e)
@@ -55,10 +56,10 @@ namespace RepackagingMoblie
             }
 
         }
-
         private async void TxfPackbarcode_TextChanged(object sender, TextChangedEventArgs e)
         {
             if(txfPackbarcode.Text!=""&&txfPackbarcode.Text!=null){
+                docLines.Clear();
                 try
                 {
                     BOMItem bi = await GoodsRecieveingApp.App.Database.GetBOMItem(txfPackbarcode.Text);
@@ -76,10 +77,9 @@ namespace RepackagingMoblie
                 }
             }
         }
-
         private async void Button_Clicked_Home(object sender, EventArgs e)
         {
-           // await Navigation.PushAsync(new ScannerFDB.MainPage());  
+            await Navigation.PopAsync();  
         }
     }
 }

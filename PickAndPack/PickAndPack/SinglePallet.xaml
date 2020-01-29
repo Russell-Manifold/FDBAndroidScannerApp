@@ -7,6 +7,9 @@
              mc:Ignorable="d"
              Title="Single Pallet"
              x:Class="PickAndPack.SinglePallet">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Save" x:Name="btnSave" Clicked="btnSave_Clicked"/>
+    </ContentPage.ToolbarItems>
     <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0" >
         <StackLayout x:Name="MainLayout" IsVisible="False">
             <StackLayout x:Name="SOCodeLayout">
