@@ -3,8 +3,10 @@ using Data.Message;
 using Data.Model;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -214,8 +216,90 @@ namespace GoodsRecieveingApp
         }
         private async void ToolbarItem_Clicked(object sender, EventArgs e)
         {
+            //message.DisplayMessage("Saving....", false);
+            //if (await SaveData())
+            //{
+            //    message.DisplayMessage("All data Saved", true);
+            //    await Navigation.PopAsync();
+            //}
+            //else
+            //{
+            //    Vibration.Vibrate();
+            //    message.DisplayMessage("Error!!! Could Not Save!", true);
+            //}
             await Navigation.PushAsync(new ViewStock(UsingDoc.DocNum.ToUpper()));
         }
 
+        private async Task<bool> SaveData()
+        {
+            List<DocLine> docs = new List<DocLine>();
+            var ds = new DataSet();
+            try
+            {
+                var t1 = new DataTable();
+                DataRow row = null;
+                t1.Columns.Add("DocNum");
+                t1.Columns.Add("ItemBarcode");
+                t1.Columns.Add("ScanAccQty");
+                t1.Columns.Add("Balance");
+                t1.Columns.Add("ScanRejQty");
+                t1.Columns.Add("PalletNumber");
+                docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemQty == 0).ToList();
+                if (docs.Count == 0)
+                    return true;
+                foreach (string str in docs.Select(x => x.ItemCode).Distinct())
+                {
+                    int i = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
+                    row = t1.NewRow();
+                    row["DocNum"] = docs.FirstOrDefault().DocNum;
+                    row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
+                    row["ScanAccQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanAccQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
+                    row["Balance"] = 0;
+                    row["ScanRejQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanRejQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanRejQty);
+                    row["PalletNumber"] = 0;
+                    t1.Rows.Add(row);
+                }
+                ds.Tables.Add(t1);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
+            RestSharp.RestClient client = new RestSharp.RestClient();
+            client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/");
+            {
+                var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
+                Request.RequestFormat = RestSharp.DataFormat.Json;
+                Request.AddJsonBody(myds);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("COMPLETE"))
+                {
+                    await RemoveAllOld(docs.FirstOrDefault().DocNum);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        private async Task<bool> RemoveAllOld(string docNum)
+        {
+            try
+            {
+                foreach (DocLine dl in (await App.Database.GetSpecificDocsAsync(docNum)))
+                {
+                    await App.Database.Delete(dl);
+                }
+            }
+            catch
+            {
+
+            }
+            return true;
+        }
     }
 }

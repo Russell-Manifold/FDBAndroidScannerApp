@@ -8,8 +8,9 @@
     <ContentPage.Content>
         <StackLayout Orientation="Vertical">
             <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
+            <Button Text="RESET TRAINING DATA" Clicked="btnReset_Clicked"  x:Name="btnReset" HeightRequest="150" FontSize="Medium"/>
             <Button Text="Update Data" Clicked="Button_Clicked" x:Name="btnUpdate"/>
-            <Button Text="Add User" Clicked="Add_User_Clicked" x:Name="btnAddUser"/>
+            <!--<Button Text="Add User" Clicked="Add_User_Clicked" x:Name="btnAddUser"/>-->
             <Button Text="Connections Setup" Clicked="Button_Clicked_1" x:Name="btnConnectionSetup"/>
         </StackLayout>
     </ContentPage.Content>

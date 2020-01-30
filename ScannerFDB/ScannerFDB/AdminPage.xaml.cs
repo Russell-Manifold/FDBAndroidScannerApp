@@ -80,10 +80,46 @@ namespace ScannerFDB
         {
 
         }
-        private async void Add_User_Clicked(object sender, EventArgs e)
+        //private async void Add_User_Clicked(object sender, EventArgs e)
+        //{
+        //    await Navigation.PushAsync(new CreateUser());
+        //}
+
+        private void btnUpdate_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new CreateUser());
+
         }
-       
+
+        private void btnReset_Clicked(object sender, EventArgs e)
+        {
+            RestSharp.RestClient client = new RestSharp.RestClient();
+            string path = "DocumentSQLConnection";
+            client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+            {
+                string qry = "DELETE FROM tblTempDocHeader";
+                string str = $"Post?qry={qry}";
+                var Request = new RestSharp.RestRequest();
+                Request.Resource = str;
+                Request.Method = RestSharp.Method.POST;
+                var res = client.Execute(Request);
+                if (res.IsSuccessful && res.Content != null)
+                {
+                }
+
+                qry = "DELETE FROM tblTempDocLines";
+                 str = $"Post?qry={qry}";
+                 Request = new RestSharp.RestRequest();
+                Request.Resource = str;
+                Request.Method = RestSharp.Method.POST;
+                res = client.Execute(Request);
+                if (res.IsSuccessful && res.Content != null)
+                {
+                }
+            }
+
+
+
+            Button_Clicked(sender, EventArgs.Empty);
+        }
     }
 }

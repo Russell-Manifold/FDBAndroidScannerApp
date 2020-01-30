@@ -48,9 +48,9 @@ namespace GoodsRecieveingApp
             txfPOCode.Focus();
         }              
         private async void TxfPOCode_TextChanged(object sender, TextChangedEventArgs e)
-        {       
+        {
             if (txfPOCode.Text.Length == 8)
-            {            
+            {
                 LodingIndiactor.IsVisible = true;
                 if (await GetItems(txfPOCode.Text.ToUpper()))
                 {
@@ -64,13 +64,14 @@ namespace GoodsRecieveingApp
                     btnAccept.IsVisible = true;
                     btnRej.IsVisible = true;
                     btnAll.IsVisible = true;
-                    ToolbarItem item = new ToolbarItem()
-                    {
-                        Text = "Save"                    
-                    };
-                    item.Clicked += SaveClicked;
-                    this.ToolbarItems.Add(item);
-                        
+
+                    //ToolbarItem item = new ToolbarItem()
+                    //{
+                    //    Text = "Save"                    
+                    //};
+                    //item.Clicked += SaveClicked;
+                    //this.ToolbarItems.Add(item);
+
                     try
                     {
                         await App.Database.Delete(await App.Database.GetHeader(d.DocNum));
@@ -94,20 +95,20 @@ namespace GoodsRecieveingApp
                 {
                     txfPOCode.Text = "";
                     txfPOCode.Focus();
-                }          
+                }
+
             }
-        }     
+            else {
+                await DisplayAlert("Error!", "Invalid Document Number", "OK");
+                Vibration.Vibrate();
+            }
+        }
         private async void ButtonAccepted_Clicked(object sender, EventArgs e)
         {
-            try
+            if (txfPOCode.Text.ToString().Length > 1)
             {
                 DocLine dl = await App.Database.GetOneSpecificDocAsync(txfPOCode.Text.ToUpper());
                 await Navigation.PushAsync(new ScanAcc(dl));
-            }
-            catch
-            {
-                Vibration.Vibrate();
-                message.DisplayMessage("Could not Load PO",true);
             }
         }
         private async void ButtonRejected_Clicked(object sender, EventArgs e)
@@ -154,7 +155,9 @@ namespace GoodsRecieveingApp
                                     Doc.ItemBarcode = row["ItemBarcode"].ToString();
                                     Doc.ItemCode = row["ItemCode"].ToString();
                                     Doc.ItemDesc = row["ItemDesc"].ToString();
-                                    if (row["ScanAccQty"].ToString()!="")
+                                    Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
+                                    Doc.PalletNum = 0;
+                                    if (row["ScanAccQty"].ToString() != "")
                                     {
                                         Doc.ScanAccQty = Convert.ToInt32(row["ScanAccQty"].ToString());
                                     }
@@ -162,22 +165,20 @@ namespace GoodsRecieveingApp
                                     {
                                         Doc.ScanAccQty = 0;
                                     }
-                                    if (row["ScanRejQty"].ToString()!="")
+                                    if (row["ScanRejQty"].ToString() != "")
                                     {
                                         Doc.ScanRejQty = Convert.ToInt32(row["ScanRejQty"].ToString());
                                     }
                                     else
                                     {
                                         Doc.ScanRejQty = 0;
-                                    }                                    
-                                    Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
-                                    Doc.PalletNum = 0;
-                                    await App.Database.Insert(Doc);
+                                    }
+                                   await App.Database.Insert(Doc);
                                 }
-                                catch (Exception)
+                                catch (Exception ex)
                                 {
                                     Vibration.Vibrate();
-                                    message.DisplayMessage("Error in storing items", true);
+                                    message.DisplayMessage("Error in storing items" + ex.Message, true);
                                 }
                             }
                             return true;
@@ -186,7 +187,6 @@ namespace GoodsRecieveingApp
                         {
                             LodingIndiactor.IsVisible = false;
                             Vibration.Vibrate();
-                            message.DisplayMessage("There is no data in this PO", true);
                         }
                     }
                 }
