@@ -2,6 +2,7 @@
 using Data.Model;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -63,9 +64,12 @@ namespace GoodsRecieveingApp
                 case "NO":
                     break;
                 case "YES":
-                    if (await restetQty(dl))
+                    if (await ResetItem(dl))
                     {
-                        PopData();
+                        if (await restetQty(dl))
+                        {
+                            PopData();
+                        }                      
                     }                                                            
                     break;
             }
@@ -77,6 +81,11 @@ namespace GoodsRecieveingApp
             {
                 await App.Database.Delete(docline);
             }
+            List<DocLine> Orig = (await App.Database.GetSpecificDocsAsync(d.DocNum)).Where(x => x.ItemQty != 0&& x.ItemCode == d.ItemCode).ToList();
+            Orig.ForEach(a=>a.Balacnce=0);
+            Orig.ForEach(a=>a.ScanRejQty=0);
+            Orig.ForEach(a=>a.ScanAccQty=0);
+            await App.Database.Update(Orig.FirstOrDefault());
             return true;
         }
         private async void BtnComplete_Clicked(object sender, EventArgs e)
@@ -121,6 +130,131 @@ namespace GoodsRecieveingApp
             {
                 Navigation.RemovePage(Navigation.NavigationStack[3]);
                 await Navigation.PopAsync();
+            }
+        }
+        private async void btnSave_Clicked(object sender, EventArgs e)
+        {
+            message.DisplayMessage("Saving....", false);
+            if (await SaveData())
+            {
+                message.DisplayMessage("All data Saved", true);
+                if (Navigation.NavigationStack.Count == 4)
+                {
+                    Navigation.RemovePage(Navigation.NavigationStack[2]);
+                }
+                else
+                {
+                    Navigation.RemovePage(Navigation.NavigationStack[2]);
+                    Navigation.RemovePage(Navigation.NavigationStack[3]);
+                    await Navigation.PopAsync();
+                }
+            }
+            else
+            {
+                Vibration.Vibrate();
+                message.DisplayMessage("Error!!! Could Not Save!", true);
+            }
+
+        }
+        private async Task<bool> ResetItem(DocLine doc) 
+        {
+            var ds = new DataSet();
+            try
+            {
+                var t1 = new DataTable();
+                DataRow row = null;
+                t1.Columns.Add("DocNum");
+                t1.Columns.Add("ItemBarcode");
+                t1.Columns.Add("ScanAccQty");
+                t1.Columns.Add("Balance");
+                t1.Columns.Add("ScanRejQty");
+                t1.Columns.Add("PalletNumber");
+                row = t1.NewRow();
+                row["DocNum"] = doc.DocNum;
+                row["ItemBarcode"] = doc.ItemBarcode;
+                row["ScanAccQty"] = 0;
+                row["Balance"] = 0;
+                row["ScanRejQty"] = 0;
+                row["PalletNumber"] = 0;
+                t1.Rows.Add(row);
+                ds.Tables.Add(t1);
+                string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
+                RestSharp.RestClient client = new RestSharp.RestClient();
+                client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/");
+                {
+                    var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
+                    Request.RequestFormat = RestSharp.DataFormat.Json;
+                    Request.AddJsonBody(myds);
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("COMPLETE"))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+            return false;
+        }
+        private async Task<bool> SaveData()
+        {
+            List<DocLine> docs = new List<DocLine>();
+            var ds = new DataSet();
+            try
+            {
+                var t1 = new DataTable();
+                DataRow row = null;
+                t1.Columns.Add("DocNum");
+                t1.Columns.Add("ItemBarcode");
+                t1.Columns.Add("ScanAccQty");
+                t1.Columns.Add("Balance");
+                t1.Columns.Add("ScanRejQty");
+                t1.Columns.Add("PalletNumber");
+                docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemQty == 0).ToList();
+                if (docs.Count == 0)
+                    return true;
+                foreach (string str in docs.Select(x => x.ItemCode).Distinct())
+                {
+                    int i = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
+                    row = t1.NewRow();
+                    row["DocNum"] = docs.FirstOrDefault().DocNum;
+                    row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
+                    row["ScanAccQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanAccQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
+                    row["Balance"] = 0;
+                    row["ScanRejQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanRejQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanRejQty);
+                    row["PalletNumber"] = 0;
+                    t1.Rows.Add(row);
+                }
+                ds.Tables.Add(t1);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
+            RestSharp.RestClient client = new RestSharp.RestClient();
+            client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/");
+            {
+                var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
+                Request.RequestFormat = RestSharp.DataFormat.Json;
+                Request.AddJsonBody(myds);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("COMPLETE"))
+                {                    
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
     }

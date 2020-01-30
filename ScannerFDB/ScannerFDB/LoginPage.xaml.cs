@@ -111,7 +111,7 @@ namespace ScannerFDB
             {
                 if (!await CheckUser())
                 {
-                    txfUserBarcode.Text = "";
+                    txfUserBarcode.Text = ""; 
                     txfUserBarcode.Focus();
                 }
             }

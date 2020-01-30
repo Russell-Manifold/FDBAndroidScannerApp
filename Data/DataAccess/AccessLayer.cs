@@ -67,6 +67,10 @@ namespace Data.DataAccess
         {
             return database.UpdateAsync(data);
         }
+        public Task<int> Update(DocLine data)
+        {
+            return database.UpdateAsync(data);
+        }
         public Task<int> Update(List<IBTItem> data)
         {
             return database.UpdateAllAsync(data);

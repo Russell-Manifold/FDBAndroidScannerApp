@@ -155,29 +155,7 @@ namespace GoodsRecieveingApp
                 wrong = true;
             }
             txfAccCode.Focus();
-        }
-        public async Task<bool> restetQty()
-        {
-            try
-            {
-                List<DocLine> dls = await App.Database.GetSpecificDocsAsync(UsingDoc.DocNum);
-                foreach (DocLine docline in dls.Where(x => x.ItemCode == lastItem && x.ItemQty == 0))
-                {
-                    await App.Database.Delete(docline);
-                }
-            }
-            catch
-            {
-
-            }
-            lblBalance.Text =  "";
-            lblScanQTY.Text =  "";
-            lblOrderQTY.Text = "";
-            lblitemDescAcc.Text = "";
-            PicImage.IsVisible = false;            
-            txfAccCode.Focus();
-            return true;
-        }
+        }       
         private async void PicImage_Clicked(object sender, EventArgs e)
         {
             if (wrong)
@@ -188,7 +166,7 @@ namespace GoodsRecieveingApp
                     case "NO":
                         break;
                     case "YES":
-                        await restetQty();
+                        await ResetItem();
                         break;
                 }               
             }
@@ -196,6 +174,75 @@ namespace GoodsRecieveingApp
             {
                 await Navigation.PopAsync();
             }                      
+        }
+        public async Task<bool> restetQty(DocLine d)
+        {
+            List<DocLine> dls = await App.Database.GetSpecificDocsAsync(d.DocNum);
+            foreach (DocLine docline in dls.Where(x => x.ItemCode == d.ItemCode && x.ItemQty == 0))
+            {
+                await App.Database.Delete(docline);
+            }
+            List<DocLine> Orig = (await App.Database.GetSpecificDocsAsync(d.DocNum)).Where(x => x.ItemQty != 0 && x.ItemCode == d.ItemCode).ToList();
+            Orig.ForEach(a => a.Balacnce = 0);
+            Orig.ForEach(a => a.ScanRejQty = 0);
+            Orig.ForEach(a => a.ScanAccQty = 0);
+            await App.Database.Update(Orig.FirstOrDefault());
+            return true;
+        }
+        private async Task<bool> ResetItem()
+        {
+            DocLine doc = (await App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemCode == lastItem).FirstOrDefault();
+            var ds = new DataSet();
+            try
+            {
+                var t1 = new DataTable();
+                DataRow row = null;
+                t1.Columns.Add("DocNum");
+                t1.Columns.Add("ItemBarcode");
+                t1.Columns.Add("ScanAccQty");
+                t1.Columns.Add("Balance");
+                t1.Columns.Add("ScanRejQty");
+                t1.Columns.Add("PalletNumber");
+                row = t1.NewRow();
+                row["DocNum"] = doc.DocNum;
+                row["ItemBarcode"] = doc.ItemBarcode;
+                row["ScanAccQty"] = 0;
+                row["Balance"] = 0;
+                row["ScanRejQty"] = 0;
+                row["PalletNumber"] = 0;
+                t1.Rows.Add(row);
+                ds.Tables.Add(t1);
+                string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
+                RestSharp.RestClient client = new RestSharp.RestClient();
+                client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/");
+                {
+                    var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
+                    Request.RequestFormat = RestSharp.DataFormat.Json;
+                    Request.AddJsonBody(myds);
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("COMPLETE"))
+                    {
+                        await restetQty(doc);
+                        lblBalance.Text = "";
+                        lblScanQTY.Text = "";
+                        lblOrderQTY.Text = "";
+                        lblitemDescAcc.Text = "";
+                        PicImage.IsVisible = false;
+                        txfAccCode.Focus();
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+            return false;
         }
         private async void Entry_Focused(object sender, FocusEventArgs e)
         {
