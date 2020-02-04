@@ -10,12 +10,15 @@ using Xamarin.Forms.Xaml;
 using System.Threading;
 using System.Data;
 using RestSharp;
+using Data.Message;
+using Xamarin.Essentials;
 
 namespace WHTransfer
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class OutPage : ContentPage
     {
+        IMessage message = DependencyService.Get<IMessage>();
         public OutPage()
         {
             InitializeComponent();
@@ -27,12 +30,13 @@ namespace WHTransfer
             RecDate = DatePickerRec.Date.ToString("dd MMM yyyy");
             if (FromWH==null||ToWH==null||FromDate==null||RecDate==null||FromWH == "" || ToWH == "" || FromDate == "" || RecDate == "")
             {
-                await DisplayAlert("Error!", "Please enter ALL the fields", "OK");
+                Vibration.Vibrate();
+                message.DisplayMessage("Please enter all fields",true);
             }
             else
             {
                 await GoodsRecieveingApp.App.Database.Insert(new IBTHeader { TrfDate = DateTime.Now.ToString("dd MMM yyyy"), FromWH = FromWH, ToWH = ToWH, FromDate = FromDate, RecDate = RecDate, Active = true });
-                await DisplayAlert("Complete!", "Transfer Successfully Started", "OK");
+                message.DisplayMessage("Complete! Transfer started",true);
                 await Navigation.PushAsync(new OutItems());
             }
         }
@@ -66,7 +70,7 @@ namespace WHTransfer
         {
             lblDatePickRec.Text = "Receving Date: " + DatePickerRec.Date.ToString("dd MMM yyyy");
         }
-        private async void PickerToWH_SelectedIndexChanged(object sender, EventArgs e)
+        private void PickerToWH_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (pickerToWH.SelectedIndex != -1)
             {
@@ -76,7 +80,8 @@ namespace WHTransfer
                     ToWH = "";
                     pickerToWH.SelectedIndex = -1;
                     pickerToWH.Focus();
-                    await DisplayAlert("Error!", "You cannot transfer from and to the same warehouse", "OK");
+                    message.DisplayMessage("You cannot transfer to and from the same warehouse",true);
+                    Vibration.Vibrate();
                 }
                 else
                 {

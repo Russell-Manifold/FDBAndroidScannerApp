@@ -28,7 +28,7 @@ namespace ScannerFDB
             {
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "Find";
-                client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+                client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
                 {
                     string str = $"GET?qrystr=ACCBOML|0|0&posInString=0&searchValue=0";
                     var Request = new RestSharp.RestRequest();
@@ -49,7 +49,7 @@ namespace ScannerFDB
                                 item.Qty = Convert.ToInt32(s.Split('|')[4]);
                                 RestSharp.RestClient client1 = new RestSharp.RestClient();
                                 string path1 = "GetField";
-                                client1.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path1);
+                                client1.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path1);
                                 {
                                     string str1 = $"GET?qrystr=ACCPRD|0|{ s.Split('|')[3] }|3";
                                     var Request1 = new RestSharp.RestRequest();
@@ -94,7 +94,7 @@ namespace ScannerFDB
         {
             RestSharp.RestClient client = new RestSharp.RestClient();
             string path = "DocumentSQLConnection";
-            client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+            client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
             {
                 string qry = "DELETE FROM tblTempDocHeader";
                 string str = $"Post?qry={qry}";

@@ -1,4 +1,5 @@
 ﻿using Data.KeyboardContol;
+using Data.Message;
 using Data.Model;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace WHTransfer
     public partial class OutItems : ContentPage
     {
         private ExtendedEntry _currententry;
+        IMessage message = DependencyService.Get<IMessage>();
         public static List<IBTItem> items=new List<IBTItem>();
         public OutItems()
         {
@@ -72,7 +74,7 @@ namespace WHTransfer
                 {
                     RestSharp.RestClient client = new RestSharp.RestClient();
                     string path = "FindDescAndCode";
-                    client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+                    client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
                     {
                         string qry = $"ACCPRD|4|{txfScannedItem.Text}";
                         string str = $"GET?qrystr={qry}";

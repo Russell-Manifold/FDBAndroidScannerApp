@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using GoodsRecieveingApp;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Data.Message;
+using Xamarin.Essentials;
 
 namespace ScannerFDB
 {
@@ -17,6 +19,7 @@ namespace ScannerFDB
     public partial class LoginPage : ContentPage
     {
         private ExtendedEntry _currententry;
+        IMessage message = DependencyService.Get<IMessage>();
         public LoginPage()
         {
             InitializeComponent();
@@ -53,7 +56,8 @@ namespace ScannerFDB
             {
                 RestClient client = new RestClient();
                 string path = "GetUser";
-                client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+                //client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+                client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
                 {
                     string str = $"GET?UserName={txfUserBarcode.Text}";
                     var Request = new RestRequest(str, Method.GET);
@@ -92,18 +96,19 @@ namespace ScannerFDB
                     else
                     {
                         AccessLoading.IsVisible = false;
-                        await DisplayAlert("Error!", "Invalid User Access", "OK");
+                        message.DisplayMessage("Invalid user!",true);
+                        Vibration.Vibrate();
+                        return false;
                     }
                 }
             }
             catch
             {
                 AccessLoading.IsVisible = false;
-                await DisplayAlert("Error!", "Invalid User Access", "OK");
-            }
-            AccessLoading.IsVisible = false;
-            await DisplayAlert("Error!", "Invalid User Access", "OK");
-            return false;
+                message.DisplayMessage("Invalid user!", true);
+                Vibration.Vibrate();
+                return false;
+            }  
         }
         private async void txfUserBarcode_Completed(object sender, EventArgs e)
         {

@@ -89,7 +89,9 @@
         </StackLayout>
         <StackLayout x:Name="LoadLayout">
             <Button Text="Start New Pallet" VerticalOptions="StartAndExpand" x:Name="btnStartNew" Clicked="btnStartNew_Clicked" BackgroundColor="Transparent" ImageSource="NewPallet.PNG" FontSize="Large"/>
-            <Button Text="Continue with existing" VerticalOptions="EndAndExpand" x:Name="btnContinue" Clicked="btnContinue_Clicked" BackgroundColor="Transparent" ImageSource="AddToPallet.PNG" FontSize="Large"/>
+            <Label Text="OR" FontSize="Large" FontAttributes="Bold" HorizontalOptions="CenterAndExpand"/>
+            <Label Text="Enter Pallet Number to continue" FontSize="Medium"/>
+            <Entry Completed="txfPalletNumber_Completed" Keyboard="Numeric" x:Name="txfPalletNumber" HorizontalTextAlignment="Center" HorizontalOptions="FillAndExpand" VerticalOptions="Center"/>
         </StackLayout>
     </StackLayout>
 </ContentPage>

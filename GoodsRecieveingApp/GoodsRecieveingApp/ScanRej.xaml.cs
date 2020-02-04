@@ -198,7 +198,7 @@ namespace GoodsRecieveingApp
                 ds.Tables.Add(t1);
                 string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
                 RestSharp.RestClient client = new RestSharp.RestClient();
-                client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/");
+                client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/");
                 {
                     var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
                     Request.RequestFormat = RestSharp.DataFormat.Json;

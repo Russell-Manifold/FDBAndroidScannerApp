@@ -39,6 +39,10 @@ namespace Data.DataAccess
                 await database.DeleteAsync(doc);
             }
         }
+        public Task<int> DeleteSpecificDocs(string docNum)
+        {
+            return database.ExecuteAsync($"DELETE FROM DocLine WHERE DocNum='{docNum}'");
+        }
         public Task<int> Delete(DocHeader h)
         {
             return database.DeleteAsync(h);

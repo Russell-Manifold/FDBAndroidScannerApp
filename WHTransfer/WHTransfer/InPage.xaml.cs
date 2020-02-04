@@ -35,7 +35,6 @@ namespace WHTransfer
             await FetchHeaders();
             pickerHeaders.IsEnabled = true;
             isLoading.IsVisible = false;
-            await Task.Delay(500);
             txfScannedItem.Focus();
         }
         private async void Entry_Focused(object sender, FocusEventArgs e)
@@ -94,7 +93,7 @@ namespace WHTransfer
             {
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "IBTHeader";
-                client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+                client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
                 {
                     string str = $"GET?";
                     var Request = new RestSharp.RestRequest();
@@ -146,7 +145,7 @@ namespace WHTransfer
             {
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "IBTLines";
-                client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+                client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
                 {
                     string str = $"Get?qry=SELECT* FROM tblIBTLines WHERE iTrfId={trf}";
                     var Request = new RestSharp.RestRequest();
@@ -204,7 +203,7 @@ namespace WHTransfer
                         int k = lines.Where(x => x.ItemCode == i.ItemCode).Sum(c=>c.ItemQtyOut);
                         RestSharp.RestClient client2 = new RestSharp.RestClient();
                         string path2 = "WHTransfer";
-                        client2.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path2);
+                        client2.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path2);
                         {
                             string str2 = $"POST?itemCode={i.ItemCode}&InOrOut=true&JnlDate={DateTime.Now.ToString("dd MMM yyyy")}&JobCode={i.iTrfID}&Desc={i.iTrfID}&Ref={DateTime.Now.ToString("ddMMMyyyy")+"-"+i.iTrfID}&Qty={k}&Store={i.WH}";
                             var Request2 = new RestSharp.RestRequest();
@@ -222,7 +221,7 @@ namespace WHTransfer
                 }
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "IBTHeader";
-                client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+                client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
                 {
                     string str = $"DELETE?coid={CurrentHeader.ID}";
                     var Request = new RestSharp.RestRequest();

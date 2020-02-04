@@ -1,4 +1,5 @@
 ﻿using Data.KeyboardContol;
+using Data.Message;
 using Data.Model;
 using RestSharp;
 using System;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -18,6 +19,7 @@ namespace WHTransfer
     public partial class AuthOut : ContentPage
     {
         private ExtendedEntry _currententry;
+        IMessage message = DependencyService.Get<IMessage>();
         private string AdminName, WH;
         private int AdminCode,ColID;
         public AuthOut()
@@ -39,14 +41,15 @@ namespace WHTransfer
                     if (await completeOrder())
                     {
                         await GoodsRecieveingApp.App.Database.DeleteAllHeaders();
-                        await DisplayAlert("Complete!","All the data has been saved","OK");
-                        Navigation.RemovePage(Navigation.NavigationStack[2]);
-                        Navigation.RemovePage(Navigation.NavigationStack[3]);
+                        await DisplayAlert("Complete!","All the data has been saved","OK");                                             
                         Navigation.RemovePage(Navigation.NavigationStack[4]);
+                        Navigation.RemovePage(Navigation.NavigationStack[3]);
+                        Navigation.RemovePage(Navigation.NavigationStack[2]);
                         await Navigation.PopAsync();
                         return;
                     }
-                    await DisplayAlert("Error!", "There was a problem with sending the IBT", "OK");
+                    message.DisplayMessage("There was a error in sending the information", true);
+                    Vibration.Vibrate();
                     break;
                 case "No":
                     break;
@@ -74,7 +77,7 @@ namespace WHTransfer
                 WH = header.FromWH;
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "IBTHeader";
-                client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+                client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
                 {
                     string str = $"POST?TrfDate={DateTime.Now.ToString("dd MMM yyyy")}&FromWH={header.FromWH}&ToWH={header.ToWH}&FromDate={header.FromDate}&RecDate={header.RecDate}&PickerUser={GoodsRecieveingApp.MainPage.UserCode}&AuthUser={AdminCode}&Active=true";
                     var Request = new RestSharp.RestRequest();
@@ -86,6 +89,7 @@ namespace WHTransfer
                     {
                         ColID = Convert.ToInt32(res.Content.Replace('\\', ' ').Replace('"', ' '));
                         await DisplayAlert("Header Added!", "Your Header has been added your TRF code is " + ColID, "Continue");
+
                         return true;
                     }
                 }
@@ -108,7 +112,7 @@ namespace WHTransfer
                 {
                     RestSharp.RestClient client = new RestSharp.RestClient();
                     string path = "IBTLines";
-                    client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+                    client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
                     {
                         string str = $"POST?ScanBarcode={i.ScanBarcode}&ItemBarcode={i.ItemBarcode}&ItemCode={i.ItemCode}&ItemDesc={i.ItemDesc}&ItemQtyOut={i.ItemQtyOut}&ItemQtyIn={i.ItemQtyIn}&PickerUser={i.PickerUser}&AuthUser={i.AuthUser}&PickDateTime={i.PickDateTime.ToString("dd MMM yyyy")}&WH={i.WH}&iTrfId={i.iTrfID}";
                         var Request = new RestRequest(str, Method.POST);
@@ -124,6 +128,8 @@ namespace WHTransfer
                 catch
                 {
                     await DisplayAlert("Error!","There was an error in inserting the lines","OK");
+                    message.DisplayMessage("Error in sending the lines",true);
+                    Vibration.Vibrate();
                     return false;
                 }
             }
@@ -135,7 +141,7 @@ namespace WHTransfer
             if (txfUserCode.Text.Length>1)
             {
                 Loading.IsVisible = true;
-                if (txfUserCode.Text!=GoodsRecieveingApp.MainPage.UserName&&await CheckUser(txfUserCode.Text) !=GoodsRecieveingApp.MainPage.UserCode) 
+                if (txfUserCode.Text!=GoodsRecieveingApp.MainPage.UserName&&await CheckUser(txfUserCode.Text)) 
                 { 
                      AdminName = txfUserCode.Text;
                      btnDone.IsEnabled = true;
@@ -143,7 +149,8 @@ namespace WHTransfer
                      return;
                 }
                     Loading.IsVisible = false;
-                    await DisplayAlert("Error!", "Invalid access or user code", "OK");
+                Vibration.Vibrate();
+                message.DisplayMessage("Invalid User",true);
                     txfUserCode.Text = "";
                     txfUserCode.Focus();               
             }
@@ -164,13 +171,13 @@ namespace WHTransfer
                 }
             }
         }
-        private async Task<int> CheckUser(string usercode)
+        private async Task<bool> CheckUser(string usercode)
         {
             try
             {
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "GetUser";
-                client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+                client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
                 {
                     string str = $"GET?UserName={usercode}";
                     var Request = new RestRequest(str, Method.GET);
@@ -185,16 +192,15 @@ namespace WHTransfer
                         {
                             try
                             {
-                                if (Convert.ToInt32(row["AccessLevel"]) > 3)
+                                if (Convert.ToBoolean(row["AuthWHTrf"]))
                                 {
-                                    AdminCode =Convert.ToInt32(row["Id"].ToString());
                                     myds.Dispose();
-                                    return AdminCode;
+                                    return true;
                                 }
                                 else
                                 {
                                     myds.Dispose();
-                                    return GoodsRecieveingApp.MainPage.UserCode;
+                                    return false;
                                 }
                             }
                             catch (Exception ex)
@@ -209,7 +215,7 @@ namespace WHTransfer
             catch
             {
             }
-            return GoodsRecieveingApp.MainPage.UserCode;
+            return false;
         }
     }
 }

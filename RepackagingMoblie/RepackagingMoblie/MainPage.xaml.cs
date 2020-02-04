@@ -4,6 +4,7 @@ using Data.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -19,6 +20,7 @@ namespace RepackagingMoblie
         public static List<DocLine> docLines = new List<DocLine>();
         public static List<string> PackCodes = new List<string>();
         IMessage message = DependencyService.Get<IMessage>();
+        bool MustMakePack = false;
         public MainPage()
         {
             InitializeComponent();
@@ -44,14 +46,17 @@ namespace RepackagingMoblie
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            txfPackbarcode.Text = "";       
-            txfPackbarcode.Focus();
+            txfPackbarcode.Text = "";
+            lblQTY.Text = "";
+            lblDesc.Text = "";
+            MainLayout.IsVisible = false;
+            OpenLayout.IsVisible = true;
         }
         private async void BtnGoToRepack_Clicked(object sender, EventArgs e)
         {
             if (docLines.Count>0)
             {
-                await Navigation.PushAsync(new MenuPage());
+                await Navigation.PushAsync(new MenuPage(MustMakePack));
             }
             else
             {
@@ -62,29 +67,98 @@ namespace RepackagingMoblie
         }
         private async void TxfPackbarcode_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if(txfPackbarcode.Text!=""&&txfPackbarcode.Text!=null){
+            if(txfPackbarcode.Text.Length>1){
                 docLines.Clear();
-                try
+                isLoading.IsVisible = true;
+                if (MustMakePack)
                 {
-                    BOMItem bi = await GoodsRecieveingApp.App.Database.GetBOMItem(txfPackbarcode.Text);
-                    lblDesc.Text = "Item: " + bi.ItemDesc;
-                    lblQTY.Text = "Qty: " + bi.Qty;
-                    docLines.Add(new DocLine { ItemBarcode = bi.PackBarcode,ItemCode=bi.ItemCode, ItemDesc = "1ItemFromMain", ItemQty = bi.Qty });
-                    btnGoToRepack.IsVisible = true;
+                    try
+                    {
+                        RestSharp.RestClient client = new RestSharp.RestClient();
+                        string path = "FindDescAndCode";
+                        client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
+                        {
+                            string qry = $"ACCPRD|4|{txfPackbarcode.Text}";
+                            string str = $"GET?qrystr={qry}";
+                            var Request = new RestSharp.RestRequest(str, RestSharp.Method.GET);
+                            var cancellationTokenSource = new CancellationTokenSource();
+                            var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                            cancellationTokenSource.Dispose();
+                            if (res.IsSuccessful && res.Content != null)
+                            {
+                                docLines.Add(new DocLine {ItemBarcode = txfPackbarcode.Text, ItemCode = res.Content.Split('|')[2], ItemDesc = res.Content.Split('|')[3],ItemQty=1});
+                                lblDesc.Text = "Item: " + res.Content.Split('|')[3];
+                                lblDesc.IsVisible = true;
+                                btnGoToRepack.IsVisible = true;
+                                return;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        Vibration.Vibrate();
+                        btnGoToRepack.IsVisible = false;
+                        message.DisplayMessage("No item code found", true);
+                        txfPackbarcode.Text = "";
+                        txfPackbarcode.Focus();
+                    }
                 }
-                catch
+                else
                 {
-                    Vibration.Vibrate();
-                    message.DisplayMessage("No pack code found", true);
-                    txfPackbarcode.Text = "";
-                    txfPackbarcode.Focus();
-                    btnGoToRepack.IsVisible = false;
+                    try
+                    {
+                        BOMItem bi = await GoodsRecieveingApp.App.Database.GetBOMItem(txfPackbarcode.Text);
+                        lblDesc.IsVisible = true;
+                        lblQTY.IsVisible = false;
+                        lblDesc.Text = "Item: " + bi.ItemDesc;
+                        lblQTY.Text = "Qty: " + bi.Qty;
+                        docLines.Add(new DocLine { ItemBarcode = bi.PackBarcode, ItemCode = bi.ItemCode, ItemDesc = "1ItemFromMain", ItemQty = bi.Qty });
+                        btnGoToRepack.IsVisible = true;
+                    }
+                    catch
+                    {
+                        Vibration.Vibrate();
+                        btnGoToRepack.IsVisible = false;
+                        message.DisplayMessage("No pack code found", true);
+                        txfPackbarcode.Text = "";
+                        txfPackbarcode.Focus();
+                    }
                 }
+                isLoading.IsVisible = false;
             }
         }
         private async void Button_Clicked_Home(object sender, EventArgs e)
         {
             await Navigation.PopAsync();  
+        }
+        private void btnUnpack_Clicked(object sender, EventArgs e)
+        {
+            lblQuestion.Text = "Scan Barcode of pack to be Unpacked:";
+            OpenLayout.IsVisible = false;
+            MainLayout.IsVisible = true;
+            MustMakePack = false;
+            txfPackbarcode.Focus();
+        }
+        private void btnPack_Clicked(object sender, EventArgs e)
+        {
+            lblQuestion.Text = "Scan Barcode of product to be packed:";
+            OpenLayout.IsVisible = false;
+            MainLayout.IsVisible = true;
+            MustMakePack = true;
+            txfPackbarcode.Focus();
+        }
+        protected override bool OnBackButtonPressed()
+        {
+            if (!MainLayout.IsVisible)
+            {
+                Navigation.PopAsync();
+            }
+            else
+            {
+                OpenLayout.IsVisible = true;
+                MainLayout.IsVisible = false;               
+            }
+            return false;
         }
     }
 }

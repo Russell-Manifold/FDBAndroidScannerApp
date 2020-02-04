@@ -27,12 +27,12 @@ namespace PickAndPack
             List<DocLine> list = new List<DocLine>();
             foreach (string s in lines.Select(x => x.ItemDesc).Distinct())
             {
-                foreach (int i in lines.Where(x=>x.ItemDesc==s&&x.ItemQty==0).Select(x => x.PalletNum).Distinct())
+                foreach (int i in lines.Where(x=>x.ItemDesc==s).Select(x => x.PalletNum).Distinct())
                 {
                     DocLine TDoc = lines.Where(x => x.ItemDesc == s&&x.PalletNum==i).First();
                     DocLine TempDoc = new DocLine() {PalletNum=TDoc.PalletNum,ItemDesc=TDoc.ItemDesc};
                     TempDoc.ScanAccQty = (lines.Where(x => x.ItemDesc == s && x.PalletNum == i).Sum(x => x.ScanAccQty));
-                    TempDoc.ItemQty = (lines.Where(x => x.ItemDesc == s && x.ItemQty != 0).First().ItemQty);
+                    TempDoc.ItemQty = (lines.Where(x => x.ItemDesc == s).First().ItemQty);
                     TempDoc.Balacnce = TempDoc.ItemQty - (lines.Where(x => x.ItemDesc == s).Sum(x => x.ScanAccQty));
                     if (TempDoc.Balacnce == 0)
                     {

@@ -10,7 +10,7 @@
     <ContentPage.Content>
         <StackLayout>
             <Label Text="Please Scan Picking slips:" FontSize="Large" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
-            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfSOCodes" FontSize="Large" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center" TextChanged="txfSOCodes_TextChanged"/>
+            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfSOCodes" FontSize="Large" VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center" TextChanged="txfSOCodes_TextChanged"/>
             <ActivityIndicator IsVisible="False" x:Name="LoadingIndicator" IsRunning="True"/>
             <Label x:Name="lblSoName" FontSize="Large" IsVisible="False" HorizontalOptions="CenterAndExpand" VerticalOptions="FillAndExpand" VerticalTextAlignment="Center"/>
         </StackLayout>

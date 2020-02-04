@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
              mc:Ignorable="d"
              x:Class="RepackagingMoblie.MenuPage"
              Title="Repacking">
@@ -12,12 +13,21 @@
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
-            <Label x:Name="lblRepackHeader" FontSize="Large" HorizontalOptions="Center" TextDecorations="Underline">Repacking Progress</Label>
-            <Label x:Name="lblBOMInfo" FontSize="Large" TextColor="red"/>
-            <Button Text="Single Units" x:Name="btnSingles" Clicked="BtnSingles_Clicked" VerticalOptions="FillAndExpand" ImageSource="repacksing.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
-            <Button Text="Custom QTY" x:Name="btnCustom" Clicked="BtnCustom_Clicked" VerticalOptions="FillAndExpand" ImageSource="repack.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
-            <Button Text="Damaged Goods" x:Name="btnDamaged" Clicked="BtnDamaged_Clicked" VerticalOptions="FillAndExpand" ImageSource="ItemAcceptDamaged.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
-            <Button Text="Finish" x:Name="btnComplete" Clicked="BtnComplete_Clicked" VerticalOptions="FillAndExpand" ImageSource="TickSmall.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
+            <StackLayout x:Name="Mainlayout">
+                <Label x:Name="lblRepackHeader" FontSize="Large" HorizontalOptions="Center" TextDecorations="Underline">Repacking Progress</Label>
+                <Label x:Name="lblBOMInfo" FontSize="Large" TextColor="red"/>
+                <Button Text="Single Units" x:Name="btnSingles" Clicked="BtnSingles_Clicked" VerticalOptions="FillAndExpand" ImageSource="repacksing.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
+                <Button Text="Custom QTY" x:Name="btnCustom" Clicked="BtnCustom_Clicked" VerticalOptions="FillAndExpand" ImageSource="repack.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
+                <Button Text="Damaged Goods" x:Name="btnDamaged" Clicked="BtnDamaged_Clicked" VerticalOptions="FillAndExpand" ImageSource="ItemAcceptDamaged.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
+                <Button Text="Finish" x:Name="btnComplete" Clicked="BtnComplete_Clicked" VerticalOptions="FillAndExpand" ImageSource="TickSmall.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
+            </StackLayout>
+            <StackLayout x:Name="IntoPackLayout" IsVisible="False">
+                <Label Text="Scan a PackCode:" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand"/>
+                <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScanPack" Completed="txfScanPack_Completed" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
+                <Label Text="OR" FontSize="Large" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand"/>
+                <Label Text="Enter number of items :" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand"/>
+                <Entry Keyboard="Numeric" x:Name="txfNumberOfItem" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Completed="txfNumberOfItem_Completed"/>
+            </StackLayout>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

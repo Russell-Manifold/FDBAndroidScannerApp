@@ -132,7 +132,7 @@ namespace GoodsRecieveingApp
                 {
                     RestSharp.RestClient client = new RestSharp.RestClient();
                     string path = "GetDocument";
-                    client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
+                    client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
                     {
                         string str = $"GET?qrystr=ACCHISTL|6|{code}|106|"+MainPage.UserCode;
                         var Request = new RestSharp.RestRequest();
@@ -313,7 +313,7 @@ namespace GoodsRecieveingApp
             }
             string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
             RestSharp.RestClient client = new RestSharp.RestClient();
-            client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/");
+            client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/");
             {
                 var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
                 Request.RequestFormat = RestSharp.DataFormat.Json;
