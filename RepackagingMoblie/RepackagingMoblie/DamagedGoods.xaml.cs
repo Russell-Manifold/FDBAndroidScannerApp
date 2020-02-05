@@ -81,7 +81,7 @@ namespace RepackagingMoblie
                 {
                     RestSharp.RestClient client = new RestSharp.RestClient();
                     string path = "FindDescAndCode";
-                    client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                    client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/" + path);
                     {
                         string str = $"GET?qrystr=ACCPRD|4|" + txfBarcode.Text;
                         var Request = new RestSharp.RestRequest();

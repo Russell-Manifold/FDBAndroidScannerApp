@@ -19,7 +19,6 @@ namespace GoodsRecieveingApp
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-        public static string APIPath = "http://192.168.0.105/FDBAPI/api/";
         public static string UserName = "";
         public static int AccessLevel = 0;
         public static int UserCode = 0;
@@ -133,7 +132,7 @@ namespace GoodsRecieveingApp
                 {
                     RestSharp.RestClient client = new RestSharp.RestClient();
                     string path = "GetDocument";
-                    client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                    client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/" + path);
                     {
                         string str = $"GET?qrystr=ACCHISTL|6|{code}|106|"+MainPage.UserCode;
                         var Request = new RestSharp.RestRequest();
@@ -314,7 +313,7 @@ namespace GoodsRecieveingApp
             }
             string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
             RestSharp.RestClient client = new RestSharp.RestClient();
-            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath);
+            client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/");
             {
                 var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
                 Request.RequestFormat = RestSharp.DataFormat.Json;

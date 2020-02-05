@@ -20,6 +20,7 @@ namespace PickAndPack
         IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;
         List<string> allSo = new List<string>();
+        bool isNewPallet = true;
         int currentPallet=0;
         public SinglePallet()
         {
@@ -40,7 +41,7 @@ namespace PickAndPack
                 {
                     RestSharp.RestClient client = new RestSharp.RestClient();
                     string path = "GetDocument";
-                    client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                    client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/" + path);
                     {
                         string str = $"GET?qrystr=ACCHISTL|6|{code}|102|"+GoodsRecieveingApp.MainPage.UserCode;
                         var Request = new RestSharp.RestRequest();
@@ -63,25 +64,12 @@ namespace PickAndPack
                                     Doc.SupplierName = row["SupplierName"].ToString();
                                     Doc.ItemBarcode = row["ItemBarcode"].ToString();
                                     Doc.ItemCode = row["ItemCode"].ToString();
-                                    Doc.ItemDesc = row["ItemDesc"].ToString();                                   
-                                    try
-                                    {
-                                        Doc.ScanAccQty = Convert.ToInt32(row["ScanAccQty"].ToString().Trim());
-                                    }
-                                    catch
-                                    {
-                                        Doc.ScanAccQty = 0;
-                                    }
+                                    Doc.ItemDesc = row["ItemDesc"].ToString();
+                                    Doc.ScanAccQty = Convert.ToInt32(row["ScanAccQty"].ToString().Trim());
                                     Doc.ScanRejQty = 0;
-                                    try
-                                    {
-                                        Doc.PalletNum = Convert.ToInt32(row["PalletNumber"].ToString().Trim());
-                                    }
-                                    catch
-                                    {
-                                        Doc.PalletNum = 0;
-                                    }
-                                    currentPallet = Doc.PalletNum;
+                                    Doc.PalletNum = Convert.ToInt32(row["PalletNumber"].ToString().Trim());
+                                    if (Doc.PalletNum>0)
+                                    isNewPallet = false;
                                     Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
                                     lblCode.Text = Doc.DocNum;
                                     lblCusName.Text = Doc.SupplierName;
@@ -118,7 +106,7 @@ namespace PickAndPack
         {
             try
             {
-                foreach (DocLine dl in (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docNum)))
+                foreach (DocLine dl in (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docNum)).Where(x => x.ItemQty != 0))
                 {
                     await GoodsRecieveingApp.App.Database.Delete(dl);
                 }
@@ -284,7 +272,7 @@ namespace PickAndPack
                 ds.Tables.Add(t1);
                 string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
                 RestSharp.RestClient client = new RestSharp.RestClient();
-                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath);
+                client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/");
                 {
                     var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
                     Request.RequestFormat = RestSharp.DataFormat.Json;
@@ -313,16 +301,35 @@ namespace PickAndPack
             {
                 LodingIndiactor.IsVisible = true;
                 if (await GetItems(txfSOCode.Text.ToUpper()))
-                {                    
-                    await PalletCheck(txfSOCode.Text);                                             
-                    DocLine d = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).First();
+                {
+                    List<DocLine> docsd = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text));
+                    foreach(DocLine ds in docsd)
+                    {
+                        foreach(DocLine docz in docsd){
+                            if (docz.PalletNum != ds.PalletNum && ds.PalletNum != 0 && docz.PalletNum != 0)
+                            {
+                                LodingIndiactor.IsVisible = false;
+                                Vibration.Vibrate();
+                                message.DisplayMessage("This Sales Order is being scanned onto multiple pallets already!", true);
+                                txfSOCode.Text = "";
+                                txfSOCode.Focus();
+                                return;
+                            }
+                        }                      
+                    }
+                    if (isNewPallet)
+                        await PalletCreate();
+                    DocLine d = docsd.First();
                     txfSOCode.IsVisible = false;
                     lblSOCode.IsVisible = false;
                     try
                     {
                         await GoodsRecieveingApp.App.Database.Delete(await GoodsRecieveingApp.App.Database.GetHeader(d.DocNum));
                     }
-                    catch{}
+                    catch
+                    {
+
+                    }
                     await GoodsRecieveingApp.App.Database.Insert(new DocHeader { DocNum = txfSOCode.Text, PackerUser = GoodsRecieveingApp.MainPage.UserCode, AccName = d.SupplierName, AcctCode = d.SupplierCode });
                     LodingIndiactor.IsVisible = false;
                     SOCodeLayout.IsVisible = false;
@@ -399,55 +406,14 @@ namespace PickAndPack
                 return false;
 
             return true;
-        }
-        private async Task PalletCheck(string SO)
-        {
-            RestSharp.RestClient client = new RestSharp.RestClient();
-            string path = "Pallet";
-            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
-            {
-                string str = $"POST?SOCode={SO}";
-                var Request = new RestSharp.RestRequest();
-                Request.Resource = str;
-                Request.Method = RestSharp.Method.POST;
-                var cancellationTokenSource = new CancellationTokenSource();
-                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                if (res.IsSuccessful && res.Content.Contains("Complete"))
-                {
-                    string s = res.Content.Replace('"', ' ').Replace('\\',' ').Trim();
-                    if (s.Split('|').Count()>3)
-                    {
-                        Vibration.Vibrate();
-                        message.DisplayMessage("This order is already on multiple pallets", true);
-                        await Navigation.PopAsync();
-                        return;
-                    }
-                    else 
-                    {
-                        try
-                        {
-                            int ext = Convert.ToInt32(s.Split('|').Last());
-                            currentPallet = ext;
-                        }
-                        catch (Exception e)
-                        {
-                            Vibration.Vibrate();
-                            message.DisplayMessage("Could not create pallet", true);
-                            await Navigation.PopAsync();
-                            return;
-                        }
-                    }
-                }
-            }
-            
-        }
+        }  
         private async Task<int> PalletCreate()
         {
             RestSharp.RestClient client = new RestSharp.RestClient();
             string path = "DocumentSQLConnection";
-            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/" + path);
             {
-                string qry = "";                
+                string qry = "INSERT INTO PalletTransaction(SONum,PalletID) VALUES('" + txfSOCode.Text + "',((SELECT MAX(PalletID) FROM PalletTransaction)+1))";                
                 string str = $"Post?qry={qry}";
                 var Request = new RestSharp.RestRequest();
                 Request.Resource = str;
@@ -474,7 +440,15 @@ namespace PickAndPack
                     var Res2 = await client.ExecuteAsync(RequestNum, cancellationToken.Token);
                     if (Res2.IsSuccessful && Res2.Content.Contains("Complete"))
                     {
-                        return 1;
+                        var RequestNumber = new RestSharp.RestRequest("Get?qry=SELECT MAX(PalletID)As PalletID FROM PalletTransaction", RestSharp.Method.GET);
+                        var cancellationTokens = new CancellationTokenSource();
+                        var Result = await client.ExecuteAsync(RequestNumber, cancellationTokens.Token);
+                        if (Result.IsSuccessful && Result.Content.Contains("PalletID"))
+                        {
+                            DataSet myds = new DataSet();
+                            myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(Result.Content);
+                            return Convert.ToInt32(myds.Tables[0].Rows[0]["PalletID"].ToString());
+                        }
                     }
                 }
             }
@@ -533,7 +507,7 @@ namespace PickAndPack
             }
             string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
             RestSharp.RestClient client = new RestSharp.RestClient();
-            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath);
+            client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/");
             {
                 var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
                 Request.RequestFormat = RestSharp.DataFormat.Json;

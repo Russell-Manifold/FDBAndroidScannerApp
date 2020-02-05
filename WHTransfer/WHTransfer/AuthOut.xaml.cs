@@ -77,7 +77,7 @@ namespace WHTransfer
                 WH = header.FromWH;
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "IBTHeader";
-                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/" + path);
                 {
                     string str = $"POST?TrfDate={DateTime.Now.ToString("dd MMM yyyy")}&FromWH={header.FromWH}&ToWH={header.ToWH}&FromDate={header.FromDate}&RecDate={header.RecDate}&PickerUser={GoodsRecieveingApp.MainPage.UserCode}&AuthUser={AdminCode}&Active=true";
                     var Request = new RestSharp.RestRequest();
@@ -112,7 +112,7 @@ namespace WHTransfer
                 {
                     RestSharp.RestClient client = new RestSharp.RestClient();
                     string path = "IBTLines";
-                    client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                    client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/" + path);
                     {
                         string str = $"POST?ScanBarcode={i.ScanBarcode}&ItemBarcode={i.ItemBarcode}&ItemCode={i.ItemCode}&ItemDesc={i.ItemDesc}&ItemQtyOut={i.ItemQtyOut}&ItemQtyIn={i.ItemQtyIn}&PickerUser={i.PickerUser}&AuthUser={i.AuthUser}&PickDateTime={i.PickDateTime.ToString("dd MMM yyyy")}&WH={i.WH}&iTrfId={i.iTrfID}";
                         var Request = new RestRequest(str, Method.POST);
@@ -177,7 +177,7 @@ namespace WHTransfer
             {
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "GetUser";
-                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/" + path);
                 {
                     string str = $"GET?UserName={usercode}";
                     var Request = new RestRequest(str, Method.GET);

@@ -180,7 +180,7 @@ namespace GoodsRecieveingApp
                 ds.Tables.Add(t1);
                 string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
                 RestSharp.RestClient client = new RestSharp.RestClient();
-                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath);
+                client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/");
                 {
                     var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
                     Request.RequestFormat = RestSharp.DataFormat.Json;
@@ -240,7 +240,7 @@ namespace GoodsRecieveingApp
             }
             string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
             RestSharp.RestClient client = new RestSharp.RestClient();
-            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath);
+            client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/");
             {
                 var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
                 Request.RequestFormat = RestSharp.DataFormat.Json;

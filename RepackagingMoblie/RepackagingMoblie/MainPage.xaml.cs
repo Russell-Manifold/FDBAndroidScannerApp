@@ -76,7 +76,7 @@ namespace RepackagingMoblie
                     {
                         RestSharp.RestClient client = new RestSharp.RestClient();
                         string path = "FindDescAndCode";
-                        client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                        client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/" + path);
                         {
                             string qry = $"ACCPRD|4|{txfPackbarcode.Text}";
                             string str = $"GET?qrystr={qry}";
@@ -133,7 +133,7 @@ namespace RepackagingMoblie
         }
         private void btnUnpack_Clicked(object sender, EventArgs e)
         {
-            lblQuestion.Text = "Scan Barcode of pack to be Unpacked:";
+            lblQuestion.Text = "Scan Barcode of pack to be unpacked:";
             OpenLayout.IsVisible = false;
             MainLayout.IsVisible = true;
             MustMakePack = false;
