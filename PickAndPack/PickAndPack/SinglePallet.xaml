@@ -11,8 +11,7 @@
         <ToolbarItem Text="Save" x:Name="btnSave" Clicked="btnSave_Clicked"/>
     </ContentPage.ToolbarItems>
     <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0" >
-        <StackLayout x:Name="MainLayout" IsVisible="False">
-            <StackLayout x:Name="SOCodeLayout">
+        <StackLayout x:Name="SOCodeLayout">
                 <Label x:Name="lblSOCode" Text="IO Number:"  FontSize="Large" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
                 <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfSOCode" HorizontalOptions="FillAndExpand" MaxLength="8" Completed="txfSOCode_Completed"/>
             </StackLayout>
@@ -28,70 +27,63 @@
                 <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfItemCode" HorizontalOptions="FillAndExpand" MaxLength="14" Completed="txfItemCode_Completed" />
             </StackLayout>
             <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
-            <StackLayout x:Name="GridLayout" IsVisible="False">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100*" />
-                        <ColumnDefinition Width="30*" />
-                        <ColumnDefinition Width="30*" />
-                        <ColumnDefinition Width="30*" />
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0" Text="Description" FontSize="15" FontAttributes="Bold"/>
-                    <Label Grid.Row="0" Grid.Column="1" Text="ORD Qty" FontSize="15" FontAttributes="Bold"/>
-                    <Label Grid.Row="0" Grid.Column="2" Text="Scan Qty" FontSize="15" FontAttributes="Bold"/>
-                    <Label Grid.Row="0" Grid.Column="3" Text="BAL" FontSize="15" FontAttributes="Bold"/>
-                </Grid>
-                <StackLayout>
-                    <ListView x:Name="lstItems" ItemSelected="lstItems_ItemSelected" HasUnevenRows="True">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <ViewCell>
-                                    <StackLayout>
-                                        <StackLayout.Triggers>
-                                            <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="Yes">
-                                                <Setter Property="BackgroundColor" Value="#53f57e"/>
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="No">
-                                                <Setter Property="BackgroundColor" Value="#f5a940"/>
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="NotStarted">
-                                                <Setter Property="BackgroundColor" Value="Transparent"/>
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="Wrong">
-                                                <Setter Property="BackgroundColor" Value="#f50505"/>
-                                            </DataTrigger>
-                                        </StackLayout.Triggers>
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="100*" />
-                                                <ColumnDefinition Width="30*" />
-                                                <ColumnDefinition Width="30*" />
-                                                <ColumnDefinition Width="30*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Label Grid.Row="0" Grid.Column="0" FontSize="Medium" Text="{Binding ItemDesc}" TextColor="Black"/>
-                                            <Label Grid.Row="0" Grid.Column="1" FontSize="Medium" Text="{Binding ItemQty}" TextColor="Black"/>
-                                            <Label Grid.Row="0" Grid.Column="2" FontSize="Medium" Text="{Binding ScanAccQty}" TextColor="Black"/>
-                                            <Label Grid.Row="0" Grid.Column="3" FontSize="Medium" Text="{Binding Balacnce}" TextColor="Black"/>
-                                        </Grid>
-                                    </StackLayout>
-                                </ViewCell>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </StackLayout>
+        <StackLayout x:Name="GridLayout" IsVisible="False">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100*" />
+                    <ColumnDefinition Width="30*" />
+                    <ColumnDefinition Width="30*" />
+                    <ColumnDefinition Width="30*" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Text="Description" FontSize="15" FontAttributes="Bold"/>
+                <Label Grid.Row="0" Grid.Column="1" Text="ORD Qty" FontSize="15" FontAttributes="Bold"/>
+                <Label Grid.Row="0" Grid.Column="2" Text="Scan Qty" FontSize="15" FontAttributes="Bold"/>
+                <Label Grid.Row="0" Grid.Column="3" Text="BAL" FontSize="15" FontAttributes="Bold"/>
+            </Grid>
+            <StackLayout>
+                <ListView x:Name="lstItems" ItemSelected="lstItems_ItemSelected" HasUnevenRows="True">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout>
+                                    <StackLayout.Triggers>
+                                        <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="Yes">
+                                            <Setter Property="BackgroundColor" Value="#53f57e"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="No">
+                                            <Setter Property="BackgroundColor" Value="#f5a940"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="NotStarted">
+                                            <Setter Property="BackgroundColor" Value="Transparent"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="Wrong">
+                                            <Setter Property="BackgroundColor" Value="#f50505"/>
+                                        </DataTrigger>
+                                    </StackLayout.Triggers>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100*" />
+                                            <ColumnDefinition Width="30*" />
+                                            <ColumnDefinition Width="30*" />
+                                            <ColumnDefinition Width="30*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Row="0" Grid.Column="0" FontSize="Medium" Text="{Binding ItemDesc}" TextColor="Black"/>
+                                        <Label Grid.Row="0" Grid.Column="1" FontSize="Medium" Text="{Binding ItemQty}" TextColor="Black"/>
+                                        <Label Grid.Row="0" Grid.Column="2" FontSize="Medium" Text="{Binding ScanAccQty}" TextColor="Black"/>
+                                        <Label Grid.Row="0" Grid.Column="3" FontSize="Medium" Text="{Binding Balacnce}" TextColor="Black"/>
+                                    </Grid>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </StackLayout>
-        </StackLayout>
-        <StackLayout x:Name="LoadLayout">
-            <Button Text="Start New Pallet" VerticalOptions="StartAndExpand" x:Name="btnStartNew" Clicked="btnStartNew_Clicked" BackgroundColor="Transparent" ImageSource="NewPallet.PNG" FontSize="Large"/>
-            <Label Text="OR" FontSize="Large" FontAttributes="Bold" HorizontalOptions="CenterAndExpand"/>
-            <Label Text="Enter Pallet Number to continue" FontSize="Medium"/>
-            <Entry Completed="txfPalletNumber_Completed" Keyboard="Numeric" x:Name="txfPalletNumber" HorizontalTextAlignment="Center" HorizontalOptions="FillAndExpand" VerticalOptions="Center"/>
         </StackLayout>
     </StackLayout>
 </ContentPage>

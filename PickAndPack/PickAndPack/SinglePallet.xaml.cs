@@ -27,7 +27,12 @@ namespace PickAndPack
             InitializeComponent();
             txfSOCode.Focused += Entry_Focused;
             txfItemCode.Focused += Entry_Focused;
-        }            
+        }
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            txfSOCode.Focus();
+        }
         private async Task<bool> GetItems(string code)
         {
             if (await RemoveAllOld(code))
@@ -401,14 +406,7 @@ namespace PickAndPack
                 return false;
 
             return true;
-        }
-        private void btnStartNew_Clicked(object sender, EventArgs e)
-        {
-            LoadLayout.IsVisible = false;
-            MainLayout.IsVisible = true;
-            Task.Delay(500);
-            txfSOCode.Focus();
-        }
+        }  
         private async Task<int> PalletCreate()
         {
             RestSharp.RestClient client = new RestSharp.RestClient();
@@ -522,46 +520,6 @@ namespace PickAndPack
                 }
             }
             return false;
-        }
-        private async void txfPalletNumber_Completed(object sender, EventArgs e)
-        {
-            if (txfPalletNumber.Text.Length > 0)
-            {
-                RestSharp.RestClient client = new RestSharp.RestClient();
-                string path = "DocumentSQLConnection";
-                client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
-                {
-                    string qry = $"SELECT * FROM PalletTransaction WHERE PalletID = {txfPalletNumber.Text}";
-                    string str = $"Get?qry={qry}";
-                    var Request = new RestSharp.RestRequest();
-                    Request.Resource = str;
-                    Request.Method = RestSharp.Method.GET;
-                    var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                    if (res.IsSuccessful && res.Content.Contains("PalletID"))
-                    {
-                        LoadLayout.IsVisible = false;
-                        MainLayout.IsVisible = true;
-                        currentPallet = Convert.ToInt32(txfPalletNumber.Text);
-                        await Task.Delay(500);
-                        txfSOCode.Focus();
-                    }
-                    else
-                    {
-                        string result = await DisplayActionSheet("Unknown pallet, would you like to continue on a random pallet?","YES","NO");
-                        if (result=="YES")
-                        {
-                            isNewPallet = false;
-                            await Task.Delay(500);
-                            txfSOCode.Focus();
-                        }
-                        else
-                        {
-                            txfPalletNumber.Text = "";
-                        }
-                    }
-                }
-            }             
-        }
+        }                       
     }
 }
