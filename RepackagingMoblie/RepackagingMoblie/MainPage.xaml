@@ -6,7 +6,7 @@
              xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
              mc:Ignorable="d"
              x:Class="RepackagingMoblie.MainPage"
-             Title="Unpacking">
+             Title="Repacking">
     <ContentPage.ToolbarItems>
         <ToolbarItem Clicked="Button_Clicked_Home" IconImageSource="home.PNG"/>
     </ContentPage.ToolbarItems>
@@ -21,9 +21,10 @@
                 <ActivityIndicator x:Name="isLoading" IsVisible="False"/>
             </StackLayout>
             <StackLayout x:Name="OpenLayout" VerticalOptions="FillAndExpand">
-                <Button x:Name="btnUnpack" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Clicked="btnUnpack_Clicked" ImageSource="unpack.png" BackgroundColor="Transparent"/>
-                <Button x:Name="btnPack" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Clicked="btnPack_Clicked" ImageSource="repackbox.png" BackgroundColor="Transparent"/>
+                <Button x:Name="btnUnpack" VerticalOptions="FillAndExpand" Clicked="btnUnpack_Clicked" ImageSource="unpack.png" BackgroundColor="Transparent" />
+                <Button x:Name="btnPack" VerticalOptions="FillAndExpand"  Clicked="btnPack_Clicked" ImageSource="repackbox.png"  BackgroundColor="Transparent"/>
             </StackLayout>
      </StackLayout>
 </ContentPage.Content>
 </ContentPage>
+ 
