@@ -10,12 +10,12 @@
     </ContentPage.ToolbarItems>
     <ScrollView>
     <StackLayout>
-            <Label x:Name="lblUserLvl" Text="" IsVisible="False" />
+            <Label x:Name="lblUserLvl" Text="" IsVisible="False" VerticalOptions="FillAndExpand" />
             <Button x:Name="btnReceive" Text="Goods Receiving" Clicked="Button_Clicked_Goods_Receving" VerticalOptions="EndAndExpand" ImageSource="ReceiveStck.png" BackgroundColor="Transparent" FontSize="Large" />
             <Button x:Name="btnRepack" Text="Repacking" Clicked="Button_Clicked_Repacking" VerticalOptions="EndAndExpand" ImageSource="repack.png" BackgroundColor="Transparent" FontSize="Large"/>
             <Button x:Name="BtnInvCount" Text="Inventory Count" Clicked="Button_Clicked_Repacking" VerticalOptions="EndAndExpand" ImageSource="InvCount.png" BackgroundColor="Transparent" FontSize="Large"/>
             <Button x:Name="btnWhTrf" Text="Warehouse Transfer" Clicked="Button_Clicked_WareHouseTransfer" VerticalOptions="EndAndExpand" ImageSource="WHTrf.png" BackgroundColor="Transparent" FontSize="Large"/>
             <Button x:Name="btnPickPack" Text="Picking and Packing" Clicked="Button_Clicked" VerticalOptions="EndAndExpand" ImageSource="pickpack.png" BackgroundColor="Transparent" FontSize="Large"/>
-        </StackLayout>
+            </StackLayout>
     </ScrollView>
 </ContentPage>

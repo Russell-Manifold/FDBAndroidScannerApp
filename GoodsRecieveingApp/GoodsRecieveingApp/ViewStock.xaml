@@ -7,8 +7,8 @@
              x:Class="GoodsRecieveingApp.ViewStock"
              Title="View List">
     <ContentPage.ToolbarItems>
-        <ToolbarItem  IconImageSource="save.png" x:Name="btnSave" Clicked="btnSave_Clicked"/>
         <ToolbarItem Text="" Clicked="ToolbarItem_Clicked"  IconImageSource="home.PNG"/>
+        <ToolbarItem  IconImageSource="save.png" x:Name="btnSave" Clicked="btnSave_Clicked"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>

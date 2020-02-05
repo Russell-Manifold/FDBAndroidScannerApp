@@ -61,7 +61,7 @@ namespace RepackagingMoblie
             else
             {
                 Vibration.Vibrate();
-                message.DisplayMessage("Please nake sure to scan a valid bardode", true);
+                message.DisplayMessage("Please make sure to scan a valid bardode", true);
             }
 
         }
@@ -133,7 +133,7 @@ namespace RepackagingMoblie
         }
         private void btnUnpack_Clicked(object sender, EventArgs e)
         {
-            lblQuestion.Text = "Scan Barcode of pack to be Unpacked:";
+            lblQuestion.Text = "Scan Barcode of pack to be unpacked:";
             OpenLayout.IsVisible = false;
             MainLayout.IsVisible = true;
             MustMakePack = false;
