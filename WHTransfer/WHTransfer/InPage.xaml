@@ -18,7 +18,7 @@
                 <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScannedItem" TextChanged="TxfScannedItem_TextChanged"/>
                 <ListView x:Name="ListViewItems" HasUnevenRows="True">
                     <ListView.Footer>
-                        <Button Text="Complete" Clicked="Button_Clicked" x:Name="btnComplete" BackgroundColor="Green"/>
+                        <Button Text="Complete" Clicked="btnComplete_Clicked" x:Name="btnComplete" BackgroundColor="Green"/>
                     </ListView.Footer>
                     <ListView.Header>
                         <Grid>

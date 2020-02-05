@@ -108,7 +108,7 @@ namespace PickAndPack
                 {
                     RestSharp.RestClient client = new RestSharp.RestClient();
                     string path = "GetDocument";
-                    client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
+                    client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
                     {
                         string str = $"GET?qrystr=ACCHISTL|6|{code}|102";
                         var Request = new RestSharp.RestRequest();

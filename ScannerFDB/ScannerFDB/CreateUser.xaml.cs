@@ -89,7 +89,7 @@ namespace ScannerFDB
             {
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "AddUser";
-                client.BaseUrl = new Uri("http://192.168.0.108/FDBAPI/api/" + path);
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
                 {
                     string str = $"POST?UserName={userName}&UserNum={UserNum}&Access={Access}";
                     var Request = new RestSharp.RestRequest();
