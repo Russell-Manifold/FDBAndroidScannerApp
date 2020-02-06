@@ -57,7 +57,7 @@ namespace ScannerFDB
                 RestClient client = new RestClient();
                 string path = "GetUser";
                 //client.BaseUrl = new Uri("https://manifoldsa.co.za/FDBAPI/api/" + path);
-                client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/" + path);
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath+ path);
                 {
                     string str = $"GET?UserName={txfUserBarcode.Text}";
                     var Request = new RestRequest(str, Method.GET);

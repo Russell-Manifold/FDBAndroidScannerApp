@@ -22,10 +22,10 @@
                 <Button Text="Finish" x:Name="btnComplete" Clicked="BtnComplete_Clicked" VerticalOptions="FillAndExpand" ImageSource="TickSmall.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
             </StackLayout>
             <StackLayout x:Name="IntoPackLayout" IsVisible="False">
-                <Label Text="Scan a PackCode:" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand" FontSize="Large"/>
+                <Label Text="Scan a PackCode:" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand"/>
                 <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScanPack" Completed="txfScanPack_Completed" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
                 <Label Text="OR" FontSize="Large" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand"/>
-                <Label Text="Enter number of items :" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand" FontSize="Large"/>
+                <Label Text="Enter number of items :" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand"/>
                 <Entry Keyboard="Numeric" x:Name="txfNumberOfItem" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Completed="txfNumberOfItem_Completed"/>
             </StackLayout>
         </StackLayout>

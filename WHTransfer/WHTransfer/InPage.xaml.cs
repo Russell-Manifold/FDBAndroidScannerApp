@@ -25,7 +25,7 @@ namespace WHTransfer
         public InPage()
         {
             InitializeComponent();
-            txfScannedItem.Focused += Entry_Focused;          
+            txfScannedItem.Focused += Entry_Focused;
         }
         protected async override void OnAppearing()
         {
@@ -65,7 +65,7 @@ namespace WHTransfer
                 }
                 else
                 {
-                    _= IsDone();
+                    _ = IsDone();
                     await Task.Delay(100);
                     ListViewItems.ItemsSource = null;
                     ListViewItems.ItemsSource = lines;
@@ -84,7 +84,7 @@ namespace WHTransfer
             catch
             {
 
-            }         
+            }
             return false;
         }
         private async Task FetchHeaders()
@@ -93,7 +93,7 @@ namespace WHTransfer
             {
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "IBTHeader";
-                client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/" + path);
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
                 {
                     string str = $"GET?";
                     var Request = new RestSharp.RestRequest();
@@ -109,7 +109,7 @@ namespace WHTransfer
                         {
                             try
                             {
-                                headers.Add(new IBTHeader{ID=Convert.ToInt32(row["TrfId"]),TrfDate=row["TrfDate"].ToString(),FromWH=row["FromWH"].ToString(),ToWH=row["ToWH"].ToString(),FromDate=row["FromDate"].ToString(),RecDate=row["RecDate"].ToString(),PickerUser = Convert.ToInt32(row["PickerUser"].ToString()), AuthUser=Convert.ToInt32(row["AuthUser"].ToString()), Active=Convert.ToBoolean(row["Active"]) });
+                                headers.Add(new IBTHeader { ID = Convert.ToInt32(row["TrfId"]), TrfDate = row["TrfDate"].ToString(), FromWH = row["FromWH"].ToString(), ToWH = row["ToWH"].ToString(), FromDate = row["FromDate"].ToString(), RecDate = row["RecDate"].ToString(), PickerUser = Convert.ToInt32(row["PickerUser"].ToString()), AuthUser = Convert.ToInt32(row["AuthUser"].ToString()), Active = Convert.ToBoolean(row["Active"]) });
                                 PickerItems.Add(row["TrfId"].ToString());
                             }
                             catch
@@ -129,12 +129,12 @@ namespace WHTransfer
         private async void PickerHeaders_SelectedIndexChanged(object sender, EventArgs e)
         {
             isLoading.IsVisible = true;
-            CurrentHeader =headers.Where(x=>x.ID==Convert.ToInt32(pickerHeaders.SelectedItem.ToString())).FirstOrDefault();
+            CurrentHeader = headers.Where(x => x.ID == Convert.ToInt32(pickerHeaders.SelectedItem.ToString())).FirstOrDefault();
             await GetLines(CurrentHeader.ID);
             pickerHeaders.IsVisible = false;
             lblTop.IsVisible = false;
             LayoutMain.IsVisible = true;
-            lblInfo.Text = "Transfer number :"+CurrentHeader.ID+" started on date :"+CurrentHeader.TrfDate;
+            lblInfo.Text = "Transfer number :" + CurrentHeader.ID + " started on date :" + CurrentHeader.TrfDate;
             ListViewItems.ItemsSource = lines;
             isLoading.IsVisible = false;
             //txfScannedItem.Focus();
@@ -145,36 +145,34 @@ namespace WHTransfer
             {
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "IBTLines";
-                client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/" + path);
-                {
-                    string str = $"Get?qry=SELECT* FROM tblIBTLines WHERE iTrfId={trf}";
-                    var Request = new RestSharp.RestRequest();
-                    Request.Resource = str;
-                    Request.Method = RestSharp.Method.GET;
-                    var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                    if (res.IsSuccessful && res.Content != null)
-                    {
-                        DataSet myds = new DataSet();
-                        myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
-                        foreach (DataRow row in myds.Tables[0].Rows)
-                        {
-                            try
-                            {
-                                lines.Add(new IBTItem {ScanBarcode=row["ScanBarcode"].ToString(),ItemBarcode = row["ItemBarcode"].ToString(), ItemCode = row["ItemCode"].ToString(), ItemDesc = row["ItemDesc"].ToString(), ItemQtyOut = Convert.ToInt32(row["ItemQtyOut"]), ItemQtyIn=Convert.ToInt32(row["ItemQtyIn"]), PickerUser=Convert.ToInt32(row["PickerUser"]),AuthUser=Convert.ToInt32(row["AuthUser"]),PickDateTime=Convert.ToDateTime(row["PickDateTime"]),WH=row["WH"].ToString(),iTrfID=Convert.ToInt32(row["iTrfId"])});
-                            }
-                            catch
-                            {
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
 
-                            }
+                string str = $"Get?qry=SELECT* FROM tblIBTLines WHERE iTrfId={trf}";
+                var Request = new RestSharp.RestRequest();
+                Request.Resource = str;
+                Request.Method = RestSharp.Method.GET;
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content != null)
+                {
+                    DataSet myds = new DataSet();
+                    myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                    foreach (DataRow row in myds.Tables[0].Rows)
+                    {
+                        try
+                        {
+                            lines.Add(new IBTItem { ScanBarcode = row["ScanBarcode"].ToString(), ItemBarcode = row["ItemBarcode"].ToString(), ItemCode = row["ItemCode"].ToString(), ItemDesc = row["ItemDesc"].ToString(), ItemQtyOut = Convert.ToInt32(row["ItemQtyOut"]), ItemQtyIn = Convert.ToInt32(row["ItemQtyIn"]), PickerUser = Convert.ToInt32(row["PickerUser"]), AuthUser = Convert.ToInt32(row["AuthUser"]), PickDateTime = Convert.ToDateTime(row["PickDateTime"]), WH = row["WH"].ToString(), iTrfID = Convert.ToInt32(row["iTrfId"]) });
                         }
-                        return true;
+                        catch
+                        {
+
+                        }
                     }
+                    return true;
                 }
-            }
+            }            
             catch
             {
-
             }
             return false;
         }
@@ -203,7 +201,7 @@ namespace WHTransfer
                         int k = lines.Where(x => x.ItemCode == i.ItemCode).Sum(c=>c.ItemQtyOut);
                         RestSharp.RestClient client2 = new RestSharp.RestClient();
                         string path2 = "WHTransfer";
-                        client2.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/" + path2);
+                        client2.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path2);
                         {
                             string str2 = $"POST?itemCode={i.ItemCode}&InOrOut=true&JnlDate={DateTime.Now.ToString("dd MMM yyyy")}&JobCode={i.iTrfID}&Desc={i.iTrfID}&Ref={DateTime.Now.ToString("ddMMMyyyy")+"-"+i.iTrfID}&Qty={k}&Store={i.WH}";
                             var Request2 = new RestSharp.RestRequest();
@@ -221,7 +219,7 @@ namespace WHTransfer
                 }
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "IBTHeader";
-                client.BaseUrl = new Uri("http://192.168.0.105/FDBAPI/api/" + path);
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
                 {
                     string str = $"DELETE?coid={CurrentHeader.ID}";
                     var Request = new RestSharp.RestRequest();
@@ -243,12 +241,9 @@ namespace WHTransfer
             Navigation.RemovePage(Navigation.NavigationStack[2]);
             await Navigation.PopAsync();
         }
-        private async void Button_Clicked(object sender, EventArgs e)
+        private async void btnComplete_Clicked(object sender, EventArgs e)
         {
-            btnComplete.BackgroundColor = Color.Red;
-            await IsDone();                                
-            await Task.Delay(3000);
-            btnComplete.BackgroundColor = Color.Green;
+            await IsDone();
         }
     }
 }
