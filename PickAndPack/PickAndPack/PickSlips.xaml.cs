@@ -1,4 +1,5 @@
 ﻿using Data.KeyboardContol;
+using Data.Message;
 using Data.Model;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace PickAndPack
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class PickSlips : ContentPage
     {
+        IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;
         public PickSlips()
         {
@@ -45,17 +47,20 @@ namespace PickAndPack
         {
             if (txfSOCodes.Text.Length == 8)
             {
+                lblSoName.IsVisible = false;
                 LoadingIndicator.IsVisible = true;
                 if (await FetchSO(txfSOCodes.Text))
                 {
                     LoadingIndicator.IsRunning = false;
-                    await DisplayAlert("FDB Scanner","Got It","OK");
+                    message.DisplayMessage("Success", true);
                     lblSoName.IsVisible = true;
+                    lblSoName.Text += txfSOCodes.Text+"\n";
                 }
                 else
                 {
                     LoadingIndicator.IsRunning = false;
-                    await DisplayAlert("FDB Scanner", "Error Somethings wrong", "OK");
+                    Vibration.Vibrate();
+                    message.DisplayMessage("Something went wrong",true);
                     lblSoName.IsVisible = false;
                 }
                 LoadingIndicator.IsVisible = false;

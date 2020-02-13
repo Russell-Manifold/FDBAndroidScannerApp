@@ -23,7 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WHTransfer", "WHTransfer\WH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PickAndPack.Android", "PickAndPack\PickAndPack.Android\PickAndPack.Android.csproj", "{4A073B78-61CE-458F-A646-00C92079245D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PickAndPack", "PickAndPack\PickAndPack\PickAndPack.csproj", "{4052E80A-F068-4460-B2D6-5ACA8A0CE260}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PickAndPack", "PickAndPack\PickAndPack\PickAndPack.csproj", "{4052E80A-F068-4460-B2D6-5ACA8A0CE260}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryCount.Android", "InventoryCount\InventoryCount.Android\InventoryCount.Android.csproj", "{BB3721F4-B98D-434F-B071-28FD282E40C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryCount", "InventoryCount\InventoryCount\InventoryCount.csproj", "{7C5E2886-0F81-4BCC-B230-E355C03698E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +91,16 @@ Global
 		{4052E80A-F068-4460-B2D6-5ACA8A0CE260}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4052E80A-F068-4460-B2D6-5ACA8A0CE260}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4052E80A-F068-4460-B2D6-5ACA8A0CE260}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB3721F4-B98D-434F-B071-28FD282E40C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB3721F4-B98D-434F-B071-28FD282E40C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB3721F4-B98D-434F-B071-28FD282E40C8}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{BB3721F4-B98D-434F-B071-28FD282E40C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB3721F4-B98D-434F-B071-28FD282E40C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB3721F4-B98D-434F-B071-28FD282E40C8}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{7C5E2886-0F81-4BCC-B230-E355C03698E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C5E2886-0F81-4BCC-B230-E355C03698E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C5E2886-0F81-4BCC-B230-E355C03698E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C5E2886-0F81-4BCC-B230-E355C03698E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -38,7 +38,7 @@ namespace PickAndPack
                     {
                         TempDoc.Complete = "Yes";
                     }
-                    else if (TempDoc.Balacnce == TempDoc.ItemQty)
+                    else if (TempDoc.ScanAccQty==0)
                     {
                         TempDoc.Complete = "NotStarted";
                     }

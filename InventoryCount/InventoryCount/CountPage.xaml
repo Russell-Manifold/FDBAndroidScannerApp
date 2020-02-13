@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Title="Inventory"
+             x:Class="InventoryCount.CountPage">
+    <StackLayout>
+        <Label Text="Scan item or pack codes" FontSize="Medium"/>
+        <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" HorizontalOptions="FillAndExpand" VerticalOptions="Start" HorizontalTextAlignment="Center" x:Name="txfItemCode" Completed="txfItemCode_Completed"/>
+        <ActivityIndicator IsVisible="False" IsRunning="True" x:Name="LoadingIndicator"/>
+        <StackLayout Orientation="Horizontal" IsVisible="False" x:Name="lblLayout" BackgroundColor="#3F51B5">
+            <Label x:Name="lblCurrentItem" TextColor="White" FontSize="Large" VerticalOptions="CenterAndExpand" HorizontalOptions="Start" LineBreakMode="WordWrap"/>
+            <Label x:Name="lblCurrentQty" TextColor="White" FontSize="Large" VerticalOptions="CenterAndExpand" HorizontalOptions="End" WidthRequest="45"  LineBreakMode="WordWrap"/>
+            <Button ImageSource="save.png" WidthRequest="45" BackgroundColor="Transparent" x:Name="btnSave" Clicked="btnSave_Clicked" VerticalOptions="End"/>
+        </StackLayout>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80*" />
+                <ColumnDefinition Width="10*" />
+                <ColumnDefinition Width="10*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Text="Description" FontSize="15" FontAttributes="Bold"/>
+            <Label Grid.Row="0" Grid.Column="1" Text="1st" FontSize="15" FontAttributes="Bold"/>
+            <Label Grid.Row="0" Grid.Column="2" Text="2nd" FontSize="15" FontAttributes="Bold"/>
+        </Grid>
+        <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
+        <ListView x:Name="lstItems" ItemSelected="lstItems_ItemSelected" HasUnevenRows="True">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout>
+                            <StackLayout.Triggers>
+                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="Complete">
+                                    <Setter Property="BackgroundColor" Value="#d4ff88"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="Current">
+                                    <Setter Property="BackgroundColor" Value="Transparent"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="1">
+                                    <Setter Property="BackgroundColor" Value="Transparent"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="2">
+                                    <Setter Property="BackgroundColor" Value="Transparent"/>
+                                </DataTrigger>
+                            </StackLayout.Triggers>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80*" />
+                                    <ColumnDefinition Width="10*" />
+                                    <ColumnDefinition Width="10*" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding ItemDesc}" TextColor="Black" FontSize="Medium"/>
+                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding FirstScanQty}" TextColor="Black" FontSize="Medium"/>
+                                <Label Grid.Row="0" Grid.Column="2" Text="{Binding SecondScanQty}" TextColor="Black" FontSize="Medium"/>
+                            </Grid>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</ContentPage>

@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Data\Data.csproj" />
     <ProjectReference Include="..\..\GoodsRecieveingApp\GoodsRecieveingApp\GoodsRecieveingApp.csproj" />
+    <ProjectReference Include="..\..\InventoryCount\InventoryCount\InventoryCount.csproj" />
     <ProjectReference Include="..\..\PickAndPack\PickAndPack\PickAndPack.csproj" />
     <ProjectReference Include="..\..\RepackagingMoblie\RepackagingMoblie\RepackagingMoblie.csproj" />
     <ProjectReference Include="..\..\WHTransfer\WHTransfer\WHTransfer.csproj" />

@@ -8,19 +8,19 @@
              Title="Single Pallet"
              x:Class="PickAndPack.SinglePallet">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Save" x:Name="btnSave" Clicked="btnSave_Clicked"/>
+        <ToolbarItem IconImageSource="save.png" x:Name="btnSave" Clicked="btnSave_Clicked"/>
     </ContentPage.ToolbarItems>
     <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0" >
         <StackLayout x:Name="SOCodeLayout">
                 <Label x:Name="lblSOCode" Text="IO Number:"  FontSize="Large" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
                 <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfSOCode" HorizontalOptions="FillAndExpand" MaxLength="8" Completed="txfSOCode_Completed"/>
             </StackLayout>
-            <StackLayout Orientation="Horizontal" IsVisible="False" x:Name="AddSoLayout">
+            <StackLayout HorizontalOptions="CenterAndExpand" Orientation="Horizontal" IsVisible="False" x:Name="AddSoLayout">
                 <StackLayout Orientation="Vertical" HorizontalOptions="Center">
                     <Label x:Name="lblCusName" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
                     <Label x:Name="lblCode" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
                 </StackLayout>
-                <Button x:Name="btnAddSoNumber" Text="Add" HorizontalOptions="End" Clicked="btnAddSoNumber_Clicked"/>
+            <Button x:Name="btnAddSoNumber" ImageSource="PalletAdd.png" HeightRequest="30" BackgroundColor="Transparent" HorizontalOptions="End" Clicked="btnAddSoNumber_Clicked"/>
             </StackLayout>
             <StackLayout x:Name="ItemCodeLayout" IsVisible="False">
                 <Label x:Name="lblItemCodes" Text="Scan Items:"  FontSize="Large" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>

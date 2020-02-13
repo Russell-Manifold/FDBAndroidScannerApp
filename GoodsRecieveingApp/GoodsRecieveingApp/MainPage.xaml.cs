@@ -19,7 +19,8 @@ namespace GoodsRecieveingApp
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-        public static string APIPath = "http://192.168.0.105/FDBAPI/api/";
+        //public static string APIPath = "http://192.168.0.111/FDBAPI/api/";
+        public static string APIPath = "https://manifoldsa.co.za/FDBAPI/api/";
         public static string UserName = "";
         public static int AccessLevel = 0;
         public static int UserCode = 0;
@@ -60,6 +61,7 @@ namespace GoodsRecieveingApp
                     lblPONum.Text = txfPOCode.Text.ToUpper();
                     lblCompany.IsVisible = true;
                     lblPONum.IsVisible = true;
+                    txfPOCode.IsEnabled = false;
                     txfPOCode.IsVisible = false;
                     lblPOCode.IsVisible = false;
                     btnAccept.IsVisible = true;
@@ -158,22 +160,22 @@ namespace GoodsRecieveingApp
                                     Doc.ItemDesc = row["ItemDesc"].ToString();
                                     Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
                                     Doc.PalletNum = 0;
-                                    if (row["ScanAccQty"].ToString() != "")
+                                    try
                                     {
                                         Doc.ScanAccQty = Convert.ToInt32(row["ScanAccQty"].ToString());
                                     }
-                                    else
+                                    catch
                                     {
                                         Doc.ScanAccQty = 0;
                                     }
-                                    if (row["ScanRejQty"].ToString() != "")
+                                    try
                                     {
                                         Doc.ScanRejQty = Convert.ToInt32(row["ScanRejQty"].ToString());
                                     }
-                                    else
+                                    catch
                                     {
                                         Doc.ScanRejQty = 0;
-                                    }
+                                    }                                  
                                    await App.Database.Insert(Doc);
                                 }
                                 catch (Exception ex)

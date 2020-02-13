@@ -20,8 +20,8 @@
                     <ColumnDefinition Width="30*" />
                 </Grid.ColumnDefinitions>
                 <Label Grid.Row="0" Grid.Column="0" Text="Description" FontSize="15" FontAttributes="Bold"/>
-                <Label Grid.Row="0" Grid.Column="1" Text="ORD Qty" FontSize="15" FontAttributes="Bold"/>
-                <Label Grid.Row="0" Grid.Column="2" Text="Scan Qty" FontSize="15" FontAttributes="Bold"/>
+                <Label Grid.Row="0" Grid.Column="1" Text="ORD" FontSize="15" FontAttributes="Bold"/>
+                <Label Grid.Row="0" Grid.Column="2" Text="Scan" FontSize="15" FontAttributes="Bold"/>
                 <Label Grid.Row="0" Grid.Column="3" Text="BAL" FontSize="15" FontAttributes="Bold"/> 
                 <Label Grid.Row="0" Grid.Column="4" Text="Pallet" FontSize="15" FontAttributes="Bold"/>
             </Grid>

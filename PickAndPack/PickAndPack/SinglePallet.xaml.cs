@@ -19,13 +19,21 @@ namespace PickAndPack
     {
         IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;
-        List<string> allSo = new List<string>();
+        bool firstSO=true;
         int currentPallet=0;
         public SinglePallet()
         {
             InitializeComponent();
             txfSOCode.Focused += Entry_Focused;
             txfItemCode.Focused += Entry_Focused;
+        }
+        public SinglePallet(string SONumber)
+        {
+            InitializeComponent();
+            txfSOCode.Focused += Entry_Focused;
+            txfItemCode.Focused += Entry_Focused;
+            txfSOCode.Text = SONumber;
+            txfSOCode_Completed(null,null);
         }
         protected override void OnAppearing()
         {
@@ -50,6 +58,13 @@ namespace PickAndPack
                         var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                         if (res.Content.ToString().Contains("DocNum"))
                         {
+                            if (!firstSO)
+                            {
+                                if(!await PalletAddSO())
+                                {
+                                    return false;
+                                }
+                            }
                             await GoodsRecieveingApp.App.Database.DeleteSpecificDocs(code);
                             DataSet myds = new DataSet();
                             myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
@@ -217,11 +232,13 @@ namespace PickAndPack
         }
         private async void btnAddSoNumber_Clicked(object sender, EventArgs e)
         {
-            string res = await DisplayActionSheet("Open a new Sales Order for this pallet?", "YES", "NO");
+            string res = await DisplayActionSheet("Open a new SO for this pallet?", "YES", "NO");
             if (res == "YES")
             {
+                firstSO = false;
                 SOCodeLayout.IsVisible = true;
                 AddSoLayout.IsVisible = false;
+                txfSOCode.IsEnabled = true;
                 txfSOCode.IsVisible = true;
                 lblSOCode.IsVisible = true;
                 ItemCodeLayout.IsVisible = false;
@@ -230,13 +247,104 @@ namespace PickAndPack
                 txfSOCode.Focus();
             }
         }
+        async Task<bool> PalletAddSO()
+        {
+            if (Connectivity.NetworkAccess == NetworkAccess.Internet)
+            {
+                RestSharp.RestClient client = new RestSharp.RestClient();
+                string path = "DocumentSQLConnection";
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                {
+                    string qry = $"SELECT * FROM PalletTransaction WHERE SONum='{txfSOCode.Text}'";
+                    string str = $"GET?qry={qry}";
+                    var Request = new RestSharp.RestRequest();
+                    Request.Resource = str;
+                    Request.Method = RestSharp.Method.GET;
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("SONum"))
+                    {
+                        DataSet myds = new DataSet();
+                        myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                        if (myds.Tables[0].Rows.Count==1)
+                        {
+                            if (!myds.Tables[0].Rows[0]["PalletID"].ToString().Contains(currentPallet+""))
+                            {
+                                Vibration.Vibrate();
+                                message.DisplayMessage("This order has been started on a different pallet", true);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            Vibration.Vibrate();
+                            message.DisplayMessage("This order is already being scanned on multiple pallets", true);
+                            return false;
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        if (!await AddToPallet(txfSOCode.Text))
+                        {
+                            return false;
+                        }                      
+                    }
+                }
+            }
+            else
+            {
+                Vibration.Vibrate();
+                message.DisplayMessage("Please recconect to the internet", true);
+                return false;
+            }
+            return true;
+        }
+        async Task<bool> AddToPallet(string SOCode)
+        {
+            if (Connectivity.NetworkAccess == NetworkAccess.Internet)
+            {
+                RestSharp.RestClient client = new RestSharp.RestClient();
+                string path = "DocumentSQLConnection";
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                {
+                    string qry = $"INSERT INTO PalletTransaction(SONum, PalletID) VALUES('{SOCode}',{currentPallet})";
+                    string str = $"POST?qry={qry}";
+                    var Request = new RestSharp.RestRequest();
+                    Request.Resource = str;
+                    Request.Method = RestSharp.Method.POST;
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("Complete"))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        Vibration.Vibrate();
+                        message.DisplayMessage("Error in connecting to the API", true);
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                Vibration.Vibrate();
+                message.DisplayMessage("Please recconect to the internet", true);
+                return false;
+            }
+        }
         private async void btnViewSO_Clicked(object sender, EventArgs e)
         {
             message.DisplayMessage("Loading...", false);
             try
             {
-                //await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(sender.ToString());
-                await Navigation.PushAsync(new ViewItems((sender as ToolbarItem).Text));
+                string result = await DisplayActionSheet("Are you sure you would like to close this SO?","YES","NO");
+                if (result=="YES")
+                {
+                    await Navigation.PushAsync(new SinglePallet((sender as ToolbarItem).Text));
+                    Navigation.RemovePage(Navigation.NavigationStack[3]);
+                }
             }
             catch
             {
@@ -310,12 +418,18 @@ namespace PickAndPack
         private async void txfSOCode_Completed(object sender, EventArgs e)
         {
             if (txfSOCode.Text.Length != 0)
-            {
+            {                
                 LodingIndiactor.IsVisible = true;
                 if (await GetItems(txfSOCode.Text.ToUpper()))
                 {                    
-                    await PalletCheck(txfSOCode.Text);                                             
+                    if(!await PalletCheck(txfSOCode.Text))
+                    {
+                        LodingIndiactor.IsVisible = false;
+                        txfSOCode.Text = "";
+                        txfSOCode.Focus();
+                    }                                             
                     DocLine d = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).First();
+                    txfSOCode.IsEnabled = false;
                     txfSOCode.IsVisible = false;
                     lblSOCode.IsVisible = false;
                     try
@@ -329,14 +443,31 @@ namespace PickAndPack
                     ItemCodeLayout.IsVisible = true;
                     AddSoLayout.IsVisible = true;
                     GridLayout.IsVisible = true;
-                    ToolbarItem item = new ToolbarItem
+                    string SONumbers = await GetAllSONumbers(currentPallet);
+                    if (SONumbers=="")
                     {
-                        Text=txfSOCode.Text,
-                        Order = ToolbarItemOrder.Secondary
-                    };
-                    item.Clicked += btnViewSO_Clicked;
-                    this.ToolbarItems.Add(item);
-                    allSo.Add(txfSOCode.Text);
+                        SONumbers = txfSOCode.Text+"|";
+                    }
+                    List<string> codes = new List<string>();
+                    foreach (ToolbarItem items in this.ToolbarItems)
+                    {
+                        codes.Add(items.Text);
+                    }
+                    foreach (string str in SONumbers.Split('|'))
+                    {
+                        if (str.Length>1){
+                            if (!codes.Contains(str))
+                            {
+                                ToolbarItem item = new ToolbarItem
+                                {
+                                    Text = str,
+                                    Order = ToolbarItemOrder.Secondary
+                                };
+                                item.Clicked += btnViewSO_Clicked;
+                                this.ToolbarItems.Add(item);
+                            }                           
+                        }                     
+                    }                   
                     await RefreshList();
                     txfItemCode.Focus();
                 }
@@ -347,6 +478,47 @@ namespace PickAndPack
                 }
             }
             
+        }
+        async Task<string> GetAllSONumbers(int palletNumber)
+        {
+            if (Connectivity.NetworkAccess==NetworkAccess.Internet)
+            {
+                RestSharp.RestClient client = new RestSharp.RestClient();
+                string path = "DocumentSQLConnection";
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                {
+                    string qry = $"SELECT SONum FROM PalletTransaction WHERE PalletID={palletNumber}";
+                    string str = $"GET?qry={qry}";
+                    var Request = new RestSharp.RestRequest();
+                    Request.Resource = str;
+                    Request.Method = RestSharp.Method.GET;
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("SONum"))
+                    {
+                        string output = "";
+                        DataSet myds = new DataSet();
+                        myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                        foreach (DataRow row in myds.Tables[0].Rows)
+                        {
+                            output += row["SONum"] +"|";
+                        }
+                        return output;
+                    }
+                    else
+                    {
+                        Vibration.Vibrate();
+                        message.DisplayMessage("Error in fetching data", true);                        
+                        return "";
+                    }
+                }
+            }
+            else
+            {
+                Vibration.Vibrate();
+                message.DisplayMessage("Please recconect to the internet",true);
+                return "";
+            }          
         }
         async Task RefreshList()
         {
@@ -400,7 +572,7 @@ namespace PickAndPack
 
             return true;
         }
-        private async Task PalletCheck(string SO)
+        private async Task<bool> PalletCheck(string SO)
         {
             RestSharp.RestClient client = new RestSharp.RestClient();
             string path = "Pallet";
@@ -419,67 +591,67 @@ namespace PickAndPack
                     {
                         Vibration.Vibrate();
                         message.DisplayMessage("This order is already on multiple pallets", true);
-                        await Navigation.PopAsync();
-                        return;
+                        return false;
                     }
                     else 
                     {
                         try
                         {
-                            int ext = Convert.ToInt32(s.Split('|').Last());
+                            int ext = Convert.ToInt32(s.Split('|')[1]);
                             currentPallet = ext;
+                            return true;
                         }
                         catch (Exception e)
                         {
                             Vibration.Vibrate();
                             message.DisplayMessage("Could not create pallet", true);
-                            await Navigation.PopAsync();
-                            return;
+                            return false;
                         }
                     }
                 }
+                return false;
             }
             
         }
-        private async Task<int> PalletCreate()
-        {
-            RestSharp.RestClient client = new RestSharp.RestClient();
-            string path = "DocumentSQLConnection";
-            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
-            {
-                string qry = "";                
-                string str = $"Post?qry={qry}";
-                var Request = new RestSharp.RestRequest();
-                Request.Resource = str;
-                Request.Method = RestSharp.Method.POST;
-                var cancellationTokenSource = new CancellationTokenSource();
-                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                if (res.IsSuccessful && res.Content.Contains("Complete"))
-                {
-                    var RequestNum = new RestSharp.RestRequest("Get?qry=SELECT MAX(PalletID)As PalletID FROM PalletTransaction", RestSharp.Method.GET);
-                    var cancellationToken = new CancellationTokenSource();
-                    var Res2 = await client.ExecuteAsync(RequestNum, cancellationToken.Token);
-                    if (Res2.IsSuccessful && Res2.Content.Contains("PalletID"))
-                    {
-                        DataSet myds = new DataSet();
-                        myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(Res2.Content);
-                        return Convert.ToInt32(myds.Tables[0].Rows[0]["PalletID"].ToString());
-                    }
-                }
-                else if (res.Content.Contains("ErrorSystem.Data.SqlClient.SqlException"))
-                {
-                    string qrys = "Post?qry=INSERT INTO PalletTransaction(SONum,PalletID) VALUES('" + txfSOCode.Text + "',1)";
-                    var RequestNum = new RestSharp.RestRequest(qrys, RestSharp.Method.POST);
-                    var cancellationToken = new CancellationTokenSource();
-                    var Res2 = await client.ExecuteAsync(RequestNum, cancellationToken.Token);
-                    if (Res2.IsSuccessful && Res2.Content.Contains("Complete"))
-                    {
-                        return 1;
-                    }
-                }
-            }
-            return -1;
-        }      
+        //private async Task<int> PalletCreate()
+        //{
+        //    RestSharp.RestClient client = new RestSharp.RestClient();
+        //    string path = "DocumentSQLConnection";
+        //    client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+        //    {
+        //        string qry = "";                
+        //        string str = $"Post?qry={qry}";
+        //        var Request = new RestSharp.RestRequest();
+        //        Request.Resource = str;
+        //        Request.Method = RestSharp.Method.POST;
+        //        var cancellationTokenSource = new CancellationTokenSource();
+        //        var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+        //        if (res.IsSuccessful && res.Content.Contains("Complete"))
+        //        {
+        //            var RequestNum = new RestSharp.RestRequest("Get?qry=SELECT MAX(PalletID)As PalletID FROM PalletTransaction", RestSharp.Method.GET);
+        //            var cancellationToken = new CancellationTokenSource();
+        //            var Res2 = await client.ExecuteAsync(RequestNum, cancellationToken.Token);
+        //            if (Res2.IsSuccessful && Res2.Content.Contains("PalletID"))
+        //            {
+        //                DataSet myds = new DataSet();
+        //                myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(Res2.Content);
+        //                return Convert.ToInt32(myds.Tables[0].Rows[0]["PalletID"].ToString());
+        //            }
+        //        }
+        //        else if (res.Content.Contains("ErrorSystem.Data.SqlClient.SqlException"))
+        //        {
+        //            string qrys = "Post?qry=INSERT INTO PalletTransaction(SONum,PalletID) VALUES('" + txfSOCode.Text + "',1)";
+        //            var RequestNum = new RestSharp.RestRequest(qrys, RestSharp.Method.POST);
+        //            var cancellationToken = new CancellationTokenSource();
+        //            var Res2 = await client.ExecuteAsync(RequestNum, cancellationToken.Token);
+        //            if (Res2.IsSuccessful && Res2.Content.Contains("Complete"))
+        //            {
+        //                return 1;
+        //            }
+        //        }
+        //    }
+        //    return -1;
+        //}      
         private async void btnSave_Clicked(object sender, EventArgs e)
         {
             message.DisplayMessage("Saving....", true);
@@ -507,9 +679,8 @@ namespace PickAndPack
                 t1.Columns.Add("Balance");
                 t1.Columns.Add("ScanRejQty");
                 t1.Columns.Add("PalletNumber");
-                foreach (string s in allSo)
-                {                                                         
-                    List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(s)).ToList();
+                string s = txfSOCode.Text;
+                List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(s)).ToList();
                     foreach (string str in docs.Select(x => x.ItemDesc).Distinct())
                     {
                         foreach (int ints in docs.Select(x => x.PalletNum).Distinct())
@@ -524,7 +695,6 @@ namespace PickAndPack
                             t1.Rows.Add(row);
                         }
                     }
-                }
                 ds.Tables.Add(t1);
             }
             catch(Exception)

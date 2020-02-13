@@ -70,5 +70,10 @@ namespace ScannerFDB
         {
             await Navigation.PushAsync(new PickAndPack.MainPage());
         }
+
+        private async void BtnInvCount_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new InventoryCount.InvLandingPage());
+        }
     }
 }
