@@ -6,7 +6,7 @@
              mc:Ignorable="d"
              Title="Warehouse Transfer"
              x:Class="WHTransfer.MainPage">
-    <StackLayout>
+    <StackLayout VerticalOptions="FillAndExpand">
         <Button Text="Transfer Out" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" x:Name="btnOutStock" Clicked="BtnOutStock_Clicked" FontSize="Large"  ImageSource="WHTrfOut.png" BackgroundColor="Transparent"/>
         <Button Text="Transfer In" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" x:Name="btnInStock" Clicked="BtnInStock_Clicked" FontSize="Large"  ImageSource="WHTrfIN.png" BackgroundColor="Transparent"/>
     </StackLayout>

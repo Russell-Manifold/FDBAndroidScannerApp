@@ -35,7 +35,7 @@ namespace WHTransfer
         private async void BtnDone_Clicked(object sender, EventArgs e)
         {
             //Complete order
-            string Useroutput =await DisplayActionSheet("Are you sure you would like to complete the order","Yes","No");
+            string Useroutput =await DisplayActionSheet("Complete Transfer Out","Yes","No");
             switch(Useroutput){
                 case"Yes":
                     if (await completeOrder())
@@ -88,7 +88,7 @@ namespace WHTransfer
                     if (res.IsSuccessful && res.Content != null)
                     {
                         ColID = Convert.ToInt32(res.Content.Replace('\\', ' ').Replace('"', ' '));
-                        await DisplayAlert("Header Added!", "Your Header has been added your TRF code is " + ColID, "Continue");
+                        await DisplayAlert("Out Complete!", "Transfer OUT Number " + ColID + " Complete", "Continue");
 
                         return true;
                     }
@@ -144,7 +144,7 @@ namespace WHTransfer
                 if (txfUserCode.Text!=GoodsRecieveingApp.MainPage.UserName&&await CheckUser(txfUserCode.Text)) 
                 { 
                      AdminName = txfUserCode.Text;
-                     btnDone.IsEnabled = true;
+                     btnDone.IsVisible = true;
                      Loading.IsVisible = false;
                      return;
                 }

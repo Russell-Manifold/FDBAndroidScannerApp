@@ -17,10 +17,7 @@
                 <Label Text="Scan all items:" FontSize="Large"/>
                 <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScannedItem" TextChanged="TxfScannedItem_TextChanged"/>
                 <ListView x:Name="ListViewItems" HasUnevenRows="True">
-                    <ListView.Footer>
-                        <Button Text="Complete" Clicked="btnComplete_Clicked" x:Name="btnComplete" BackgroundColor="Green"/>
-                    </ListView.Footer>
-                    <ListView.Header>
+                     <ListView.Header>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -29,8 +26,8 @@
                                 <ColumnDefinition Width="100*" />
                                 <ColumnDefinition Width="30*" />
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Row="0" Grid.Column="0" Text="Item Code" TextColor="Black" FontSize="Medium"/>
-                            <Label Grid.Row="0" Grid.Column="1" Text="Qty" TextColor="Black" FontSize="Medium"/>
+                            <Label Grid.Row="0" Grid.Column="0" Text="Item" TextColor="Black" FontSize="Medium"/>
+                            <Label Grid.Row="0" Grid.Column="1" Text="Qty" TextColor="Black" FontSize="Medium" HorizontalTextAlignment="Center"/>
                         </Grid>
                     </ListView.Header>
                     <ListView.ItemTemplate>
@@ -56,14 +53,15 @@
                                             <ColumnDefinition Width="100*" />
                                             <ColumnDefinition Width="30*" />
                                         </Grid.ColumnDefinitions>
-                                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding ItemDesc}" TextColor="Black"/>
-                                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding ItemQtyOut}" TextColor="Black"/>
+                                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding ItemDesc}" TextColor="Black" FontSize="Medium"/>
+                                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding ItemQtyOut}" TextColor="Black" FontSize="Medium" HorizontalTextAlignment="Center"/>
                                     </Grid>
                                 </StackLayout>
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+                <Button Text="Complete" Clicked="btnComplete_Clicked" x:Name="btnComplete" BackgroundColor="Transparent"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

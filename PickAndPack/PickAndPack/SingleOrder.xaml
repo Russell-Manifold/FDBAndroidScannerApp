@@ -5,6 +5,7 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
+             Title="1 Order 1+ Pallets"
              x:Class="PickAndPack.SingleOrder">
     <ContentPage.ToolbarItems>
         <ToolbarItem  IconImageSource="save.png" x:Name="btnSave" Clicked="btnSave_Clicked"/>
@@ -31,11 +32,11 @@
                     <ColumnDefinition Width="30*" />
                     <ColumnDefinition Width="30*" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Text="Description" FontSize="15" FontAttributes="Bold"/>
-                <Label Grid.Row="0" Grid.Column="1" Text="ORD Qty" FontSize="15" FontAttributes="Bold"/>
-                <Label Grid.Row="0" Grid.Column="2" Text="Scan Qty" FontSize="15" FontAttributes="Bold"/>
-                <Label Grid.Row="0" Grid.Column="3" Text="BAL" FontSize="15" FontAttributes="Bold"/>
-                <Label Grid.Row="0" Grid.Column="4" Text="Pallet" FontSize="15" FontAttributes="Bold"/>
+                <Label Grid.Row="0" Grid.Column="0" Text="Description" FontSize="15" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                <Label Grid.Row="0" Grid.Column="1" Text="ORD" FontSize="15" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                <Label Grid.Row="0" Grid.Column="2" Text="Scan" FontSize="15" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                <Label Grid.Row="0" Grid.Column="3" Text="BAL" FontSize="15" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                <Label Grid.Row="0" Grid.Column="4" Text="Pallet" FontSize="15" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
             </Grid>
             <StackLayout>
                 <ListView x:Name="lstItems" ItemSelected="lstItems_ItemSelected" HasUnevenRows="True">
@@ -81,6 +82,7 @@
                 </ListView>
             </StackLayout>
             <StackLayout Orientation="Horizontal">
+                <Label Text="Pallets" FontSize="30"  HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center"/>
                 <Button FontSize="Large" x:Name="btnPrev" Clicked="btnPrevPallet_Clicked" BackgroundColor="Transparent" ImageSource="PalletMinus.png" HorizontalOptions="StartAndExpand" />
                 <Label x:Name="lblPalletNumber" Text="1" FontSize="40"  HorizontalOptions="CenterAndExpand"/>
                 <Button FontSize="Large" x:Name="btnNext" Clicked="btnNextPallet_Clicked" BackgroundColor="Transparent" ImageSource="PalletAdd.png" HorizontalOptions="EndAndExpand"/>

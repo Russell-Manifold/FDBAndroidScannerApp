@@ -134,7 +134,7 @@ namespace WHTransfer
             pickerHeaders.IsVisible = false;
             lblTop.IsVisible = false;
             LayoutMain.IsVisible = true;
-            lblInfo.Text = "Transfer number :" + CurrentHeader.ID + " started on date :" + CurrentHeader.TrfDate;
+            lblInfo.Text = "Transfer number :" + CurrentHeader.ID + " started on :" + CurrentHeader.TrfDate;
             ListViewItems.ItemsSource = lines;
             isLoading.IsVisible = false;
             //txfScannedItem.Focus();

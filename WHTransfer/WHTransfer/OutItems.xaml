@@ -5,11 +5,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
              mc:Ignorable="d"
-             Title="Scan Items"
+             Title="Scan Items OUT"
              x:Class="WHTransfer.OutItems">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Scan items to go out:"/>
+            <Label Text="Scan item barcode(s)" FontSize="Large"/>
             <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScannedItem" TextChanged="TxfScannedItem_TextChanged"/>
             <ActivityIndicator x:Name="Loading" IsVisible="False" IsRunning="True" Color="Blue"/>
             <Label Text="Start Scanning..." x:Name="lblLastItem"/>
@@ -21,10 +21,10 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="100*" />
-                            <ColumnDefinition Width="30*" />
+                            <ColumnDefinition Width="15*" />
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Row="0" Grid.Column="0" Text="Item Code" TextColor="Black" FontSize="Medium"/>
-                        <Label Grid.Row="0" Grid.Column="1" Text="Qty" TextColor="Black" FontSize="Medium"/>
+                        <Label Grid.Row="0" Grid.Column="0" Text="Item Code" TextColor="Black" FontSize="Medium" Padding="5"/>
+                        <Label Grid.Row="0" Grid.Column="1" Text="Qty" TextColor="Black" FontSize="Medium" HorizontalOptions="Center"/>
                     </Grid>
                 </ListView.Header>
                 <ListView.ItemTemplate>
@@ -37,17 +37,17 @@
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="100*" />
-                                        <ColumnDefinition Width="30*" />
+                                        <ColumnDefinition Width="15*" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding ItemDesc}" TextColor="Black"/>
-                                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding ItemQtyOut}" TextColor="Black"/>
+                                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding ItemDesc}" FontSize="Medium" TextColor="Black" Padding="5"/>
+                                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding ItemQtyOut}" FontSize="Medium" TextColor="Black" HorizontalOptions="Center"/>
                                 </Grid>
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button Text="Complete" x:Name="btnComplete" Clicked="BtnComplete_Clicked" ImageSource="TickSmall.png" BackgroundColor="Transparent" FontSize="Medium" TextColor="Green" />
+            <Button Text="Transfer OUT" x:Name="btnComplete" Clicked="BtnComplete_Clicked" ImageSource="TickSmall.png" BackgroundColor="Transparent" FontSize="Medium" TextColor="Green" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

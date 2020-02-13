@@ -8,11 +8,11 @@
              Title="Authentication"
              x:Class="WHTransfer.AuthOut">
     <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Please scan your User Barcode:" x:Name="lblUserCode"/>
-            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfUserCode" TextChanged="TxfUserCode_TextChanged"/>
+        <StackLayout VerticalOptions="CenterAndExpand">
+            <Label Text="Please scan your User Barcode:" x:Name="lblUserCode" FontSize="Large" VerticalOptions="StartAndExpand"/>
+            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfUserCode" TextChanged="TxfUserCode_TextChanged" VerticalOptions="StartAndExpand"/>
             <ActivityIndicator IsVisible="False" IsRunning="True" x:Name="Loading"/>
-            <Button Text="Done" x:Name="btnDone" Clicked="BtnDone_Clicked" IsEnabled="False" ImageSource="TickSmall.png" BackgroundColor="Transparent" FontSize="Medium" TextColor="Green"/>
+            <Button Text="Complete Transfer Out" x:Name="btnDone" Clicked="BtnDone_Clicked" ImageSource="TickSmall.png" BackgroundColor="Transparent" FontSize="Large" TextColor="Green" IsVisible="False" VerticalOptions="End"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
