@@ -18,10 +18,12 @@ namespace InventoryCount
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CountPage : ContentPage
     {
-        private List<InventoryItem> items = new List<InventoryItem>();
+        public static List<InventoryItem> items = new List<InventoryItem>();
         IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;
+        private InventoryItem currentItem = new InventoryItem();
         private int countID = 0;
+        Button btn1 = new Button();
         public CountPage(int i)
         {
             InitializeComponent();
@@ -77,6 +79,7 @@ namespace InventoryCount
                             i1.BarCode = row["BarCode"].ToString();
                             i1.ItemCode = row["ItemCode"].ToString();
                             i1.isFirst = Convert.ToBoolean(row["isFirst"].ToString());
+                            i1.Complete = Convert.ToBoolean(row["Complete"].ToString());
                             try
                             {
                                 i1.FirstScanQty = Convert.ToInt32(row["FirstScanQty"].ToString());
@@ -131,34 +134,40 @@ namespace InventoryCount
                 if (ite.Complete)
                 {
                     ite.Status = "Complete";
-                }else if (ite.ItemDesc==lblCurrentItem.Text)
-                {
-                    ite.Status = "Current";
-                }else if (!ite.isFirst)
-                {
-                    ite.Status = "2";
-                }
-                else
-                {
-                    ite.Status = "1";
                 }
             }
             lstItems.ItemsSource = items;
+            _ = CheckIfComplete();
             return true;
+        }
+         Task CheckIfComplete()
+        {
+            
+            foreach (InventoryItem i in items)
+            {
+                if (i.Complete == false)
+                {
+                    btnComplete.IsVisible = false;
+                    return null;
+                }
+            }
+            btnComplete.IsVisible = true;
+            return null;
         }
         void Setlbl(string desc)
         {
             lblLayout.IsVisible = true;
-            lblCurrentItem.Text =items.Where(x=>x.ItemDesc==desc).First().ItemDesc+" : ";
+            currentItem = items.Where(x => x.ItemDesc == desc).First();
+            lblCurrentItem.Text = currentItem .ItemDesc+ " : ";
             if (items.Where(x => x.ItemDesc == desc).First().isFirst)
             {
                 lblLayout.BackgroundColor = Color.FromHex("#3F51B5");
-                lblCurrentQty.Text = ""+items.Where(x => x.ItemDesc == desc).First().FirstScanQty;
+                lblCurrentQty.Text = ""+currentItem.FirstScanQty;
             }
             else
             {
                 lblLayout.BackgroundColor = Color.Orange;
-                lblCurrentQty.Text = "" + items.Where(x => x.ItemDesc == desc).First().SecondScanQty;
+                lblCurrentQty.Text = "" + currentItem.SecondScanQty;
             }
         }
         private async void txfItemCode_Completed(object sender, EventArgs e)
@@ -166,7 +175,7 @@ namespace InventoryCount
             LoadingIndicator.IsVisible = true;
             if (txfItemCode.Text.Length>10)
             {               
-                if (items.Where(x => x.BarCode == txfItemCode.Text) != null)
+                if (items.Where(x => x.BarCode == txfItemCode.Text&&x.Complete==false) != null)
                 {
                     if (items.Where(x => x.BarCode == txfItemCode.Text).First().isFirst)
                     {
@@ -200,7 +209,7 @@ namespace InventoryCount
                 else
                 {
                     Vibration.Vibrate();
-                    message.DisplayMessage("No item on this order with this code", true);
+                    message.DisplayMessage("No item found or scanning complete for this item", true);
                     txfItemCode.Text = "";
                     LoadingIndicator.IsVisible = false;
                     txfItemCode.Focus();
@@ -223,7 +232,7 @@ namespace InventoryCount
                     txfItemCode.Focus();
                     return;
                 }
-                if (items.Where(x=>x.ItemCode==bi.ItemCode)!=null)
+                if (items.Where(x=>x.ItemCode==bi.ItemCode && x.Complete == false) !=null)
                 {
                     if (items.Where(x=>x.ItemCode==bi.ItemCode).First().isFirst)
                     {
@@ -257,7 +266,7 @@ namespace InventoryCount
                 else
                 {
                     Vibration.Vibrate();
-                    message.DisplayMessage("No item on this order with this code", true);
+                    message.DisplayMessage("No item found or scanning complete for this item", true);
                     txfItemCode.Text = "";
                     LoadingIndicator.IsVisible = false;
                     txfItemCode.Focus();
@@ -291,12 +300,14 @@ namespace InventoryCount
                     {
                         if (dl.isFirst)
                         {
-                            items.Where(x => x.ItemDesc == dl.ItemDesc).Select(x => { x.FirstScanQty = 0; return x; }).ToList();
+                            items.Where(x => x.ItemDesc == dl.ItemDesc).FirstOrDefault().FirstScanQty = 0;                           
                         }
                         else
                         {
-                            items.Where(x => x.ItemDesc == dl.ItemDesc).Select(x => { x.SecondScanQty = 0; return x; }).ToList();
+                            items.Where(x => x.ItemDesc == dl.ItemDesc).FirstOrDefault().SecondScanQty = 0;
                         }
+                        items.Where(x => x.ItemDesc == dl.ItemDesc).FirstOrDefault().SecondScanAuth = 0;
+                        items.Where(x => x.ItemDesc == dl.ItemDesc).FirstOrDefault().Complete = false;
                     }
                     break;
             }
@@ -326,8 +337,8 @@ namespace InventoryCount
                 string path = "DocumentSQLConnection";
                 client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
                 {
-                    string str = $"POST?qry=UPDATE InventoryLines SET {scanQty}=0,Complete=False,SecondScanAuth=0 WHERE CountID={countID} AND ItemDesc='{desc}'";
-                    var Request = new RestRequest(str, Method.GET);
+                    string str = $"POST?qry=UPDATE InventoryLines SET {scanQty}=0,Complete='false',SecondScanAuth=0 WHERE CountID={countID} AND ItemDesc='{desc}'";
+                    var Request = new RestRequest(str, Method.POST);
                     var cancellationTokenSource = new CancellationTokenSource();
                     var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                     cancellationTokenSource.Dispose();
@@ -343,8 +354,10 @@ namespace InventoryCount
             }
             return false;
         }
-        private void btnComplete_Clicked(object sender, EventArgs e)
+        private async void btnComplete_Clicked(object sender, EventArgs e)
         {
+            message.DisplayMessage("Complete!",true);
+            await Navigation.PopAsync();
             //SendSQLToPastel
         }
         private async void Entry_Focused(object sender, FocusEventArgs e)
@@ -366,21 +379,85 @@ namespace InventoryCount
         }
         private async void btnSave_Clicked(object sender, EventArgs e)
         {
-            message.DisplayMessage("Checking Values....", true);
-            if (await CheckWithSQL())
-            {
-                Navigation.RemovePage(Navigation.NavigationStack[2]);
-                await Navigation.PopAsync();
-            }
-            else
+            message.DisplayMessage("Checking Values....", false);
+            if (!await CheckWithSQL())
             {
                 Vibration.Vibrate();
-                message.DisplayMessage("Could not connect to DB", false);                
+                message.DisplayMessage("Could not connect to DB", false);
             }
         }
         private async Task<bool> CheckWithSQL()
         {
-            //Check item Qtys
+            int QTY = 0;
+            string itemcode = currentItem.ItemCode;
+            if (Connectivity.NetworkAccess == NetworkAccess.Internet)
+            {
+                RestClient client = new RestClient();
+                string path = "ItemQOH";
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                {
+                    string stri = InvLandingPage.WH;
+                    string str = $"GET?WH=001&ItemCode={itemcode}";
+                    var Request = new RestRequest(str, Method.GET);
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    cancellationTokenSource.Dispose();
+                    if (!res.IsSuccessful||res.Content==null)
+                    {
+                        Vibration.Vibrate();
+                        message.DisplayMessage("Item not found", true);
+                        return true;
+                    }
+                    else
+                    {
+                        QTY=Convert.ToInt32(Convert.ToDouble(res.Content));                        
+                    }
+                }
+            }
+            else
+            {
+                Vibration.Vibrate();
+                message.DisplayMessage("Please recconect to the internet", true);
+                return true;
+            }
+            if (currentItem.isFirst)
+            {
+                if (currentItem.FirstScanQty==QTY)
+                {
+                    items.Where(x => x.BarCode == currentItem.BarCode).First().Complete = true;
+                    message.DisplayMessage("QTY DID MATCH!", true);
+                }
+                else
+                {
+                    items.Where(x => x.BarCode == currentItem.BarCode).First().isFirst = false;
+                    Vibration.Vibrate();
+                    message.DisplayMessage("Your QTY did not match", true);
+                }
+            }
+            else
+            {
+                if (currentItem.SecondScanQty == QTY)
+                {
+                    items.Where(x => x.BarCode == currentItem.BarCode).First().Complete = true;
+                    message.DisplayMessage("QTY DID MATCH!", true);
+                }
+                else
+                {
+                    await Navigation.PushAsync(new AcceptScanPage(currentItem));
+                    return true;
+                }
+            }
+            if (!await SendData())
+            {
+                Vibration.Vibrate();
+                message.DisplayMessage("Could not update the database",true);
+            }
+            Navigation.InsertPageBefore(new CountPage(countID), Navigation.NavigationStack[3]);
+            await Navigation.PopAsync();
+            return true;
+        }
+        private async Task<bool> SendData()
+        {
             var ds = new DataSet();
             try
             {
@@ -394,19 +471,19 @@ namespace InventoryCount
                 t1.Columns.Add("SecondScanAuth");
                 t1.Columns.Add("CountUser");
                 t1.Columns.Add("isFirst");
-                foreach (InventoryItem iut in items)
-                {
-                    row = t1.NewRow();
-                    row["CountID"] = countID;
-                    row["BarCode"] = iut.BarCode;                    
-                    row["FirstScanQty"] = iut.FirstScanQty;                    
-                    row["SecondScanQty"] = iut.SecondScanQty;                    
-                    row["SecondScanAuth"] = iut.SecondScanAuth;                    
-                    row["ItemDesc"] = iut.ItemDesc;                    
-                    row["CountUser"] = iut.CountUser;                    
-                    row["isFirst"] = iut.isFirst;                    
-                    t1.Rows.Add(row);
-                }
+                t1.Columns.Add("Complete");
+                InventoryItem iut = currentItem;
+                row = t1.NewRow();
+                row["CountID"] = countID;
+                row["BarCode"] = iut.BarCode;
+                row["FirstScanQty"] = iut.FirstScanQty;
+                row["SecondScanQty"] = iut.SecondScanQty;
+                row["SecondScanAuth"] = iut.SecondScanAuth;
+                row["ItemDesc"] = iut.ItemDesc;
+                row["CountUser"] = iut.CountUser;
+                row["isFirst"] = iut.isFirst;
+                row["Complete"] = iut.Complete;
+                t1.Rows.Add(row);
                 ds.Tables.Add(t1);
             }
             catch (Exception)
@@ -428,19 +505,6 @@ namespace InventoryCount
                 }
             }
             return false;
-        }
-        private void addCompleteBtn()
-        {
-            Button btn1 = new Button 
-            {
-                Text = "Complete Inventory Count" ,
-                BackgroundColor = Color.Green, 
-                TextColor = Color.Black, 
-                ImageSource = "TickSmall.png", 
-                FontSize = 30
-            };
-            btn1.Clicked += btnComplete_Clicked;
-            lstItems.Footer = btn1;
         }
     }
 }

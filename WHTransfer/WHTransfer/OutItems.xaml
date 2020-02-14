@@ -13,7 +13,7 @@
             <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScannedItem" TextChanged="TxfScannedItem_TextChanged"/>
             <ActivityIndicator x:Name="Loading" IsVisible="False" IsRunning="True" Color="Blue"/>
             <Label Text="Start Scanning..." x:Name="lblLastItem"/>
-            <ListView x:Name="ListViewItems" HasUnevenRows="True">
+            <ListView x:Name="ListViewItems" HasUnevenRows="True" ItemSelected="ListViewItems_ItemSelected">
                 <ListView.Header>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -47,7 +47,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button Text="Transfer OUT" x:Name="btnComplete" Clicked="BtnComplete_Clicked" ImageSource="TickSmall.png" BackgroundColor="Transparent" FontSize="Medium" TextColor="Green" />
+            <Button Text="Transfer OUT" x:Name="btnComplete" Clicked="BtnComplete_Clicked" ImageSource="TickSmall.png" BackgroundColor="Transparent" IsVisible="False" FontSize="Medium" TextColor="Green" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

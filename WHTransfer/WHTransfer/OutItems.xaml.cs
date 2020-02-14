@@ -36,11 +36,12 @@ namespace WHTransfer
             {
                 ListViewItems.ItemsSource = null;
                 await Task.Delay(100);
-                lblLastItem.Text ="Previous Barcode: "+ txfScannedItem.Text;
-                txfScannedItem.Text = "";
-                txfScannedItem.Focus();
+                lblLastItem.Text ="Previous Barcode: "+ txfScannedItem.Text;            
                 ListViewItems.ItemsSource = items;
                 Loading.IsVisible = false;
+                btnComplete.IsVisible = true;
+                txfScannedItem.Text = "";
+                txfScannedItem.Focus();
             }
         }
         private async void Entry_Focused(object sender, FocusEventArgs e)
@@ -100,6 +101,26 @@ namespace WHTransfer
         private void BtnComplete_Clicked(object sender, EventArgs e)
         {
             Navigation.PushAsync(new AuthOut());
+        }
+        private async void ListViewItems_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {
+            IBTItem ite = e.SelectedItem as IBTItem;
+            string output = await DisplayActionSheet("Remove this item?", "YES", "NO");
+            switch (output)
+            {
+                case "NO":
+                    break;
+                case "YES":
+                    items.Remove(ite);
+                    ListViewItems.ItemsSource = null;
+                    ListViewItems.ItemsSource = items;
+                    if (items.Count==0)
+                    {
+                        btnComplete.IsVisible = false;
+                    }
+                    txfScannedItem.Focus();
+                    break;
+            }
         }
     }
 }

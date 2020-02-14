@@ -19,6 +19,8 @@ namespace PickAndPack
     {
         IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;
+        string SOTextlbl = "";
+        string supplier = "";
         public PickSlips()
         {
             InitializeComponent();
@@ -43,7 +45,59 @@ namespace PickAndPack
             Task.Delay(100);
             txfSOCodes.Focus();
         }
-        private async void txfSOCodes_TextChanged(object sender, TextChangedEventArgs e)
+        async Task<bool> FetchSO(string code)
+        {
+            if (Connectivity.NetworkAccess == NetworkAccess.Internet)
+            {
+                RestSharp.RestClient client = new RestSharp.RestClient();
+                string path = "GetDocument";
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath+ path);
+                {
+                    string str = $"GET?qrystr=ACCHISTL|6|{code}|102|"+ GoodsRecieveingApp.MainPage.UserCode;
+                    var Request = new RestSharp.RestRequest();
+                    Request.Resource = str;
+                    Request.Method = RestSharp.Method.GET;
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.Content.ToString().Contains("DocNum"))
+                    {
+                        DataSet myds = new DataSet();
+                        myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                       // if (await GoodsRecieveingApp.App.Database.GetHeader(myds.Tables[0].Rows[0]["OrderNumber"].ToString())==null){
+                            foreach (DataRow row in myds.Tables[0].Rows)
+                            {
+                                try
+                                {
+                                    var Doc = new DocLine();
+                                    Doc.DocNum = row["DocNum"].ToString();
+                                    Doc.SupplierCode = row["SupplierCode"].ToString();
+                                    Doc.SupplierName = row["SupplierName"].ToString();
+                                    Doc.ItemBarcode = row["ItemBarcode"].ToString();
+                                    Doc.ItemCode = row["ItemCode"].ToString();
+                                    Doc.ItemDesc = row["ItemDesc"].ToString();
+                                    Doc.ScanAccQty = 0;
+                                    Doc.ScanRejQty = 0;
+                                    Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
+                                    await GoodsRecieveingApp.App.Database.Insert(Doc);
+                                    supplier = Doc.SupplierName;
+                                }
+                                catch
+                                {
+                                    return false;
+                                }
+                            }
+                        if (!SOTextlbl.Contains(txfSOCodes.Text))
+                        {
+                            SOTextlbl += txfSOCodes.Text + " - " + supplier + "\n";
+                        }                          
+                           return true;
+                        //}
+                    }
+                }
+            }
+            return false;
+        }
+        private async void txfSOCodes_Completed(object sender, EventArgs e)
         {
             if (txfSOCodes.Text.Length == 8)
             {
@@ -54,72 +108,19 @@ namespace PickAndPack
                     LoadingIndicator.IsRunning = false;
                     message.DisplayMessage("Success", true);
                     lblSoName.IsVisible = true;
-                    lblSoName.Text += txfSOCodes.Text+"\n";
+                    lblSoName.Text = SOTextlbl;
                 }
                 else
                 {
                     LoadingIndicator.IsRunning = false;
                     Vibration.Vibrate();
-                    message.DisplayMessage("Something went wrong",true);
+                    message.DisplayMessage("Something went wrong", true);
                     lblSoName.IsVisible = false;
                 }
                 LoadingIndicator.IsVisible = false;
                 txfSOCodes.Text = "";
                 txfSOCodes.Focus();
             }
-        }
-        async Task<bool> FetchSO(string code)
-        {
-            if (Connectivity.NetworkAccess == NetworkAccess.Internet)
-            {
-                RestSharp.RestClient client = new RestSharp.RestClient();
-                string path = "GetDocument";
-                client.BaseUrl = new Uri("GoodsRecieveingApp.MainPage.APIPath" + path);
-                {
-                    string str = $"GET?qrystr=ACCHISTL|6|{code}|102";
-                    var Request = new RestSharp.RestRequest();
-                    Request.Resource = str;
-                    Request.Method = RestSharp.Method.GET;
-                    var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                    if (res.Content.ToString().Contains("OrderNumber"))
-                    {
-                        DataSet myds = new DataSet();
-                        myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
-                        string smtpe=myds.Tables[0].Rows[0]["OrderNumber"].ToString();
-                       // if (await GoodsRecieveingApp.App.Database.GetHeader(myds.Tables[0].Rows[0]["OrderNumber"].ToString())==null){
-                            foreach (DataRow row in myds.Tables[0].Rows)
-                            {
-                                try
-                                {
-                                    string s = smtpe;
-                                    s = "";
-                                    var Doc = new DocLine();
-                                    Doc.DocNum = row["OrderNumber"].ToString();
-                                    Doc.SupplierCode = row["SupplierCode"].ToString();
-                                    Doc.SupplierName = row["SupplierName"].ToString();
-                                    Doc.ItemBarcode = row["Barcode"].ToString();
-                                    Doc.ItemCode = row["ItemCode"].ToString();
-                                    Doc.ItemDesc = row["ItemDesc"].ToString();
-                                    Doc.ScanAccQty = 0;
-                                    Doc.ScanRejQty = 0;
-                                    Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
-                                    await GoodsRecieveingApp.App.Database.Insert(Doc);
-                                    s = Doc.SupplierCode;
-                                    s += "\n" + Doc.SupplierName;
-                                    lblSoName.Text = s;                                   
-                                }
-                                catch
-                                {
-                                    return false;
-                                }
-                            }
-                            return true;
-                        //}
-                    }
-                }
-            }
-            return false;
         }
     }
 }

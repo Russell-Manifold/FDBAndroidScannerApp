@@ -31,6 +31,9 @@
         </Grid>
         <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
         <ListView x:Name="lstItems" ItemSelected="lstItems_ItemSelected" HasUnevenRows="True">
+            <ListView.Footer>
+                <Button x:Name="btnComplete" Text="Complete Inventory Count" BackgroundColor="Green" TextColor="Black" ImageSource="TickSmall.png" FontSize="30" IsVisible="False" Clicked="btnComplete_Clicked"/>
+            </ListView.Footer>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
@@ -39,19 +42,10 @@
                                 <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="Complete">
                                     <Setter Property="BackgroundColor" Value="#d4ff88"/>
                                 </DataTrigger>
-                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="Current">
-                                    <Setter Property="BackgroundColor" Value="Transparent"/>
-                                </DataTrigger>
-                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="1">
-                                    <Setter Property="BackgroundColor" Value="Transparent"/>
-                                </DataTrigger>
-                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="2">
-                                    <Setter Property="BackgroundColor" Value="Transparent"/>
-                                </DataTrigger>
                             </StackLayout.Triggers>
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="50"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="80*" />

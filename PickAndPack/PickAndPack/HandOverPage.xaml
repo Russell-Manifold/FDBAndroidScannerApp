@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="PickAndPack.HandOverPage">
+    <StackLayout>
+        <Label Text="Please Scan Recieving User:" x:Name="lblRecUser" FontSize="Large" VerticalOptions="StartAndExpand" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
+        <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfRecUser" FontSize="Large" VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center" Completed="txfRecUser_Completed"/>
+        <Label Text="Please Scan the SO Codes:" x:Name="lblSOCode" FontSize="Large" VerticalOptions="StartAndExpand" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center" IsVisible="False"/>
+        <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfSOCOde" FontSize="Large" VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center" Completed="txfSOCOde_Completed" IsVisible="False"/>
+        <ActivityIndicator x:Name="Loading" IsVisible="False" VerticalOptions="StartAndExpand" HorizontalOptions="Center"/>
+        <ScrollView>
+            <Label x:Name="lblScannedCodes" Text=" " VerticalOptions="StartAndExpand" HorizontalOptions="CenterAndExpand"/>
+        </ScrollView>
+        <Button VerticalOptions="EndAndExpand" Text="Complete" TextColor="Black" BackgroundColor="Green" x:Name="btnComplete" Clicked="btnComplete_Clicked"/>
+    </StackLayout>
+</ContentPage>

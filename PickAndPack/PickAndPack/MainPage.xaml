@@ -10,7 +10,7 @@
     <StackLayout>
         <Button x:Name="btnSingleOrder" Text="Pack 1 Order &#10; onto Pallet(s)" Clicked="btnSingleOrder_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand" ImageSource="OnePallet.png" BackgroundColor="Transparent"/>
         <Button Text="Pack 1 Pallet &#10; with Order(s)" x:Name="btnSinglePallet" Clicked="btnSinglePallet_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand" ImageSource="MultiOrderPallet.png" BackgroundColor="Transparent"/>
-        <Button Text="Hand Over Picking Slip" x:Name="btnHOPickingSlips" Clicked="btnPickingSlips_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand" ImageSource="handover.png" BackgroundColor="Transparent"/>
+        <Button Text="Hand Over Picking Slip" x:Name="btnHOPickingSlips" Clicked="btnHOPickingSlips_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand" ImageSource="handover.png" BackgroundColor="Transparent"/>
         <Button Text="Collecting Picking Slips" x:Name="btnPickingSlips" Clicked="btnPickingSlips_Clicked" VerticalOptions="FillAndExpand" FontSize="Large" HorizontalOptions="CenterAndExpand" ImageSource="GetPickSlips.png" BackgroundColor="Transparent"/>
     </StackLayout>
 </ContentPage>

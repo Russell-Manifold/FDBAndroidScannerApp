@@ -1,4 +1,5 @@
 ﻿using Data.KeyboardContol;
+using Data.Message;
 using Data.Model;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -16,6 +17,7 @@ namespace WHTransfer
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class InPage : ContentPage
     {
+        IMessage message = DependencyService.Get<IMessage>();
         private List<IBTHeader> headers = new List<IBTHeader>();
         private List<IBTItem> lines = new List<IBTItem>();
         private List<string> PickerItems = new List<string>();
@@ -61,7 +63,8 @@ namespace WHTransfer
             {
                 if (!CheckItem(txfScannedItem.Text))
                 {
-                    await DisplayAlert("Error!", "Please make sure this item is on this order and hasnt been scanned yet", "OK");
+                    Vibration.Vibrate();
+                    message.DisplayMessage("This item is invalid",true);
                 }
                 else
                 {
@@ -134,10 +137,11 @@ namespace WHTransfer
             pickerHeaders.IsVisible = false;
             lblTop.IsVisible = false;
             LayoutMain.IsVisible = true;
-            lblInfo.Text = "Transfer number :" + CurrentHeader.ID + " started on :" + CurrentHeader.TrfDate;
+            lblInfo.Text = "TRN :" + CurrentHeader.ID + "\nOn :" + Convert.ToDateTime(CurrentHeader.TrfDate).ToString("dd/MMM/yyyy");
             ListViewItems.ItemsSource = lines;
             isLoading.IsVisible = false;
-            //txfScannedItem.Focus();
+            await Task.Delay(200);
+            txfScannedItem.Focus();
         }
         private async Task<bool> GetLines(int trf)
         {
@@ -178,15 +182,15 @@ namespace WHTransfer
         }
         private async Task IsDone()
         {
-            var changes = new IBTItem() ;
+            var changes = new IBTItem();
             try
             {
                 changes = lines.Where(x => x.ItemQtyIn == 0).First();
             }
             catch (InvalidOperationException)
             {
-                 await DisplayAlert("Complete!", "All items have been scanned in", "OK");
-                 await Complete();
+                message.DisplayMessage("COMPLETE!!",true);
+                await Complete();
             }         
                     
         }
@@ -211,7 +215,9 @@ namespace WHTransfer
                             var res2 = await client2.ExecuteAsync(Request2, cancellationTokenSource2.Token);
                             if (!(res2.IsSuccessful && res2.Content != null))
                             {
-                                await DisplayAlert("Error!", "Could not delete record", "OK");                               
+                                //await DisplayAlert("Error!", "Could not delete record", "OK"); 
+                                Navigation.RemovePage(Navigation.NavigationStack[2]);
+                                await Navigation.PopAsync();
                                 return;
                             }
                         }

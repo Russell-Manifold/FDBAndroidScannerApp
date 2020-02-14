@@ -114,6 +114,44 @@ namespace ScannerFDB
                 res = client.Execute(Request);
                 if (res.IsSuccessful && res.Content != null)
                 {
+                } 
+                qry = "UPDATE InventoryLines SET FirstScanQty=0,SecondScanQty=0,isFirst=1,Complete=0";
+                 str = $"Post?qry={qry}";
+                 Request = new RestSharp.RestRequest();
+                Request.Resource = str;
+                Request.Method = RestSharp.Method.POST;
+                res = client.Execute(Request);
+                if (res.IsSuccessful && res.Content != null)
+                {
+                }
+                qry = "DELETE FROM tblIBTLines";
+                str = $"Post?qry={qry}";
+                Request = new RestSharp.RestRequest();
+                Request.Resource = str;
+                Request.Method = RestSharp.Method.POST;
+                res = client.Execute(Request);
+                if (res.IsSuccessful && res.Content != null)
+                {
+                }
+
+                qry = "DELETE FROM tblIBTHeader";
+                str = $"Post?qry={qry}";
+                Request = new RestSharp.RestRequest();
+                Request.Resource = str;
+                Request.Method = RestSharp.Method.POST;
+                res = client.Execute(Request);
+                if (res.IsSuccessful && res.Content != null)
+                {
+                }
+
+                qry = "DELETE FROM PalletTransaction";
+                str = $"Post?qry={qry}";
+                Request = new RestSharp.RestRequest();
+                Request.Resource = str;
+                Request.Method = RestSharp.Method.POST;
+                res = client.Execute(Request);
+                if (res.IsSuccessful && res.Content != null)
+                {
                 }
             }
 

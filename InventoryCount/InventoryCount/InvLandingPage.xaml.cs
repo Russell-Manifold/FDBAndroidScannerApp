@@ -16,6 +16,8 @@ namespace InventoryCount
     [DesignTimeVisible(false)]
     public partial class InvLandingPage : ContentPage
     {
+        List<string> WHIDs = new List<string>();
+        public static string WH = "001";
         public InvLandingPage()
         {
             InitializeComponent();
@@ -39,6 +41,7 @@ namespace InventoryCount
                     myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
                     foreach (DataRow row in myds.Tables[0].Rows)
                     {
+                        WHIDs.Add(""+row["Whse"]);
                         pickerCountID.Items.Add(""+row["CountID"]);
                     }
                 }
@@ -55,6 +58,7 @@ namespace InventoryCount
             Loading.IsVisible = true;
             if (pickerCountID.SelectedIndex>-1)
             {
+                WH = WHIDs[pickerCountID.SelectedIndex];
                 await Navigation.PushAsync(new CountPage(Convert.ToInt32(pickerCountID.SelectedItem.ToString())));
             }
             Loading.IsVisible = false;

@@ -34,14 +34,10 @@ namespace WHTransfer
         }
         private async void BtnDone_Clicked(object sender, EventArgs e)
         {
-            //Complete order
-            string Useroutput =await DisplayActionSheet("Complete Transfer Out","Yes","No");
-            switch(Useroutput){
-                case"Yes":
                     if (await completeOrder())
                     {
                         await GoodsRecieveingApp.App.Database.DeleteAllHeaders();
-                        await DisplayAlert("Complete!","All the data has been saved","OK");                                             
+                        message.DisplayMessage("COMPLETE!",false);                                             
                         Navigation.RemovePage(Navigation.NavigationStack[4]);
                         Navigation.RemovePage(Navigation.NavigationStack[3]);
                         Navigation.RemovePage(Navigation.NavigationStack[2]);
@@ -50,12 +46,6 @@ namespace WHTransfer
                     }
                     message.DisplayMessage("There was a error in sending the information", true);
                     Vibration.Vibrate();
-                    break;
-                case "No":
-                    break;
-                default:
-                    break;
-            }
         }
         private async Task<bool> completeOrder()
         {
@@ -89,7 +79,6 @@ namespace WHTransfer
                     {
                         ColID = Convert.ToInt32(res.Content.Replace('\\', ' ').Replace('"', ' '));
                         await DisplayAlert("Out Complete!", "Transfer OUT Number " + ColID + " Complete", "Continue");
-
                         return true;
                     }
                 }
@@ -126,8 +115,7 @@ namespace WHTransfer
                     }
                 }                
                 catch
-                {
-                    await DisplayAlert("Error!","There was an error in inserting the lines","OK");
+                {                   
                     message.DisplayMessage("Error in sending the lines",true);
                     Vibration.Vibrate();
                     return false;

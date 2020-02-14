@@ -51,5 +51,10 @@ namespace PickAndPack
                 btnPickingSlips.IsVisible = false;
             }
         }
+
+        private async void btnHOPickingSlips_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new HandOverPage());
+        }
     }
 }
