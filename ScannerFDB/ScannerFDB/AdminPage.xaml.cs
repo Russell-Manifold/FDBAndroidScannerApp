@@ -76,10 +76,7 @@ namespace ScannerFDB
                 await DisplayAlert("Error!!", "Please Reconnect to the internet", "OK");
             }
         }
-        private void Button_Clicked_1(object sender, EventArgs e)
-        {
-
-        }
+ 
         //private async void Add_User_Clicked(object sender, EventArgs e)
         //{
         //    await Navigation.PushAsync(new CreateUser());
@@ -158,6 +155,11 @@ namespace ScannerFDB
 
 
             Button_Clicked(sender, EventArgs.Empty);
+        }
+
+        private async void btnConnectionSetup_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new ConfigPage());
         }
     }
 }

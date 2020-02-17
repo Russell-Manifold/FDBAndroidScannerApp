@@ -14,11 +14,13 @@ namespace Data.DataAccess
         {
             database = new SQLiteAsyncConnection(dbPath);
             database.CreateTableAsync<BOMItem>().Wait();
+            database.CreateTableAsync<DeviceConfig>().Wait();
             database.CreateTableAsync<DocHeader>().Wait();
             database.CreateTableAsync<DocLine>().Wait();
             database.CreateTableAsync<User>().Wait();
             database.CreateTableAsync<IBTItem>().Wait();
             database.CreateTableAsync<IBTHeader>().Wait();
+            database.CreateTableAsync<InventoryItem>().Wait();
         }
         public Task<DocHeader> GetHeader(string docNum)
         {
@@ -75,6 +77,10 @@ namespace Data.DataAccess
         {
             return database.UpdateAsync(data);
         }
+        public Task<int> Update(DeviceConfig data)
+        {
+            return database.UpdateAsync(data);
+        }
         public Task<int> Update(List<IBTItem> data)
         {
             return database.UpdateAllAsync(data);
@@ -95,6 +101,10 @@ namespace Data.DataAccess
         {
             return database.InsertAsync(data);
         }
+        public Task<int> Insert(DeviceConfig data)
+        {
+            return database.InsertAsync(data);
+        }
         public Task<int> Insert(DocHeader data)
         {
             return database.InsertAsync(data);
@@ -106,6 +116,10 @@ namespace Data.DataAccess
         public Task<List<DocLine>> GetLinesAsync()
         {
             return database.Table<DocLine>().ToListAsync();
+        }
+        public Task<DeviceConfig> GetConfig()
+        {
+            return database.Table<DeviceConfig>().FirstOrDefaultAsync();
         }
         public Task<List<IBTHeader>> GetIBTHeaders()
         {
