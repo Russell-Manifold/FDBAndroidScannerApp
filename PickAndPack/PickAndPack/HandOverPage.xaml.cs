@@ -101,11 +101,22 @@ namespace PickAndPack
         }
         async Task<bool> SendStatus(string status)
         {
+            string Status="ContollUser";
+            if (status=="2")
+            {
+                Status = "PickerUser";
+            }else if (status == "3")
+            {
+                Status = "PackerUser";
+            }else if (status == "4")
+            {
+                Status = "Authuser";
+            }
             RestSharp.RestClient client = new RestSharp.RestClient();
             string path = "DocumentSQLConnection";
             client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
             {
-                string str = $"POST?qry=UPDATE tblTempDocHeader SET DocStatus={((Convert.ToInt32(status))+1)} WHERE DocNum ='{txfSOCOde.Text}'";
+                string str = $"POST?qry=UPDATE tblTempDocHeader SET DocStatus={((Convert.ToInt32(status))+1)},SET {Status}={RecUserCode} WHERE DocNum ='{txfSOCOde.Text}'";
                 var Request = new RestSharp.RestRequest();
                 Request.Resource = str;
                 Request.Method = RestSharp.Method.POST;
@@ -117,7 +128,7 @@ namespace PickAndPack
                 }
             }
             return false;
-        }
+        }      
         private void Entry_Focused(object sender, FocusEventArgs e)
         {
             _currententry = sender as ExtendedEntry;
