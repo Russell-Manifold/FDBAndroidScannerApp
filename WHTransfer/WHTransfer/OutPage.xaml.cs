@@ -18,46 +18,26 @@ namespace WHTransfer
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class OutPage : ContentPage
     {
+        private List<string> WHIDs = new List<string>();
         IMessage message = DependencyService.Get<IMessage>();
         public OutPage()
         {
             InitializeComponent();
         }
-        private string FromWH,ToWH,FromDate,RecDate;
         private async void Button_Clicked(object sender, EventArgs e)
         {
-            FromDate = DatePickerFrom.Date.ToString("dd MMM yyyy");
-            RecDate = DatePickerRec.Date.ToString("dd MMM yyyy");
-            if (FromWH==null||ToWH==null||FromDate==null||RecDate==null||FromWH == "" || ToWH == "" || FromDate == "" || RecDate == "")
+            if (pickerFromWH.SelectedIndex==-1|| pickerToWH.SelectedIndex == -1)
             {
                 Vibration.Vibrate();
                 message.DisplayMessage("Please enter all fields",true);
             }
             else
             {
-                await GoodsRecieveingApp.App.Database.Insert(new IBTHeader { TrfDate = DateTime.Now.ToString("dd MMM yyyy"), FromWH = FromWH, ToWH = ToWH, FromDate = FromDate, RecDate = RecDate, Active = true });
+                await GoodsRecieveingApp.App.Database.Insert(new IBTHeader { TrfDate = DateTime.Now.ToString("dd MMM yyyy"), FromWH = pickerFromWH.SelectedItem.ToString(), ToWH = pickerToWH.SelectedItem.ToString(), FromDate = DatePickerFrom.Date.ToString("dd MMM yyyy"), RecDate = DatePickerRec.Date.ToString("dd MMM yyyy"), Active = true });
                 message.DisplayMessage("Complete! Transfer started",true);
                 await Navigation.PushAsync(new OutItems());
             }
-        }
-        private void PickerFromWH_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            FromWH = pickerFromWH.SelectedItem.ToString();
-            pickerToWH.IsEnabled = true;
-        }
-        private async void BtnStartNewHeader_Clicked(object sender, EventArgs e)
-        {
-            try
-            {
-                await GoodsRecieveingApp.App.Database.DeleteAllHeaders();
-            }
-            catch
-            {
-
-            }
-            LayoutHeader.IsVisible = false;
-            StartNewLayout.IsVisible = true;
-        }
+        }   
         private async void BtnContinue_Clicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new OutItems());
@@ -69,41 +49,96 @@ namespace WHTransfer
         private void DatePickerRec_Unfocused(object sender, FocusEventArgs e)
         {
             lblDatePickRec.Text = "Receving Date: " + DatePickerRec.Date.ToString("dd MMM yyyy");
-        }
-        private void PickerToWH_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (pickerToWH.SelectedIndex != -1)
-            {
-                ToWH = pickerToWH.SelectedItem.ToString();
-                if (ToWH == FromWH)
-                {
-                    ToWH = "";
-                    pickerToWH.SelectedIndex = -1;
-                    pickerToWH.Focus();
-                    message.DisplayMessage("You cannot transfer to and from the same warehouse",true);
-                    Vibration.Vibrate();
-                }
-                else
-                {
-                    btnAdd.IsEnabled = true;
-                    DatePickerRec.IsEnabled = true;
-                    DatePickerFrom.IsEnabled = true;
-                }
-            }
-        }           
+        }        
         protected async override void OnAppearing()
         {
             base.OnAppearing();
-            try
+            await FetchWH();
+            await GoodsRecieveingApp.App.Database.DeleteAllHeaders();
+            DatePickerFrom.Date = DateTime.Today;
+            DatePickerFrom.MinimumDate = DateTime.Today;
+            DatePickerRec.MinimumDate = DateTime.Today;
+            DatePickerRec.Date = DateTime.Today;
+        }
+        private async Task<bool> FetchWH()
+        {
+            RestSharp.RestClient client = new RestSharp.RestClient();
+            string path = "GetWarehouses";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
             {
-                IBTHeader current = (await GoodsRecieveingApp.App.Database.GetIBTHeaders()).First();
-                DatePickerFrom.Date = DateTime.Today;
-                DatePickerRec.Date = DateTime.Today;
+                string str = $"GET?";
+                var Request = new RestSharp.RestRequest();
+                Request.Resource = str;
+                Request.Method = RestSharp.Method.GET;
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.Content.ToString().Contains("WHID"))
+                {
+                    DataSet myds = new DataSet();
+                    myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                    foreach (DataRow row in myds.Tables[0].Rows)
+                    {
+                        WHIDs.Add(row["WHID"].ToString());
+                    }
+                    pickerToWH.ItemsSource = WHIDs;
+                    pickerFromWH.ItemsSource = WHIDs;
+                    return true;
+                }
             }
-            catch
+            return false;
+        }
+        private void txfToWH_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (pickerToWH.SelectedIndex != -1)
             {
-                LayoutHeader.IsVisible = false;
-                StartNewLayout.IsVisible = true;
+                if (pickerFromWH.SelectedIndex != -1)
+                {
+                    if (pickerToWH.SelectedItem.ToString() == pickerFromWH.SelectedItem.ToString())
+                    {
+                        message.DisplayMessage("You cannot have the same warehouse for both", true);
+                        Vibration.Vibrate();
+                        pickerToWH.SelectedIndex = -1;
+                        btnAdd.IsEnabled = false;
+                        DatePickerRec.IsEnabled = false;
+                        DatePickerFrom.IsEnabled = false;
+                    }
+                    else
+                    {
+                        btnAdd.IsEnabled = true;
+                        DatePickerRec.IsEnabled = true;
+                        DatePickerFrom.IsEnabled = true;
+                    }
+                }
+            }
+        }
+        private void txfFromWH_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (pickerFromWH.SelectedIndex != -1)
+            {
+                if (pickerToWH.SelectedIndex!=-1)
+                {
+                    if (pickerFromWH.SelectedItem.ToString() == pickerToWH.SelectedItem.ToString())
+                    {
+                        message.DisplayMessage("You cannot have the same warehouse for both", true);
+                        Vibration.Vibrate();
+                        pickerFromWH.SelectedIndex = -1;
+                        pickerToWH.IsEnabled = true;
+                        btnAdd.IsEnabled = false;
+                        DatePickerRec.IsEnabled = false;
+                        DatePickerFrom.IsEnabled = false;
+                    }
+                    else
+                    {
+                        pickerToWH.IsEnabled = true;
+                        btnAdd.IsEnabled = true;
+                        DatePickerRec.IsEnabled = true;
+                        DatePickerFrom.IsEnabled = true;
+                    }
+                }
+                else
+                {
+                    pickerToWH.IsEnabled = true;
+                }
             }
         }
     }

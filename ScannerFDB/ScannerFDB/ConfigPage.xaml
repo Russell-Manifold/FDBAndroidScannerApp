@@ -7,11 +7,9 @@
              x:Class="ScannerFDB.ConfigPage">
     <StackLayout>
         <Label Text="Default Accept Warehouse:"/>
-        <Entry x:Name="txfAccWH" Keyboard="Numeric" VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand"/>
+        <Picker Title="-Accepted WH-" x:Name="txfAccWH"  VerticalOptions="Start" HorizontalOptions="FillAndExpand" SelectedIndexChanged="txfAccWH_SelectedIndexChanged"/>
         <Label Text="Default Reject Warehouse:"/>
-        <Entry x:Name="txfRejWH" Keyboard="Numeric"  VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand"/>
-        <Label Text="API COnnection String:"/>
-        <Entry x:Name="ConnectionString" VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand"/>
+        <Picker Title="-Rejected WH-" x:Name="txfRejWH"  VerticalOptions="Start" HorizontalOptions="FillAndExpand" SelectedIndexChanged="txfRejWH_SelectedIndexChanged"/>
         <Button Text="Save" x:Name="btnSave" Clicked="btnSave_Clicked"/>
     </StackLayout>
 </ContentPage>

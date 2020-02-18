@@ -215,7 +215,8 @@ namespace WHTransfer
                             var res2 = await client2.ExecuteAsync(Request2, cancellationTokenSource2.Token);
                             if (!(res2.IsSuccessful && res2.Content != null))
                             {
-                                //await DisplayAlert("Error!", "Could not delete record", "OK"); 
+                                //await DisplayAlert("Error!", "Could not delete record", "OK");
+                                await DisplayAlert("Complete","Transfer complete!","OK");
                                 Navigation.RemovePage(Navigation.NavigationStack[2]);
                                 await Navigation.PopAsync();
                                 return;

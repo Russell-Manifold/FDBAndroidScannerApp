@@ -12,7 +12,7 @@
         <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfSOCOde" FontSize="Large" VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center" Completed="txfSOCOde_Completed" IsVisible="False"/>
         <ActivityIndicator x:Name="Loading" IsVisible="False" VerticalOptions="StartAndExpand" HorizontalOptions="Center"/>
         <ScrollView>
-            <Label x:Name="lblScannedCodes" Text=" " VerticalOptions="StartAndExpand" HorizontalOptions="CenterAndExpand"/>
+            <Label x:Name="lblScannedCodes" FontSize="Medium" Text=" " VerticalOptions="StartAndExpand" HorizontalOptions="CenterAndExpand"/>
         </ScrollView>
         <Button VerticalOptions="EndAndExpand" Text="Complete" TextColor="Black" BackgroundColor="Green" x:Name="btnComplete" Clicked="btnComplete_Clicked"/>
     </StackLayout>

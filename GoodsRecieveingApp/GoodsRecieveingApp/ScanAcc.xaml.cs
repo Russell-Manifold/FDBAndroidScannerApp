@@ -60,7 +60,7 @@ namespace GoodsRecieveingApp
                     }
                     if (Check(bi.ItemCode))
                     {
-                        await App.Database.Insert(new DocLine { ItemCode = bi.ItemCode, ScanAccQty = bi.Qty, ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = "001", isRejected = false });
+                        await App.Database.Insert(new DocLine { ItemCode = bi.ItemCode, ScanAccQty = bi.Qty, ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
                         PicImage.IsVisible = true;
                         lastItem = bi.ItemCode;
                         SetQtyDisplay(lastItem);
@@ -81,7 +81,7 @@ namespace GoodsRecieveingApp
                     if (CheckBarcode(txfAccCode.Text))
                     {
                         string iCode = currentDocs.Find(x => x.ItemBarcode == txfAccCode.Text && x.ItemQty != 0).ItemCode;
-                        await App.Database.Insert(new DocLine { ItemCode = iCode, ScanAccQty = 1, ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = "002", isRejected = false });
+                        await App.Database.Insert(new DocLine { ItemCode = iCode, ScanAccQty = 1, ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
                         PicImage.IsVisible = true;
                         lastItem = iCode;
                         SetQtyDisplay(iCode);

@@ -63,7 +63,6 @@ namespace ScannerFDB
                     var Request = new RestRequest(str, Method.GET);
                     var cancellationTokenSource = new CancellationTokenSource();
                     var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                    cancellationTokenSource.Dispose();
                     if (res.IsSuccessful && res.Content.Contains("UserName"))
                     {
                         DataSet myds = new DataSet();

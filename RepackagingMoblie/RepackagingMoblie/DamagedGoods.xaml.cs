@@ -96,7 +96,7 @@ namespace RepackagingMoblie
                                 if (MainPage.docLines.Where(x => x.ItemDesc == "1ItemFromMain").Select(x => x.ItemQty).FirstOrDefault() >= 1 + MainPage.docLines.Where(x => x.ItemDesc != "1ItemFromMain").Sum(x => x.ItemQty))
                                 {
                                     lblItemDesc.Text = res.Content.Split('|')[3];
-                                    MainPage.docLines.Add(new DocLine { ItemBarcode = txfBarcode.Text, ItemDesc = lblItemDesc.Text, isRejected = true, ItemQty = 1 });
+                                    MainPage.docLines.Add(new DocLine { ItemBarcode = txfBarcode.Text, ItemDesc = lblItemDesc.Text, isRejected = true,WarehouseID=(await GoodsRecieveingApp.App.Database.GetConfig()).DefaultRejWH, ItemQty = 1 });
                                     setQTY(txfBarcode.Text);
                                     Loader.IsVisible = false;
                                     return true;

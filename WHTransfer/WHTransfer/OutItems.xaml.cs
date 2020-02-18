@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -32,16 +33,25 @@ namespace WHTransfer
         private async void TxfScannedItem_TextChanged(object sender, TextChangedEventArgs e)
         {
             await Task.Delay(100);
-            if (txfScannedItem.Text.Length>1&&await CheckItem())
+            if (txfScannedItem.Text.Length>1)
             {
-                ListViewItems.ItemsSource = null;
-                await Task.Delay(100);
-                lblLastItem.Text ="Previous Barcode: "+ txfScannedItem.Text;            
-                ListViewItems.ItemsSource = items;
-                Loading.IsVisible = false;
-                btnComplete.IsVisible = true;
-                txfScannedItem.Text = "";
-                txfScannedItem.Focus();
+                if (await CheckItem())
+                {
+                    ListViewItems.ItemsSource = null;
+                    await Task.Delay(100);
+                    lblLastItem.Text = "Previous Barcode: " + txfScannedItem.Text;
+                    ListViewItems.ItemsSource = items;
+                    Loading.IsVisible = false;
+                    btnComplete.IsVisible = true;
+                    txfScannedItem.Text = "";
+                    txfScannedItem.Focus();
+                }
+                else
+                {
+                    Vibration.Vibrate();
+                    txfScannedItem.Text = "";
+                    txfScannedItem.Focus();
+                }
             }
         }
         private async void Entry_Focused(object sender, FocusEventArgs e)
@@ -75,17 +85,17 @@ namespace WHTransfer
                 {
                     RestSharp.RestClient client = new RestSharp.RestClient();
                     string path = "FindDescAndCode";
-                    client.BaseUrl = new Uri("GoodsRecieveingApp.MainPage.APIPath" + path);
+                    client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
                     {
                         string qry = $"ACCPRD|4|{txfScannedItem.Text}";
                         string str = $"GET?qrystr={qry}";
                         var Request = new RestSharp.RestRequest(str,RestSharp.Method.GET);
                         var cancellationTokenSource = new CancellationTokenSource();
                         var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                        cancellationTokenSource.Dispose();
                         if (res.IsSuccessful && res.Content != null)
                         {
-                            //"0|002|DOMEDPICKET|Domed Picket Fence Set of 3|6006146009796|3||\u0001|\u0001|\u0001|PCE|15|15||\u0001||\u0001||||||0|0|0||0|17/09/2019 16:36:13|||1BF668944E4C16AF4C5FBD802A04FDB8|"
+                            if (!await CheckQTY())
+                                return false;                              
                             items.Add(new IBTItem { ScanBarcode = txfScannedItem.Text, ItemBarcode = res.Content.Split('|')[4], ItemCode = res.Content.Split('|')[2], ItemDesc= res.Content.Split('|')[3], ItemQtyOut = 1, ItemQtyIn = 0,PickDateTime = DateTime.Now });
                             return true;
                         }
@@ -93,11 +103,39 @@ namespace WHTransfer
                 }
                 catch
                 {
-
+                    message.DisplayMessage("Please check your internet", true);
+                    return false;
                 }
             }
+            Loading.IsVisible = false;
+            message.DisplayMessage("Invalid Item", false);
             return false;
         }
+        private async Task<bool> CheckQTY()
+        {
+            RestSharp.RestClient client = new RestSharp.RestClient();
+            string path = "FindDescAndCode";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string qry = $"ACCPRD|4|{txfScannedItem.Text}";
+                string str = $"GET?qrystr={qry}";
+                var Request = new RestSharp.RestRequest(str, RestSharp.Method.GET);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content != null)
+                {
+                    if (res.Content=="0")
+                    {
+                        message.DisplayMessage("There isnt enough stock in this warehouse", true);
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            message.DisplayMessage("Please check your internet connection!", true);
+            return false;
+        }
+
         private void BtnComplete_Clicked(object sender, EventArgs e)
         {
             Navigation.PushAsync(new AuthOut());

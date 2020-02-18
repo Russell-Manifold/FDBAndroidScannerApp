@@ -4,6 +4,7 @@ using Data.Model;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -49,11 +50,19 @@ namespace PickAndPack
         }
         private async void txfSOCOde_Completed(object sender, EventArgs e)
         {
-            if (!await FetchSO(txfSOCOde.Text))
+            if (!lblScannedCodes.Text.Contains(txfSOCOde.Text))
             {
-                message.DisplayMessage("Error in Finding code",true);
-                Vibration.Vibrate();
+                if (!await FetchSO(txfSOCOde.Text))
+                {
+                    message.DisplayMessage("Error in Finding code", true);
+                    Vibration.Vibrate();
+                }
             }
+            else
+            {
+                message.DisplayMessage("This SO has been scanned already", true);
+                Vibration.Vibrate();
+            }           
             txfSOCOde.Text = "";
             txfSOCOde.Focus();
         }
@@ -101,7 +110,7 @@ namespace PickAndPack
         }
         async Task<bool> SendStatus(string status)
         {
-            string Status="ContollUser";
+            string Status= "DocControlUser";
             if (status=="2")
             {
                 Status = "PickerUser";
@@ -110,13 +119,17 @@ namespace PickAndPack
                 Status = "PackerUser";
             }else if (status == "4")
             {
-                Status = "Authuser";
+                Status = "AuthUser";
+            }
+            else
+            {
+                Status = "DocControlUser";
             }
             RestSharp.RestClient client = new RestSharp.RestClient();
             string path = "DocumentSQLConnection";
             client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
             {
-                string str = $"POST?qry=UPDATE tblTempDocHeader SET DocStatus={((Convert.ToInt32(status))+1)},SET {Status}={RecUserCode} WHERE DocNum ='{txfSOCOde.Text}'";
+                string str = $"POST?qry=UPDATE tblTempDocHeader SET DocStatus={((Convert.ToInt32(status))+1)},{Status}={RecUserCode} WHERE DocNum ='{txfSOCOde.Text}'";
                 var Request = new RestSharp.RestRequest();
                 Request.Resource = str;
                 Request.Method = RestSharp.Method.POST;
@@ -154,7 +167,6 @@ namespace PickAndPack
                     var Request = new RestRequest(str, Method.GET);
                     var cancellationTokenSource = new CancellationTokenSource();
                     var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                    cancellationTokenSource.Dispose();
                     if (res.IsSuccessful && res.Content.Contains("UserName"))
                     {
                         DataSet myds = new DataSet();

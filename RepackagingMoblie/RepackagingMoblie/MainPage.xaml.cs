@@ -43,8 +43,15 @@ namespace RepackagingMoblie
 
             }
         }
-        protected override void OnAppearing()
+        protected async override void OnAppearing()
         {
+            DeviceConfig dev =  await GoodsRecieveingApp.App.Database.GetConfig();
+            if (dev == null || dev.DefaultRejWH == null || dev.DefaultAccWH == null)
+            {
+                Vibration.Vibrate();
+                await DisplayAlert("Error!","Please make sure to set both warehouses in the configuration","OK");
+                await Navigation.PopAsync();
+            }
             base.OnAppearing();
             txfPackbarcode.Text = "";
             lblQTY.Text = "";
@@ -83,7 +90,6 @@ namespace RepackagingMoblie
                             var Request = new RestSharp.RestRequest(str, RestSharp.Method.GET);
                             var cancellationTokenSource = new CancellationTokenSource();
                             var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                            cancellationTokenSource.Dispose();
                             if (res.IsSuccessful && res.Content != null)
                             {
                                 docLines.Add(new DocLine {ItemBarcode = txfPackbarcode.Text, ItemCode = res.Content.Split('|')[2], ItemDesc = res.Content.Split('|')[3],ItemQty=1});

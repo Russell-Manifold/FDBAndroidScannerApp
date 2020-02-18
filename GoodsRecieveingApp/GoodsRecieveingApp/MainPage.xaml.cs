@@ -22,6 +22,8 @@ namespace GoodsRecieveingApp
         //public static string APIPath = "http://192.168.0.111/FDBAPI/api/";
         public static string APIPath = "https://manifoldsa.co.za/FDBAPI/api/";
         public static string UserName = "";
+        public static string ACCWH = "";
+        public static string REJWH = "";
         public static int AccessLevel = 0;
         public static int UserCode = 0;
         public static Boolean fReceive = false;
@@ -44,10 +46,22 @@ namespace GoodsRecieveingApp
             InitializeComponent();
             txfPOCode.Focused += Entry_Focused;
         }
-        protected override void OnAppearing()
+        protected async override void OnAppearing()
         {
+            DeviceConfig dev = await App.Database.GetConfig();
+            if (dev==null||dev.DefaultAccWH==null||dev.DefaultRejWH==null)
+            {
+                Vibration.Vibrate();
+                await DisplayAlert("Error!", "Please select both default WH in device configuration", "OK");
+                await Navigation.PopAsync();
+            }
+            else
+            {
+                ACCWH = dev.DefaultAccWH;
+                REJWH = dev.DefaultRejWH;
+            }
             base.OnAppearing();
-            txfPOCode.Focus();
+            txfPOCode.Focus();          
         }              
         private async void TxfPOCode_TextChanged(object sender, TextChangedEventArgs e)
         {

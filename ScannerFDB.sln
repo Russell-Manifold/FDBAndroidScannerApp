@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScannerFDB.Android", "ScannerFDB\ScannerFDB.Android\ScannerFDB.Android.csproj", "{7C135CB9-DCD7-40A9-A604-A7A590CB5D16}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D7C1022D-945E-45EF-A4B1-A4480A265970} = {D7C1022D-945E-45EF-A4B1-A4480A265970}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScannerFDB", "ScannerFDB\ScannerFDB\ScannerFDB.csproj", "{623A628C-93C2-4B54-A248-14A27652E0F4}"
 EndProject
@@ -27,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PickAndPack", "PickAndPack\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryCount.Android", "InventoryCount\InventoryCount.Android\InventoryCount.Android.csproj", "{BB3721F4-B98D-434F-B071-28FD282E40C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryCount", "InventoryCount\InventoryCount\InventoryCount.csproj", "{7C5E2886-0F81-4BCC-B230-E355C03698E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InventoryCount", "InventoryCount\InventoryCount\InventoryCount.csproj", "{7C5E2886-0F81-4BCC-B230-E355C03698E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
