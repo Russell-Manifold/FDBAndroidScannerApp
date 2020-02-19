@@ -18,6 +18,7 @@ namespace InventoryCount
     {
         List<string> WHIDs = new List<string>();
         public static string WH = "001";
+        public static bool CustQty = false;
         public InvLandingPage()
         {
             InitializeComponent();
@@ -40,6 +41,7 @@ namespace InventoryCount
                     myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
                     foreach (DataRow row in myds.Tables[0].Rows)
                     {
+                        CustQty = Convert.ToBoolean(row["AllowCustomQty"]);
                         WHIDs.Add(""+row["Whse"]);
                         pickerCountID.Items.Add(""+row["CountID"]);
                     }

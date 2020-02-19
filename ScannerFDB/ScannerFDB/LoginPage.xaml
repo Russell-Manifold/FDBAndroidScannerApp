@@ -10,7 +10,7 @@
         <StackLayout>
             <Image Source="FDBicon1.png"  HeightRequest="100"/>
             <Label Text="Login" FontSize="Large" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
-            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfUserBarcode" Completed="txfUserBarcode_Completed" VerticalOptions="StartAndExpand" HorizontalTextAlignment="Center" HorizontalOptions="FillAndExpand"/>
+            <controls:ExtendedEntry IsPassword="True" ShowVirtualKeyboardOnFocus="False" x:Name="txfUserBarcode" Completed="txfUserBarcode_Completed" VerticalOptions="StartAndExpand" HorizontalTextAlignment="Center" HorizontalOptions="FillAndExpand"/>
             <ActivityIndicator VerticalOptions="StartAndExpand" x:Name="AccessLoading" IsRunning="True"  IsVisible="False"/>
             <Image Source="MainIconLogin.png"  HeightRequest="140" VerticalOptions="EndAndExpand"/>
         </StackLayout>

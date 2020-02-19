@@ -10,7 +10,7 @@
     <ContentPage.Content>
         <StackLayout>
             <Label Text="Scan item barcode(s)" FontSize="Large"/>
-            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScannedItem" TextChanged="TxfScannedItem_TextChanged"/>
+            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScannedItem" Completed="txfScannedItem_Completed"/>
             <ActivityIndicator x:Name="Loading" IsVisible="False" IsRunning="True" Color="Blue"/>
             <Label Text="Start Scanning..." x:Name="lblLastItem"/>
             <ListView x:Name="ListViewItems" HasUnevenRows="True" ItemSelected="ListViewItems_ItemSelected">

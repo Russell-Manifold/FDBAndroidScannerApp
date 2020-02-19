@@ -20,6 +20,7 @@ namespace WHTransfer
     {
         private List<string> WHIDs = new List<string>();
         IMessage message = DependencyService.Get<IMessage>();
+        public static string FromWH="001";
         public OutPage()
         {
             InitializeComponent();
@@ -33,6 +34,7 @@ namespace WHTransfer
             }
             else
             {
+                FromWH = pickerFromWH.SelectedItem.ToString();
                 await GoodsRecieveingApp.App.Database.Insert(new IBTHeader { TrfDate = DateTime.Now.ToString("dd MMM yyyy"), FromWH = pickerFromWH.SelectedItem.ToString(), ToWH = pickerToWH.SelectedItem.ToString(), FromDate = DatePickerFrom.Date.ToString("dd MMM yyyy"), RecDate = DatePickerRec.Date.ToString("dd MMM yyyy"), Active = true });
                 message.DisplayMessage("Complete! Transfer started",true);
                 await Navigation.PushAsync(new OutItems());

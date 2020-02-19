@@ -46,6 +46,8 @@ namespace PickAndPack
             txfRecUser.IsVisible = false;
             lblSOCode.IsVisible = true;
             txfSOCOde.IsVisible = true;
+            MainImg.IsVisible = true;
+            btnComplete.IsVisible = true;
             txfSOCOde.Focus();
         }
         private async void txfSOCOde_Completed(object sender, EventArgs e)

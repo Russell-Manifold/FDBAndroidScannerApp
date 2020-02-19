@@ -10,7 +10,7 @@
         <Label Text="*APPROVAL*" FontSize="40" TextColor="Red"/>
         <Label x:Name="lblInfo" FontSize="Large"/>
         <Label Text="Scan User Code" FontSize="Medium"/>
-        <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" HorizontalOptions="FillAndExpand" VerticalOptions="Start" HorizontalTextAlignment="Center" x:Name="txfUserCode" Completed="txfUserCode_Completed"/>
+        <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" HorizontalOptions="FillAndExpand" VerticalOptions="Start" HorizontalTextAlignment="Center" IsPassword="True" x:Name="txfUserCode" Completed="txfUserCode_Completed"/>
         <ActivityIndicator IsVisible="False" IsRunning="True" x:Name="LoadingIndicator"/>
     </StackLayout>
 </ContentPage>

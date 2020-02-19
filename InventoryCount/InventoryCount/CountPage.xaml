@@ -7,12 +7,13 @@
              mc:Ignorable="d"
              Title="Inventory"
              x:Class="InventoryCount.CountPage">
-    <StackLayout>
-        <Label Text="Scan item or pack codes" FontSize="Medium"/>
+    <StackLayout >
+        <Label Text="Scan item or pack codes" x:Name="lblMain" FontSize="Medium"/>
+        <BoxView Color="Orange" HeightRequest="3" HorizontalOptions="FillAndExpand" Margin="0,0,0,10" VerticalOptions="Start" IsVisible="False" x:Name="LineT"/>
         <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" HorizontalOptions="FillAndExpand" VerticalOptions="Start" HorizontalTextAlignment="Center" x:Name="txfItemCode" Completed="txfItemCode_Completed"/>
         <ActivityIndicator IsVisible="False" IsRunning="True" x:Name="LoadingIndicator"/>
         <StackLayout Orientation="Horizontal" IsVisible="False" x:Name="lblLayout" BackgroundColor="#3F51B5">
-            <Label x:Name="lblCurrentItem" TextColor="White" FontSize="Large" VerticalOptions="CenterAndExpand" HorizontalOptions="Start" LineBreakMode="WordWrap"/>
+            <Label x:Name="lblCurrentItem" TextColor="White" FontSize="Large" VerticalOptions="CenterAndExpand" HorizontalOptions="Start" LineBreakMode="WordWrap" Text=""/>
             <Label x:Name="lblCurrentQty" TextColor="White" FontSize="Large" VerticalOptions="CenterAndExpand" HorizontalOptions="End" WidthRequest="45"  LineBreakMode="WordWrap"/>
             <Button ImageSource="save.png" WidthRequest="45" BackgroundColor="Transparent" x:Name="btnSave" Clicked="btnSave_Clicked" VerticalOptions="End"/>
         </StackLayout>

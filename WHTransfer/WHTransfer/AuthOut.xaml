@@ -10,7 +10,7 @@
     <ContentPage.Content>
         <StackLayout VerticalOptions="CenterAndExpand">
             <Label Text="Please scan your User Barcode:" x:Name="lblUserCode" FontSize="Large" VerticalOptions="StartAndExpand"/>
-            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfUserCode" TextChanged="TxfUserCode_TextChanged" VerticalOptions="StartAndExpand"/>
+            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfUserCode" IsPassword="True" TextChanged="TxfUserCode_TextChanged" VerticalOptions="StartAndExpand"/>
             <ActivityIndicator IsVisible="False" IsRunning="True" x:Name="Loading"/>
             <Button Text="Complete Transfer Out" x:Name="btnDone" Clicked="BtnDone_Clicked" ImageSource="TickSmall.png" BackgroundColor="Transparent" FontSize="Large" TextColor="Green" IsVisible="False" VerticalOptions="End"/>
         </StackLayout>

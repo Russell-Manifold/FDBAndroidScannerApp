@@ -19,8 +19,8 @@ namespace GoodsRecieveingApp
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-        //public static string APIPath = "http://192.168.0.111/FDBAPI/api/";
-        public static string APIPath = "https://manifoldsa.co.za/FDBAPI/api/";
+        public static string APIPath = "http://192.168.0.111/FDBAPI/api/";
+        //public static string APIPath = "https://manifoldsa.co.za/FDBAPI/api/";
         public static string UserName = "";
         public static string ACCWH = "";
         public static string REJWH = "";

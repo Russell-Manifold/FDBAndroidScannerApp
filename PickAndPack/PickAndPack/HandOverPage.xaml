@@ -6,14 +6,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              x:Class="PickAndPack.HandOverPage">
     <StackLayout>
-        <Label Text="Please Scan Recieving User:" x:Name="lblRecUser" FontSize="Large" VerticalOptions="StartAndExpand" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
-        <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfRecUser" FontSize="Large" VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center" Completed="txfRecUser_Completed"/>
-        <Label Text="Please Scan the SO Codes:" x:Name="lblSOCode" FontSize="Large" VerticalOptions="StartAndExpand" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center" IsVisible="False"/>
+        <Image Source="handover.png" VerticalOptions="Start" HorizontalOptions="CenterAndExpand" x:Name="MainImg" IsVisible="False"/>
+        <Label Text="Please Scan Receiving User:" x:Name="lblRecUser"  FontSize="Large" VerticalOptions="StartAndExpand" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
+        <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" IsPassword="True" x:Name="txfRecUser" FontSize="Large" VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center" Completed="txfRecUser_Completed"/>
+        <Label Text="Please Scan the Picking slips:" x:Name="lblSOCode" FontSize="Large" VerticalOptions="StartAndExpand" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center" IsVisible="False"/>
         <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfSOCOde" FontSize="Large" VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center" Completed="txfSOCOde_Completed" IsVisible="False"/>
         <ActivityIndicator x:Name="Loading" IsVisible="False" VerticalOptions="StartAndExpand" HorizontalOptions="Center"/>
         <ScrollView>
             <Label x:Name="lblScannedCodes" FontSize="Medium" Text=" " VerticalOptions="StartAndExpand" HorizontalOptions="CenterAndExpand"/>
         </ScrollView>
-        <Button VerticalOptions="EndAndExpand" Text="Complete" TextColor="Black" BackgroundColor="Green" x:Name="btnComplete" Clicked="btnComplete_Clicked"/>
+        <Button IsVisible="False" TextColor="Green" VerticalOptions="EndAndExpand" Text="Complete" BackgroundColor="Transparent" BorderColor="Black" BorderWidth="1" FontAttributes="Bold" ImageSource="TickSmall.png" FontSize="Large" x:Name="btnComplete" Clicked="btnComplete_Clicked"/>
     </StackLayout>
 </ContentPage>
