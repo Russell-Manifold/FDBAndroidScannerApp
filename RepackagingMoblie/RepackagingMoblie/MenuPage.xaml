@@ -19,9 +19,10 @@
                 <Button Text="Single Units" x:Name="btnSingles" Clicked="BtnSingles_Clicked" VerticalOptions="FillAndExpand" ImageSource="repacksing.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
                 <Button Text="Custom QTY" x:Name="btnCustom" Clicked="BtnCustom_Clicked" VerticalOptions="FillAndExpand" ImageSource="repack.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
                 <Button Text="Damaged Goods" x:Name="btnDamaged" Clicked="BtnDamaged_Clicked" VerticalOptions="FillAndExpand" ImageSource="ItemAcceptDamaged.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
-                <Button Text="Complete" x:Name="btnComplete" Clicked="BtnComplete_Clicked" VerticalOptions="FillAndExpand" ImageSource="TickSmall.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>
+                <Button Text="Complete" x:Name="btnComplete" Clicked="BtnComplete_Clicked" VerticalOptions="FillAndExpand" ImageSource="TickSmall.png" BackgroundColor="Transparent" TextColor="Green" FontAttributes="Bold" FontSize="Large" BorderWidth="1" BorderColor="LightGray"/>
             </StackLayout>
             <StackLayout x:Name="IntoPackLayout" IsVisible="False">
+                <Image Source="repack.png" HorizontalOptions="Fill"></Image>
                 <Label Text="Scan a PackCode:" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand" FontSize="Large"/>
                 <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScanPack" Completed="txfScanPack_Completed" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
                 <Label Text="OR" FontSize="Large" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand"/>

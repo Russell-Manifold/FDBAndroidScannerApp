@@ -12,6 +12,7 @@
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
+            <Image Source="repackboxicon.png" HorizontalOptions="Fill"></Image>
             <Label Text="Scan repacked the items:" FontSize="Large"/>
             <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfBarcode" TextChanged="TxfBarcode_TextChanged"/>
             <ActivityIndicator x:Name="Loader" IsRunning="True" IsVisible="False"/>

@@ -5,11 +5,11 @@
              xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             Title="Inventory"
+             Title="Inventory Count"
              x:Class="InventoryCount.CountPage">
     <StackLayout >
-        <Label Text="Scan item or pack codes" x:Name="lblMain" FontSize="Medium"/>
-        <BoxView Color="Orange" HeightRequest="3" HorizontalOptions="FillAndExpand" Margin="0,0,0,10" VerticalOptions="Start" IsVisible="False" x:Name="LineT"/>
+        <Label Text="Scan item or pack codes" x:Name="lblMain" FontSize="Medium" HorizontalTextAlignment="Center" TextColor="Black"/>
+        <BoxView Color="Orange" HeightRequest="5" HorizontalOptions="FillAndExpand" Margin="0,0,0,20" VerticalOptions="Start" IsVisible="False" x:Name="LineT"/>
         <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" HorizontalOptions="FillAndExpand" VerticalOptions="Start" HorizontalTextAlignment="Center" x:Name="txfItemCode" Completed="txfItemCode_Completed"/>
         <ActivityIndicator IsVisible="False" IsRunning="True" x:Name="LoadingIndicator"/>
         <StackLayout Orientation="Horizontal" IsVisible="False" x:Name="lblLayout" BackgroundColor="#3F51B5">

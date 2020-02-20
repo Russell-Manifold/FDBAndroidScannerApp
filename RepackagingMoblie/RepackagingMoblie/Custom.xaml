@@ -12,6 +12,7 @@
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
+            <Image Source="repack.png" HorizontalOptions="Fill"></Image>
             <Label Text="Scan the item Barcode" FontSize="Large" HorizontalTextAlignment="Center"/>
             <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfBarcode" TextChanged="TxfBarcode_TextChanged" FontSize="Large"/>
             <ActivityIndicator x:Name="Loader" IsVisible="False" IsRunning="True"/>

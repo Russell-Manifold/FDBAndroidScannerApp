@@ -232,7 +232,7 @@ namespace PickAndPack
         }
         private async void btnAddSoNumber_Clicked(object sender, EventArgs e)
         {
-            string res = await DisplayActionSheet("Open a new SO for this pallet?", "YES", "NO");
+            string res = await DisplayActionSheet("Add New Order To This Pallet?", "YES", "NO");
             if (res == "YES")
             {
                 firstSO = false;

@@ -11,14 +11,19 @@
         <ToolbarItem Clicked="Button_Clicked_Home" IconImageSource="home.PNG"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-    <StackLayout>
+        <StackLayout VerticalOptions="FillAndExpand">
             <StackLayout x:Name="MainLayout" IsVisible="False" VerticalOptions="FillAndExpand">
+                <StackLayout VerticalOptions="StartAndExpand">
+                <Image Source="repackboxicon.png" HorizontalOptions="Fill"></Image>
                 <Label  FontSize="Large" x:Name="lblQuestion" HorizontalTextAlignment="Center"/>
                 <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfPackbarcode" TextChanged="TxfPackbarcode_TextChanged" HorizontalTextAlignment="Center"/>
                 <Label x:Name="lblDesc" FontSize="Large" IsVisible="False"/>
                 <Label x:Name="lblQTY" FontSize="Large" IsVisible="False"/>
-                <Button Text="Go to Repacking" x:Name="btnGoToRepack" Clicked="BtnGoToRepack_Clicked" ImageSource="pickpack.png" BackgroundColor="Transparent" FontSize="Large" IsVisible="False" VerticalOptions="EndAndExpand"/>
                 <ActivityIndicator x:Name="isLoading" IsVisible="False"/>
+                </StackLayout>
+                    <StackLayout VerticalOptions="EndAndExpand">
+                    <Button Text="Go to Repacking" x:Name="btnGoToRepack" Clicked="BtnGoToRepack_Clicked" ImageSource="pickpack.png" BackgroundColor="Transparent" FontSize="Large" IsVisible="False" VerticalOptions="EndAndExpand"/>
+                </StackLayout>
             </StackLayout>
             <StackLayout x:Name="OpenLayout" VerticalOptions="FillAndExpand">
                 <Button x:Name="btnUnpack"  VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Clicked="btnUnpack_Clicked" ImageSource="unpack.png" BackgroundColor="Transparent"/>

@@ -6,6 +6,7 @@
              mc:Ignorable="d"
              x:Class="InventoryCount.InvLandingPage">
     <StackLayout>
+        <Image Source="InvCount.png" HorizontalOptions="Fill"/>
         <Label Text="Select Inventory Count" FontSize="Large" HorizontalOptions="CenterAndExpand" VerticalOptions="Start"/>
         <Picker Title="--Select ID--" HorizontalOptions="FillAndExpand" VerticalOptions="Start" FontSize="Large" SelectedIndexChanged="Picker_SelectedIndexChanged"  x:Name="pickerCountID"/>
         <ActivityIndicator x:Name="Loading" IsVisible="True" IsRunning="True" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>

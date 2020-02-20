@@ -8,7 +8,7 @@
              x:Class="ScannerFDB.LoginPage">
     <ContentPage.Content>
         <StackLayout>
-            <Image Source="FDBicon1.png"  HeightRequest="100"/>
+            <Image Source="FDBicon1.png"  HeightRequest="120"/>
             <Label Text="Login" FontSize="Large" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
             <controls:ExtendedEntry IsPassword="True" ShowVirtualKeyboardOnFocus="False" x:Name="txfUserBarcode" Completed="txfUserBarcode_Completed" VerticalOptions="StartAndExpand" HorizontalTextAlignment="Center" HorizontalOptions="FillAndExpand"/>
             <ActivityIndicator VerticalOptions="StartAndExpand" x:Name="AccessLoading" IsRunning="True"  IsVisible="False"/>

@@ -122,5 +122,10 @@ namespace PickAndPack
                 txfSOCodes.Focus();
             }
         }
+
+        private void btnComplete_Clicked(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -4,8 +4,8 @@ using Data.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
+using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -81,6 +81,7 @@ namespace WHTransfer
                 }
                 catch
                 {
+                    Loading.IsVisible = false;
                     message.DisplayMessage("Please check your internet", true);
                     return false;
                 }
@@ -103,6 +104,7 @@ namespace WHTransfer
                 {
                     if (res.Content=="0")
                     {
+                        Loading.IsVisible = false;
                         message.DisplayMessage("There isnt enough stock in this warehouse", true);
                         return false;
                     }
@@ -115,12 +117,14 @@ namespace WHTransfer
                         }
                         else
                         {
+                            Loading.IsVisible = false;
                             message.DisplayMessage("There arent enough of this item in this warehouse",true);
                             return false;
                         }
                     }
                 }
             }
+            Loading.IsVisible = false;
             message.DisplayMessage("Please check your internet connection!", true);
             return false;
         }

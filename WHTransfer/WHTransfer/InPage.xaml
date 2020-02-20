@@ -9,6 +9,7 @@
              x:Class="WHTransfer.InPage">
     <ContentPage.Content>
         <StackLayout>
+            <Image Source="WHTrfIN.png" HorizontalOptions="Fill"/>
             <Label Text="Select Transfer Number To Receive:" FontSize="Large" x:Name="lblTop" HorizontalTextAlignment="Center"/>
             <Picker x:Name="pickerHeaders" FontSize="Large" SelectedIndexChanged="PickerHeaders_SelectedIndexChanged"/>
             <ActivityIndicator x:Name="isLoading" IsVisible="False" IsRunning="True"/>
@@ -61,7 +62,7 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <Button Text="Complete" Clicked="btnComplete_Clicked" x:Name="btnComplete" BackgroundColor="Green"/>
+                <Button Text="Complete" Clicked="btnComplete_Clicked" x:Name="btnComplete" ImageSource="TickSmall.png" BackgroundColor="Transparent" TextColor="Green" FontAttributes="Bold" BorderWidth="1" BorderColor="LightGray" FontSize="Large"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>

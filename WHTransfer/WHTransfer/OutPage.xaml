@@ -11,10 +11,10 @@
         <Picker Title="-From Warehouse-" x:Name="pickerFromWH" SelectedIndexChanged="txfFromWH_SelectedIndexChanged"/>
         <Label Text="To WareHouse" FontSize="Large"/>
         <Picker Title="-To Warehouse-" x:Name="pickerToWH" SelectedIndexChanged="txfToWH_SelectedIndexChanged" IsEnabled="False"/>
-        <Label Text="From Date:" x:Name="lblDatePickFrom" FontSize="Large"/>
+        <Label Text="Date:" x:Name="lblDatePickFrom" FontSize="Large"/>
         <DatePicker x:Name="DatePickerFrom" Unfocused="DatePickerFrom_Unfocused" IsEnabled="False"/>
-        <Label Text="Receving Date:" x:Name="lblDatePickRec" FontSize="Large"/>
-        <DatePicker x:Name="DatePickerRec" Unfocused="DatePickerRec_Unfocused" IsEnabled="False"/>
+        <Label Text="Receving Date:" x:Name="lblDatePickRec" FontSize="Large" IsVisible="False"/>
+        <DatePicker x:Name="DatePickerRec" Unfocused="DatePickerRec_Unfocused" IsEnabled="False" IsVisible="False"/>
         <Button x:Name="btnAdd" Text="Start Transfer" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand" IsEnabled="False" Clicked="Button_Clicked" FontSize="Large"  ImageSource="WHTrf.png" BackgroundColor="Transparent" TextColor="Black"/>
     </StackLayout>
 </ContentPage>

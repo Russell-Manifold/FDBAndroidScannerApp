@@ -214,7 +214,7 @@ namespace PickAndPack
                                         Doc.Balacnce = 0;
                                     }
                                     Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
-                                    lblSOCode.Text = Doc.DocNum+"-"+Doc.SupplierName;
+                                    lblSOCode.Text = Doc.SupplierName + " - " + Doc.DocNum ;
                                     await GoodsRecieveingApp.App.Database.Insert(Doc);
                                 }
                                 catch (Exception ex)

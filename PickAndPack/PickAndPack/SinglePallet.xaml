@@ -12,18 +12,19 @@
     </ContentPage.ToolbarItems>
     <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0" >
         <StackLayout x:Name="SOCodeLayout">
-                <Label x:Name="lblSOCode" Text="IO Number:"  FontSize="Large" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
+            <Image Source="MultiOrderPallet.png" HorizontalOptions="Fill" HeightRequest="50"/>
+                <Label x:Name="lblSOCode" Text="Slip Number:"  FontSize="Large" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
                 <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfSOCode" HorizontalOptions="FillAndExpand" MaxLength="8" Completed="txfSOCode_Completed"/>
             </StackLayout>
             <StackLayout HorizontalOptions="CenterAndExpand" Orientation="Horizontal" IsVisible="False" x:Name="AddSoLayout">
                 <StackLayout Orientation="Vertical" HorizontalOptions="Center">
-                    <Label x:Name="lblCusName" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
-                    <Label x:Name="lblCode" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
+                    <Label x:Name="lblCusName" FontSize="Medium" HorizontalOptions="StartAndExpand"/>
+                    <Label x:Name="lblCode" FontSize="Medium" HorizontalOptions="StartAndExpand"/>
                 </StackLayout>
-            <Button x:Name="btnAddSoNumber" ImageSource="PalletAdd.png" HeightRequest="30" BackgroundColor="Transparent" HorizontalOptions="End" Clicked="btnAddSoNumber_Clicked"/>
+            <Button x:Name="btnAddSoNumber" ImageSource="AddToPallet.png" HeightRequest="20" BackgroundColor="Transparent" HorizontalOptions="End" Clicked="btnAddSoNumber_Clicked"/>
             </StackLayout>
             <StackLayout x:Name="ItemCodeLayout" IsVisible="False">
-                <Label x:Name="lblItemCodes" Text="Scan Items:"  FontSize="Large" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
+                <Label x:Name="lblItemCodes" Text="Scan Items:"  FontSize="Medium" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
                 <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfItemCode" HorizontalOptions="FillAndExpand" MaxLength="14" Completed="txfItemCode_Completed" />
             </StackLayout>
             <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
