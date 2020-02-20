@@ -200,6 +200,7 @@ namespace PickAndPack
         }
         private async void btnComplete_Clicked(object sender, EventArgs e)
         {
+            await DisplayAlert("COMPLETE!","All data saved","OK");
             await Navigation.PopAsync();
         }
     }

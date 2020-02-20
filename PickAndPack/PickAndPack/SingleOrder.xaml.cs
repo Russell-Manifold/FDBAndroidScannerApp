@@ -645,5 +645,41 @@ namespace PickAndPack
             }
             return false;
         }
+        async Task<bool> SendStatus(string status)
+        {
+            string Status = "DocControlUser";
+            if (status == "2")
+            {
+                Status = "PickerUser";
+            }
+            else if (status == "3")
+            {
+                Status = "PackerUser";
+            }
+            else if (status == "4")
+            {
+                Status = "AuthUser";
+            }
+            else
+            {
+                Status = "DocControlUser";
+            }
+            RestSharp.RestClient client = new RestSharp.RestClient();
+            string path = "DocumentSQLConnection";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"POST?qry=UPDATE tblTempDocHeader SET DocStatus={((Convert.ToInt32(status)) + 1)},{Status}=1 WHERE DocNum ='1'";
+                var Request = new RestSharp.RestRequest();
+                Request.Resource = str;
+                Request.Method = RestSharp.Method.POST;
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.Content.ToString().Contains("Complete"))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

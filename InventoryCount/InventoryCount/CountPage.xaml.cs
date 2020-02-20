@@ -190,7 +190,7 @@ namespace InventoryCount
             LoadingIndicator.IsVisible = true;
             if (txfItemCode.Text.Length>10)
             {
-                if (items.Where(x => x.BarCode == txfItemCode.Text&&x.Complete==false) != null)
+                if (items.Where(x => x.BarCode == txfItemCode.Text&&x.Complete==false).FirstOrDefault() != null)
                 {
                     int CUSTQTY = 1;
                     if (InvLandingPage.CustQty)
@@ -261,7 +261,7 @@ namespace InventoryCount
                     txfItemCode.Focus();
                     return;
                 }
-                if (items.Where(x=>x.ItemCode==bi.ItemCode && x.Complete == false) !=null)
+                if (items.Where(x=>x.ItemCode==bi.ItemCode && x.Complete == false).FirstOrDefault() != null)
                 {
                     SameItemCheck(bi.ItemCode);
                     CurrentQTYCounted += bi.Qty;

@@ -122,10 +122,10 @@ namespace PickAndPack
                 txfSOCodes.Focus();
             }
         }
-
-        private void btnComplete_Clicked(object sender, EventArgs e)
+        private async  void btnComplete_Clicked(object sender, EventArgs e)
         {
-
+            await DisplayAlert("COMPLETE","All the data has been saved!","OK");
+            await Navigation.PopAsync();
         }
     }
 }
