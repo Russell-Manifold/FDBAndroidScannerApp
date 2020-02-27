@@ -12,5 +12,8 @@ namespace Data.Model
         public string DefaultAccWH { get; set; }
         public string DefaultRejWH { get; set; }
         public string ConnectionS { get; set; }
+        public bool PaperPickSlips { get; set; }
+        public bool UseBins { get; set; }
+        public bool UseZones { get; set; }
     }
 }

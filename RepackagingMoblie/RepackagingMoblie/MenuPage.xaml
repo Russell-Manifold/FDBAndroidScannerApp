@@ -22,7 +22,7 @@
                 <Button Text="Complete" x:Name="btnComplete" Clicked="BtnComplete_Clicked" VerticalOptions="FillAndExpand" ImageSource="TickSmall.png" BackgroundColor="Transparent" TextColor="Green" FontAttributes="Bold" FontSize="Large" BorderWidth="1" BorderColor="LightGray"/>
             </StackLayout>
             <StackLayout x:Name="IntoPackLayout" IsVisible="False">
-                <Image Source="repack.png" HorizontalOptions="Fill"></Image>
+                <Image Source="repack.png" x:Name="RepackingImg" HorizontalOptions="Fill"></Image>
                 <Label Text="Scan a PackCode:" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand" FontSize="Large"/>
                 <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScanPack" Completed="txfScanPack_Completed" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
                 <Label Text="OR" FontSize="Large" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand"/>

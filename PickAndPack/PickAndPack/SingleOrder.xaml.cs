@@ -183,6 +183,7 @@ namespace PickAndPack
                                     Doc.ItemBarcode = row["ItemBarcode"].ToString();
                                     Doc.ItemCode = row["ItemCode"].ToString();
                                     Doc.ItemDesc = row["ItemDesc"].ToString();
+                                    Doc.Bin = row["Bin"].ToString();
                                     try
                                     {
                                         Doc.ScanAccQty = Convert.ToInt32(row["ScanAccQty"].ToString().Trim());
@@ -361,7 +362,7 @@ namespace PickAndPack
         {
             try{
                 lstItems.ItemsSource = null;
-                List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.PalletNum == currentPallet&&x.ScanAccQty!=0).ToList();
+                List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.PalletNum == currentPallet || x.ScanAccQty == 0).OrderBy(s=>s.Bin).ToList(); 
                 if (docs == null)
                     return;
                 List<DocLine> displayDocs = new List<DocLine>();

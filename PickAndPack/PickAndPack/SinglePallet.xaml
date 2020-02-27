@@ -23,9 +23,8 @@
                 </StackLayout>
             <Button x:Name="btnAddSoNumber" ImageSource="AddToPallet.png" HeightRequest="20" BackgroundColor="Transparent" HorizontalOptions="End" Clicked="btnAddSoNumber_Clicked"/>
             </StackLayout>
-            <StackLayout x:Name="ItemCodeLayout" IsVisible="False">
-                <Label x:Name="lblItemCodes" Text="Scan Items:"  FontSize="Medium" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
-                <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfItemCode" HorizontalOptions="FillAndExpand" MaxLength="14" Completed="txfItemCode_Completed" />
+        <StackLayout x:Name="ItemCodeLayout" IsVisible="False">
+            <controls:ExtendedEntry HorizontalTextAlignment="Center" ShowVirtualKeyboardOnFocus="False"  x:Name="txfItemCode" HorizontalOptions="FillAndExpand" MaxLength="14" Completed="txfItemCode_Completed" />
             </StackLayout>
             <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
         <StackLayout x:Name="GridLayout" IsVisible="False">
@@ -66,6 +65,7 @@
                                     </StackLayout.Triggers>
                                     <Grid>
                                         <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
@@ -74,10 +74,17 @@
                                             <ColumnDefinition Width="30*" />
                                             <ColumnDefinition Width="30*" />
                                         </Grid.ColumnDefinitions>
-                                        <Label Grid.Row="0" Grid.Column="0" FontSize="Medium" Text="{Binding ItemDesc}" TextColor="Black"/>
-                                        <Label Grid.Row="0" Grid.Column="1" FontSize="Medium" Text="{Binding ItemQty}" TextColor="Black"/>
-                                        <Label Grid.Row="0" Grid.Column="2" FontSize="Medium" Text="{Binding ScanAccQty}" TextColor="Black"/>
-                                        <Label Grid.Row="0" Grid.Column="3" FontSize="Medium" Text="{Binding Balacnce}" TextColor="Black"/>
+                                        <Label Grid.Row="0" Grid.Column="0" FontSize="Medium" HorizontalTextAlignment="Start" Text="{Binding ItemDesc}" TextColor="Black"/>
+                                        <Label Grid.Row="0" Grid.Column="1" FontSize="Medium" HorizontalTextAlignment="Center"  Text="{Binding ItemQty}" TextColor="Black"/>
+                                        <Label Grid.Row="0" Grid.Column="2" FontSize="Medium" HorizontalTextAlignment="Center"  Text="{Binding ScanAccQty}" TextColor="Black"/>
+                                        <Label Grid.Row="0" Grid.Column="3" FontSize="Medium" HorizontalTextAlignment="Center"  Text="{Binding Balacnce}" TextColor="Black"/>
+                                        <Label Grid.Row="1" Grid.Column="0" BackgroundColor="LightGray" Text="{Binding Bin,StringFormat='Bin: {0}'}" TextColor="Black">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Bin}" Value="NA">
+                                                    <Setter Property="IsVisible" Value="False"/>
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
                                     </Grid>
                                 </StackLayout>
                             </ViewCell>

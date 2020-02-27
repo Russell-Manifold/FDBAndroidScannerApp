@@ -83,6 +83,7 @@ namespace InventoryCount
                             i1.ItemDesc = row["ItemDesc"].ToString();
                             i1.BarCode = row["BarCode"].ToString();
                             i1.ItemCode = row["ItemCode"].ToString();
+                            i1.Bin = row["Bin"].ToString();
                             i1.isFirst = Convert.ToBoolean(row["isFirst"].ToString());
                             i1.Complete = Convert.ToBoolean(row["Complete"].ToString());
                             try
@@ -138,10 +139,17 @@ namespace InventoryCount
             {
                 if (ite.Complete)
                 {
-                    ite.Status = "Complete";
+                    ite.Status = "2";
+                }
+                else if (!ite.isFirst)
+                {
+                    ite.Status = "0";
+                }else
+                {
+                    ite.Status = "1";
                 }
             }
-            lstItems.ItemsSource = items;
+            lstItems.ItemsSource = items.OrderBy(x=>x.Status).ThenBy(x=>x.Bin);
             _ = CheckIfComplete();
             return true;
         }
@@ -163,7 +171,7 @@ namespace InventoryCount
         {           
             lblLayout.IsVisible = true;
             currentItem = items.Where(x => x.ItemDesc == desc).First();
-            lblCurrentItem.Text = currentItem .ItemDesc+ " : ";
+            lblCurrentItem.Text = currentItem .ItemDesc+ " : \nBin: "+currentItem.Bin;
             if (items.Where(x => x.ItemDesc == desc).First().isFirst)
             {
                 lblLayout.BackgroundColor = Color.FromHex("#3F51B5");
@@ -454,10 +462,12 @@ namespace InventoryCount
                 if (currentItem.FirstScanQty==QTY)
                 {
                     items.Where(x => x.BarCode == currentItem.BarCode).First().Complete = true;
+                    items.Where(x => x.BarCode == currentItem.BarCode).First().FinalQTY = items.Where(x=>x.BarCode==currentItem.BarCode).First().FirstScanQty;
                     await DisplayAlert("Complete!","QTY DID MATCH!","OK");
                 }
                 else
                 {
+                    items.Where(x => x.BarCode == currentItem.BarCode).First().FinalQTY = items.Where(x => x.BarCode == currentItem.BarCode).First().FirstScanQty;
                     items.Where(x => x.BarCode == currentItem.BarCode).First().isFirst = false;
                     Vibration.Vibrate();
                     await DisplayAlert("Error", "QTY DID NOT MATCH\nPlease recount now!", "OK");
@@ -468,10 +478,12 @@ namespace InventoryCount
                 if (currentItem.SecondScanQty == QTY)
                 {
                     items.Where(x => x.BarCode == currentItem.BarCode).First().Complete = true;
+                    items.Where(x => x.BarCode == currentItem.BarCode).First().FinalQTY = items.Where(x => x.BarCode == currentItem.BarCode).First().SecondScanQty;
                     await DisplayAlert("Complete!", "QTY DID MATCH!", "OK");
                 }
                 else
                 {
+                    items.Where(x => x.BarCode == currentItem.BarCode).First().FinalQTY = items.Where(x => x.BarCode == currentItem.BarCode).First().SecondScanQty;
                     await Navigation.PushAsync(new AcceptScanPage(currentItem));
                     return true;
                 }
@@ -501,6 +513,8 @@ namespace InventoryCount
                 t1.Columns.Add("CountUser");
                 t1.Columns.Add("isFirst");
                 t1.Columns.Add("Complete");
+                t1.Columns.Add("Bin");
+                t1.Columns.Add("FinalScanQty");
                 InventoryItem iut = currentItem;
                 row = t1.NewRow();
                 row["CountID"] = countID;
@@ -512,6 +526,8 @@ namespace InventoryCount
                 row["CountUser"] = iut.CountUser;
                 row["isFirst"] = iut.isFirst;
                 row["Complete"] = iut.Complete;
+                row["Bin"] = iut.Bin;
+                row["FinalScanQty"] = iut.FinalQTY;
                 t1.Rows.Add(row);
                 ds.Tables.Add(t1);
             }

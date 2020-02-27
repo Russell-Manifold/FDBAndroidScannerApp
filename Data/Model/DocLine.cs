@@ -23,5 +23,6 @@ namespace Data.Model
         public int Balacnce { get; set; }
         public string Complete { get; set; }
         public int PalletNum { get; set; }
+        public string Bin { get; set; }
     }
 }

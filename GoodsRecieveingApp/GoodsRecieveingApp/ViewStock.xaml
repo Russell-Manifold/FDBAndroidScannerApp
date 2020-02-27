@@ -56,6 +56,7 @@
                                         </StackLayout.Triggers>
                                         <Grid>
                                             <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
                                                 <RowDefinition Height="Auto"/>
                                             </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
@@ -66,10 +67,17 @@
                                                 <ColumnDefinition Width="15*" />
                                             </Grid.ColumnDefinitions>
                                             <Label Grid.Row="0" Grid.Column="0" Text="{Binding ItemDesc}" TextColor="Black" FontSize="Medium"/>
-                                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding ItemQty}" TextColor="Black"/>
+                                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding ItemQty}" HorizontalTextAlignment="Center" TextColor="Black"/>
                                             <Label Grid.Row="0" Grid.Column="2" Text="{Binding ScanAccQty}" TextColor="Black" HorizontalTextAlignment="Center"/>
                                             <Label Grid.Row="0" Grid.Column="3" Text="{Binding ScanRejQty}" TextColor="Red" HorizontalTextAlignment="Center"/>
                                             <Label Grid.Row="0" Grid.Column="4" Text="{Binding Balacnce}" TextColor="Black" HorizontalTextAlignment="Center"/>
+                                            <Label Grid.Row="1" Grid.Column="0" BackgroundColor="LightGray" Text="{Binding Bin,StringFormat='Bin: {0}'}" TextColor="Black">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding Bin}" Value="NA">
+                                                        <Setter Property="IsVisible" Value="False"/>
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
                                         </Grid>
                                     </StackLayout>
                                 </ViewCell>

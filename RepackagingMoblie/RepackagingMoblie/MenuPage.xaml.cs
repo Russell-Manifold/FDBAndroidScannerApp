@@ -49,6 +49,7 @@ namespace RepackagingMoblie
             {
                 Mainlayout.IsVisible = false;
                 IntoPackLayout.IsVisible = true;
+                RepackingImg.Source = "unpackicon.png";
                 txfScanPack.Focus();
             }
             else

@@ -40,15 +40,23 @@ namespace PickAndPack
             await Navigation.PushAsync(new PickSlips());
         }
 
-        protected override void OnAppearing()
+        protected async override void OnAppearing()
         {
             base.OnAppearing();
-            if (GoodsRecieveingApp.MainPage.PSCollect == true)
+            DeviceConfig d = await GoodsRecieveingApp.App.Database.GetConfig();
+            if (!d.PaperPickSlips)
+            {
+                btnPickingSlips.IsVisible = false;
+                btnHOPickingSlips.IsVisible = false;
+            }
+            if (GoodsRecieveingApp.MainPage.PSCollect == true&&!d.PaperPickSlips)
             {
                 btnPickingSlips.IsVisible = true;
+                btnHOPickingSlips.IsVisible = true;
             }
             else {
                 btnPickingSlips.IsVisible = false;
+                btnHOPickingSlips.IsVisible = true;
             }
         }
 

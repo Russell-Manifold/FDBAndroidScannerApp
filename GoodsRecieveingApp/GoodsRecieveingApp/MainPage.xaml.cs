@@ -19,8 +19,11 @@ namespace GoodsRecieveingApp
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-        public static string APIPath = "http://192.168.0.111/FDBAPI/api/";
+        //public static string APIPath = "http://192.168.10.254/FDBAPI/api/";
+        public static string APIPathIN = "http://192.168.10.254/FDBAPI/api/";
+        public static string APIPathOUT = "http://firstdutchbrands.dvrdns.org:5555/FDBWebServiceAPI/api/";
         //public static string APIPath = "https://manifoldsa.co.za/FDBAPI/api/";
+        public static string APIPath = "http://192.168.0.111/FDBAPI/api/";
         public static string UserName = "";
         public static string ACCWH = "";
         public static string REJWH = "";
@@ -172,6 +175,7 @@ namespace GoodsRecieveingApp
                                     Doc.ItemBarcode = row["ItemBarcode"].ToString();
                                     Doc.ItemCode = row["ItemCode"].ToString();
                                     Doc.ItemDesc = row["ItemDesc"].ToString();
+                                    Doc.Bin = row["Bin"].ToString();
                                     Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
                                     Doc.PalletNum = 0;
                                     try

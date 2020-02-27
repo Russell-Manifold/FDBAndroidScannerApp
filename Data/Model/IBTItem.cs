@@ -19,6 +19,7 @@ namespace Data.Model
         public int AuthUser { get; set; }
         public DateTime PickDateTime { get; set; }
         public string WH { get; set; }
+        public string Bin { get; set; }
         public int iTrfID { get; set; }
     }
 }

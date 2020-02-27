@@ -128,7 +128,6 @@ namespace WHTransfer
             message.DisplayMessage("Please check your internet connection!", true);
             return false;
         }
-
         private void BtnComplete_Clicked(object sender, EventArgs e)
         {
             Navigation.PushAsync(new AuthOut());
@@ -153,7 +152,6 @@ namespace WHTransfer
                     break;
             }
         }
-
         private async void txfScannedItem_Completed(object sender, EventArgs e)
         {
             await Task.Delay(100);

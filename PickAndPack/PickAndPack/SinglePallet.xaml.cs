@@ -78,7 +78,8 @@ namespace PickAndPack
                                     Doc.SupplierName = row["SupplierName"].ToString();
                                     Doc.ItemBarcode = row["ItemBarcode"].ToString();
                                     Doc.ItemCode = row["ItemCode"].ToString();
-                                    Doc.ItemDesc = row["ItemDesc"].ToString();                                   
+                                    Doc.ItemDesc = row["ItemDesc"].ToString();
+                                    Doc.Bin = row["Bin"].ToString();
                                     try
                                     {
                                         Doc.ScanAccQty = Convert.ToInt32(row["ScanAccQty"].ToString().Trim());
@@ -523,7 +524,7 @@ namespace PickAndPack
         async Task RefreshList()
         {
             lstItems.ItemsSource = null;
-            List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).ToList();
+            List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).OrderBy(s=>s.Bin).ToList();
             if (docs == null)
                 return;
             List<DocLine> displayDocs = new List<DocLine>();

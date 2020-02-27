@@ -6,6 +6,11 @@
              xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
              mc:Ignorable="d"
              x:Class="ScannerFDB.LoginPage">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="WHTrfOut.png" x:Name="btnOUTWH" Clicked="btnOUTWH_Clicked"/>
+        <ToolbarItem Text="Connection"></ToolbarItem>
+        <ToolbarItem IconImageSource="WHTrfINGreen.png" x:Name="btnInWH" Clicked="btnInWH_Clicked"/>
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
             <Image Source="FDBicon1.png"  HeightRequest="120"/>

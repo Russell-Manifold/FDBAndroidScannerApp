@@ -27,8 +27,8 @@
                 <ColumnDefinition Width="10*" />
             </Grid.ColumnDefinitions>
             <Label Grid.Row="0" Grid.Column="0" Text="Description" FontSize="15" FontAttributes="Bold"/>
-            <Label Grid.Row="0" Grid.Column="1" Text="1st" FontSize="15" FontAttributes="Bold"/>
-            <Label Grid.Row="0" Grid.Column="2" Text="2nd" FontSize="15" FontAttributes="Bold"/>
+            <Label Grid.Row="0" Grid.Column="1" HorizontalTextAlignment="Center" Text="1st" FontSize="15" FontAttributes="Bold"/>
+            <Label Grid.Row="0" Grid.Column="2" HorizontalTextAlignment="Center" Text="2nd" FontSize="15" FontAttributes="Bold"/>
         </Grid>
         <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
         <ListView x:Name="lstItems" ItemSelected="lstItems_ItemSelected" HasUnevenRows="True">
@@ -40,13 +40,17 @@
                     <ViewCell>
                         <StackLayout>
                             <StackLayout.Triggers>
-                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="Complete">
-                                    <Setter Property="BackgroundColor" Value="#d4ff88"/>
+                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="2">
+                                    <Setter Property="BackgroundColor" Value="#53f57e"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="0">
+                                    <Setter Property="BackgroundColor" Value="#f5a940"/>
                                 </DataTrigger>
                             </StackLayout.Triggers>
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="80*" />
@@ -54,8 +58,15 @@
                                     <ColumnDefinition Width="10*" />
                                 </Grid.ColumnDefinitions>
                                 <Label Grid.Row="0" Grid.Column="0" Text="{Binding ItemDesc}" TextColor="Black" FontSize="Medium"/>
-                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding FirstScanQty}" TextColor="Black" FontSize="Medium"/>
-                                <Label Grid.Row="0" Grid.Column="2" Text="{Binding SecondScanQty}" TextColor="Black" FontSize="Medium"/>
+                                <Label Grid.Row="0" HorizontalTextAlignment="Center" Grid.Column="1" Text="{Binding FirstScanQty}" TextColor="Black" FontSize="Medium"/>
+                                <Label Grid.Row="0" HorizontalTextAlignment="Center" Grid.Column="2" Text="{Binding SecondScanQty}" TextColor="Black" FontSize="Medium"/>
+                                <Label Grid.Row="1" Grid.Column="0" BackgroundColor="LightGray" Text="{Binding Bin,StringFormat='Bin: {0}'}" TextColor="Black">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding Bin}" Value="NA">
+                                            <Setter Property="IsVisible" Value="False"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
                             </Grid>
                         </StackLayout>
                     </ViewCell>

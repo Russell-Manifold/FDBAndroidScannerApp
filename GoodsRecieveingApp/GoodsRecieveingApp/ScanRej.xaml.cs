@@ -127,6 +127,7 @@ namespace GoodsRecieveingApp
             int OrderQty = currentDocs.Find(x => x.ItemCode == Icode && x.ItemQty != 0).ItemQty;
             lblitemDescRej.Text = currentDocs.Find(x => x.ItemCode == Icode && x.ItemQty != 0).ItemDesc + "\n" + txfRejCode.Text;
             int balance = OrderQty;
+            lblBin.Text = currentDocs.Find(x => x.ItemCode == Icode && x.ItemQty != 0).Bin;
             scanQty = currentDocs.Where(x => x.ItemCode == Icode).Sum(x => x.ScanAccQty) + currentDocs.Where(x => x.ItemCode == Icode).Sum(x => x.ScanRejQty);
             balance = balance - scanQty;
             lblBalance.Text = balance + "";
@@ -167,10 +168,6 @@ namespace GoodsRecieveingApp
                         await ResetItem();
                         break;
                 }
-            }
-            else
-            {
-                await Navigation.PopAsync();
             }
         }
         private async Task<bool> ResetItem()

@@ -12,6 +12,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Data.Message;
 using Xamarin.Essentials;
+using Data.Model;
 
 namespace ScannerFDB
 {
@@ -87,6 +88,7 @@ namespace ScannerFDB
                             GoodsRecieveingApp.MainPage.CloseInvCount = Convert.ToBoolean(row["CloseInvCount"]);
                             GoodsRecieveingApp.MainPage.PSCollect = Convert.ToBoolean(row["PSCollect"]);
                         }
+                        _ = GetInfo();
                             await Navigation.PushAsync(new MainPage());
                             AccessLoading.IsVisible = false;
                             return true;
@@ -109,6 +111,42 @@ namespace ScannerFDB
                 return false;
             }  
         }
+        private async Task GetInfo()
+        {
+            try
+            {
+                RestClient client = new RestClient();
+                string path = "DocumentSQLConnection";
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                {
+                    string str = $"GET?qry=SELECT * FROM SystemConfig";
+                    var Request = new RestRequest(str, Method.GET);
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("PaperPickSlips"))
+                    {
+                        DataSet myds = new DataSet();
+                        myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                        try
+                        {
+                            DeviceConfig conf = await GoodsRecieveingApp.App.Database.GetConfig();
+                            conf.PaperPickSlips = Convert.ToBoolean(myds.Tables[0].Rows[0]["PaperPickSlips"]);
+                            conf.UseBins = Convert.ToBoolean(myds.Tables[0].Rows[0]["UseBins"]);
+                            conf.UseZones = Convert.ToBoolean(myds.Tables[0].Rows[0]["UseZones"]);
+                            await GoodsRecieveingApp.App.Database.Update(conf);
+                        }
+                        catch
+                        {
+                            await GoodsRecieveingApp.App.Database.Insert(new DeviceConfig {PaperPickSlips=Convert.ToBoolean(myds.Tables[0].Rows[0]["PaperPickSlips"]), UseBins = Convert.ToBoolean(myds.Tables[0].Rows[0]["UseBins"]), UseZones = Convert.ToBoolean(myds.Tables[0].Rows[0]["UseZones"]) });
+                        }
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+        }
         private async void txfUserBarcode_Completed(object sender, EventArgs e)
         {
             if (!(txfUserBarcode.Text.Length < 2))
@@ -119,6 +157,20 @@ namespace ScannerFDB
                     txfUserBarcode.Focus();
                 }
             }
+        }
+
+        private void btnInWH_Clicked(object sender, EventArgs e)
+        {
+            btnOUTWH.IconImageSource = "WHTrfOut.png";
+            btnInWH.IconImageSource = "WHTrfINGreen.png";
+            GoodsRecieveingApp.MainPage.APIPath = GoodsRecieveingApp.MainPage.APIPathIN;
+        }
+
+        private void btnOUTWH_Clicked(object sender, EventArgs e)
+        {
+            btnInWH.IconImageSource = "WHTrfIN.png";
+            btnOUTWH.IconImageSource = "WHTrfOutGreen.png";
+            GoodsRecieveingApp.MainPage.APIPath= GoodsRecieveingApp.MainPage.APIPathOUT;
         }
     }
 }
