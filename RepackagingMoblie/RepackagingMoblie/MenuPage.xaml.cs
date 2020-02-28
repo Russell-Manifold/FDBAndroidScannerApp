@@ -1,6 +1,7 @@
 ﻿using Data.KeyboardContol;
 using Data.Message;
 using Data.Model;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,7 +82,13 @@ namespace RepackagingMoblie
         {
             if (MainPage.docLines.Find(x=>x.ItemDesc=="1ItemFromMain").ItemQty==MainPage.docLines.FindAll(x=>x.ItemDesc!= "1ItemFromMain").Sum(x=>x.ItemQty))
             {
-                // send all to API for printing MainPage.PackCodes
+                if (MainPage.PackCodes.Count > 0)
+                {
+                   if(!await SendPrinterCodes())
+                    {
+                        return;
+                    }
+                }                
                 lblBOMInfo.TextColor = System.Drawing.Color.Gray;
                 message.DisplayMessage("Repacking Complete!!", true);
                 Navigation.RemovePage(Navigation.NavigationStack[2]);
@@ -91,6 +98,28 @@ namespace RepackagingMoblie
             {
                 Vibration.Vibrate();
                 message.DisplayMessage("Not All items have benn packed", true);
+            }
+        }
+        async Task<bool> SendPrinterCodes()
+        {
+            RestClient client = new RestClient();
+            string path = "DocumentSQLConnection";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                foreach (string s in MainPage.PackCodes)
+                {
+                    string str = $"POST?qry=INSERT INTO tblPrintQue (Barcode,Qty)VALUES('{s}',1)";
+                    var Request = new RestSharp.RestRequest(str,Method.POST);
+                    CancellationTokenSource ct = new CancellationTokenSource();
+                    var res = await client.ExecuteAsync(Request,ct.Token);
+                    if (!res.IsSuccessful)
+                    {
+                        Vibration.Vibrate();
+                        message.DisplayMessage("Could not send the codes",false);
+                        return false;
+                    }
+                }
+                return true;
             }
         }
         private async void Button_Clicked_Home(object sender, EventArgs e)
