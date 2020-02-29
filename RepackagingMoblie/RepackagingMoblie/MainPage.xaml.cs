@@ -139,7 +139,8 @@ namespace RepackagingMoblie
         }
         private void btnUnpack_Clicked(object sender, EventArgs e)
         {
-            lblQuestion.Text = "Scan Barcode of pack to be Unpacked:";
+            lblQuestion.Text = "Scan PACKCODE of pack to be Un-packed:";
+            imgUnpackMain.Source = "unpackicon.png";
             OpenLayout.IsVisible = false;
             MainLayout.IsVisible = true;
             MustMakePack = false;
@@ -147,7 +148,8 @@ namespace RepackagingMoblie
         }
         private void btnPack_Clicked(object sender, EventArgs e)
         {
-            lblQuestion.Text = "Scan Barcode of product to be packed:";
+            lblQuestion.Text = "Scan BARCODE of product to be Re-packed:";
+            imgUnpackMain.Source = "repackboxicon.png";
             OpenLayout.IsVisible = false;
             MainLayout.IsVisible = true;
             MustMakePack = true;

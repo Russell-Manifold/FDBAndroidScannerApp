@@ -14,7 +14,7 @@
         <StackLayout VerticalOptions="FillAndExpand">
             <StackLayout x:Name="MainLayout" IsVisible="False" VerticalOptions="FillAndExpand">
                 <StackLayout VerticalOptions="StartAndExpand">
-                <Image Source="repackboxicon.png" HorizontalOptions="Fill"></Image>
+                <Image x:Name="imgUnpackMain" Source="repackboxicon.png" HorizontalOptions="Fill"></Image>
                 <Label  FontSize="Large" x:Name="lblQuestion" HorizontalTextAlignment="Center"/>
                 <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfPackbarcode" TextChanged="TxfPackbarcode_TextChanged" HorizontalTextAlignment="Center"/>
                 <Label x:Name="lblDesc" FontSize="Large" IsVisible="False"/>

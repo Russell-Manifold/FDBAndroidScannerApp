@@ -151,9 +151,6 @@ namespace ScannerFDB
                 {
                 }
             }
-
-
-
             Button_Clicked(sender, EventArgs.Empty);
         }
 

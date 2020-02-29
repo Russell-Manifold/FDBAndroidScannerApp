@@ -4,6 +4,7 @@ using Data.Model;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -112,7 +113,7 @@ namespace RepackagingMoblie
                     var Request = new RestSharp.RestRequest(str,Method.POST);
                     CancellationTokenSource ct = new CancellationTokenSource();
                     var res = await client.ExecuteAsync(Request,ct.Token);
-                    if (!res.IsSuccessful)
+                     if (!res.IsSuccessful)
                     {
                         Vibration.Vibrate();
                         message.DisplayMessage("Could not send the codes",false);
@@ -158,9 +159,50 @@ namespace RepackagingMoblie
                     string result=await DisplayActionSheet($"Pack {bi.Qty} : {bi.ItemDesc} into one pack","YES","NO");
                     if (result=="YES")
                     {
-                        //Send Data To Pastel
-                        message.DisplayMessage("COMPLETE!",false);                        
-                        await Navigation.PopAsync();
+                        // sending pack code to print queue
+                        RestClient client = new RestClient();
+                        string path = "DocumentSQLConnection";
+                        client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                        {
+                            string str = $"POST?qry=INSERT INTO tblPrintQue (Barcode,Qty)VALUES('" + txfScanPack.Text + "',1)";
+                            var Request = new RestSharp.RestRequest(str, Method.POST);
+                            CancellationTokenSource ct = new CancellationTokenSource();
+                            var res = await client.ExecuteAsync(Request, ct.Token);
+                            if (!res.IsSuccessful)
+                            {
+                                Vibration.Vibrate();
+                                message.DisplayMessage("Could not send the codes", false); 
+                            }
+                        }
+                        // Get Item code to send to Pastel
+                        string Qstr = "ACCPRD|4|" + MainPage.docLines.First().ItemBarcode;
+                        client = new RestClient();
+                        path = "FindDescAndCode";
+                        client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                        {
+                            string str = $"GET?qrystr={Qstr}";
+                            var Request = new RestSharp.RestRequest(str, Method.GET);
+                            CancellationTokenSource ct = new CancellationTokenSource();
+                            var res = await client.ExecuteAsync(Request, ct.Token);
+                            if (res.StatusCode.ToString() == "OK")
+                            {
+                                string returnVal = res.Content.Substring(1, res.Content.Length - 2);
+                                //Send Data To Pastel
+                                await linkCodesInPastel(returnVal.Split('|')[2], txfScanPack.Text);
+                                // Save linking to device
+                                
+                                BOMItem itemB = new BOMItem();
+                                itemB.PackBarcode = txfScanPack.Text;
+                                itemB.ItemCode = returnVal.Split('|')[2];
+                                itemB.Qty = Convert.ToInt16(bi.Qty);
+                                itemB.ItemDesc = bi.ItemDesc;
+                                await GoodsRecieveingApp.App.Database.Insert(itemB);
+                                //'''
+
+                                message.DisplayMessage("COMPLETE!", false);
+                                await Navigation.PopAsync();
+                            }
+                        }
                     }
                     else
                     {
@@ -179,50 +221,141 @@ namespace RepackagingMoblie
         }
         private async void txfNumberOfItem_Completed(object sender, EventArgs e)
         {
-            if (txfNumberOfItem.Text.Length>0)
+            if (txfNumberOfItem.Text.Length > 0)
             {
                 try
                 {
-                    int i =Convert.ToInt32(txfNumberOfItem.Text);
+                    int i = Convert.ToInt32(txfNumberOfItem.Text);
                     string Item = "F";
-                    if (i>9)
+                    if (i > 9)
                     {
-                        Item +=txfNumberOfItem.Text;
-                    }else
-                    {
-                        Item +="0"+txfNumberOfItem.Text;
+                        Item += txfNumberOfItem.Text;
                     }
-                    Item += ""+MainPage.docLines.First().ItemBarcode.Substring(7,5);
+                    else
+                    {
+                        Item += "0" + txfNumberOfItem.Text;
+                    }
+                    Item += "" + MainPage.docLines.First().ItemBarcode.Substring(7, 5);
                     try
                     {
-                       BOMItem boi=  await GoodsRecieveingApp.App.Database.GetBOMItem(Item);
-                        //send To Pastel
-                        message.DisplayMessage("Complete!",true);
+                        BOMItem boi = await GoodsRecieveingApp.App.Database.GetBOMItem(Item);
+                        if (Item != null)
+                        {
+                            // sending pack code to print queue
+                            RestClient client = new RestClient();
+                            string path = "DocumentSQLConnection";
+                            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                            {
+                                string str = $"POST?qry=INSERT INTO tblPrintQue (Barcode,Qty)VALUES('" + Item + "',1)";
+                                var Request = new RestSharp.RestRequest(str, Method.POST);
+                                CancellationTokenSource ct = new CancellationTokenSource();
+                                var res = await client.ExecuteAsync(Request, ct.Token);
+                                if (!res.IsSuccessful)
+                                {
+                                    Vibration.Vibrate();
+                                    message.DisplayMessage("Could not send codes to printing", false);
+                                }
+                            }
+                        }
+                        message.DisplayMessage("Complete!", true);
                         await Navigation.PopAsync();
                     }
                     catch
                     {
-                        string result = await DisplayActionSheet("No Pack Found would you like to create a new packcode?","YES","NO");
-                        if (result =="YES")
+                        RestClient client;
+                        string path;
+
+                        string result = await DisplayActionSheet("No Pack Code found would you like to create a new packcode?", "YES", "NO");
+                        if (result == "YES")
                         {
-                            message.DisplayMessage("Linking Codes .....",false);
-                            await Task.Delay (2000);
-                            //Send To Pastel
-                            message.DisplayMessage("Complete!",true);
-                            await Navigation.PopAsync();
-                        }
-                        else
-                        {
-                            txfNumberOfItem.Text = "";
-                            return;
+                            message.DisplayMessage("Linking Codes .....", false);
+                            if (Item != null)
+                            {
+                                // sending pack code to print queue
+                                client = new RestClient();
+                                path = "DocumentSQLConnection";
+                                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                                {
+                                    string str = $"POST?qry=INSERT INTO tblPrintQue (Barcode,Qty)VALUES('" + Item + "',1)";
+                                    var Request = new RestSharp.RestRequest(str, Method.POST);
+                                    CancellationTokenSource ct = new CancellationTokenSource();
+                                    var res = await client.ExecuteAsync(Request, ct.Token);
+                                    if (!res.IsSuccessful)
+                                    {
+                                        Vibration.Vibrate();
+                                        message.DisplayMessage("Could not send the codes to printing", false);
+                                    }
+                                }
+                            }
+                            // Get Item code to send to Pastel
+                            string Qstr = "ACCPRD|4|" + MainPage.docLines.First().ItemBarcode;
+                            client = new RestClient();
+                            path = "FindDescAndCode";
+                            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                            {
+                                string str = $"GET?qrystr={Qstr}";
+                                var Request = new RestSharp.RestRequest(str, Method.GET);
+                                CancellationTokenSource ct = new CancellationTokenSource();
+                                var res = await client.ExecuteAsync(Request, ct.Token);
+                                if (res.StatusCode.ToString() == "OK")
+                                {
+                                    string returnVal = res.Content.Substring(1, res.Content.Length - 2);
+                                    //Send To Pastel
+                                    await linkCodesInPastel(returnVal.Split('|')[2], Item);
+                                   // Save linking to device
+                                    BOMItem itemB = new BOMItem();
+                                    itemB.PackBarcode = Item;
+                                    itemB.ItemCode = returnVal.Split('|')[2];
+                                    itemB.Qty = Convert.ToInt16(txfNumberOfItem.Text);
+                                    itemB.ItemDesc = "";
+                                    await GoodsRecieveingApp.App.Database.Insert(itemB);
+                                    //'''
+                                    message.DisplayMessage("Complete!", true);
+                                    await Navigation.PopAsync();
+                                }
+                                else
+                                {
+                                    txfNumberOfItem.Text = "";
+                                    return;
+                                }
+                            }
                         }
                     }
                 }
-                catch 
+                catch
                 {
                     message.DisplayMessage("No BOM created!", true);
-                }               
+                }
             }
         }
+        private async Task<string> linkCodesInPastel(string itemCode, string barcode)
+        {
+            try
+            {
+                string BOMHead = "" + barcode + "|BOM HEADER|12.1|12.2|12.3|12.4|12.5|12.6|12.7|12.8|12.9|12|10|20|30|100|200|300|" + itemCode + "|Y|Y|N||N|N|001";
+                string line = "" + barcode + "|" + itemCode + "|" + txfNumberOfItem.Text.Trim() + "|001#";
+                RestSharp.RestClient client = new RestSharp.RestClient();
+                string path = "POSTBOM";
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                {
+                    string str = $"POST?BOMHead={BOMHead}&line={line}";
+                    var Request = new RestSharp.RestRequest();
+                    Request.Resource = str;
+                    Request.Method = RestSharp.Method.POST;
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = client.Execute(Request);
+                    if (res.StatusCode.ToString().Contains("OK"))
+                    {
+                        return res.Content.Substring(1, res.Content.Length - 2);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                
+            }
+            return "";
+        }
+
     }
 }
