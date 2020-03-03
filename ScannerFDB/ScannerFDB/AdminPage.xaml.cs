@@ -22,9 +22,7 @@ namespace ScannerFDB
         private async void Button_Clicked(object sender, EventArgs e)
         {
             LodingIndiactor.IsVisible = true;
-           var current = Connectivity.NetworkAccess;
-            var profiles = Connectivity.ConnectionProfiles;
-            if (current == NetworkAccess.Internet)
+            if (Connectivity.NetworkAccess == NetworkAccess.Internet)
             {
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "Find";
@@ -151,7 +149,7 @@ namespace ScannerFDB
                 {
                 }
             }
-            Button_Clicked(sender, EventArgs.Empty);
+            Button_Clicked(null, null);
         }
 
         private async void btnConnectionSetup_Clicked(object sender, EventArgs e)

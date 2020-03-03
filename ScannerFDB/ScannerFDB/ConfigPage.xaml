@@ -5,11 +5,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              x:Class="ScannerFDB.ConfigPage">
-    <StackLayout>
-        <Label Text="Default Accept Warehouse:"/>
+    <StackLayout VerticalOptions="FillAndExpand">
+        <Label Text="Select Warehouses for this Device:" FontSize="Large" HorizontalTextAlignment="Center"/>
+        <Label Text="Default Accept Warehouse:" FontSize="Medium"/>
         <Picker Title="-Accepted WH-" x:Name="txfAccWH"  VerticalOptions="Start" HorizontalOptions="FillAndExpand" SelectedIndexChanged="txfAccWH_SelectedIndexChanged"/>
-        <Label Text="Default Reject Warehouse:"/>
-        <Picker Title="-Rejected WH-" x:Name="txfRejWH"  VerticalOptions="Start" HorizontalOptions="FillAndExpand" SelectedIndexChanged="txfRejWH_SelectedIndexChanged"/>
-        <Button Text="Save" x:Name="btnSave" Clicked="btnSave_Clicked"/>
+        <Label Text="Default Damaged Goods Warehouse:" FontSize="Medium"/>
+        <Picker Title="-Damaged Goods WH-" x:Name="txfRejWH"  VerticalOptions="Start" HorizontalOptions="FillAndExpand" SelectedIndexChanged="txfRejWH_SelectedIndexChanged"/>
+        <Button Text="Save" x:Name="btnSave" Clicked="btnSave_Clicked" VerticalOptions="EndAndExpand" FontSize="Large"/>
     </StackLayout>
 </ContentPage>

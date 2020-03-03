@@ -149,6 +149,7 @@ namespace ScannerFDB
         }
         private async void txfUserBarcode_Completed(object sender, EventArgs e)
         {
+            txfUserBarcode.Text = "USER";
             if (!(txfUserBarcode.Text.Length < 2))
             {
                 if (!await CheckUser())

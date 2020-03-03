@@ -12,8 +12,8 @@
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
-            <Image Source="repack.png" HorizontalOptions="Fill"></Image>
-            <Label Text="Please scan the Item Code:"/>
+            <Image Source="ItemAcceptDamaged.png" HorizontalOptions="Fill"></Image>
+            <Label Text="Please scan the Item Code:" FontSize="Large" HorizontalOptions="CenterAndExpand"/>
             <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfBarcode" TextChanged="TxfBarcode_TextChanged"/>
             <ActivityIndicator x:Name="Loader" IsRunning="True" IsVisible="False"/>
             <Label x:Name="lblBarcode"/>

@@ -1,5 +1,6 @@
 ﻿using Data.Message;
 using Data.Model;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -92,8 +93,12 @@ namespace GoodsRecieveingApp
         {
             if (await Check())
             {
-                message.DisplayMessage("Complete!!!", true);
-                //send GRV back to Pastel database
+                if(!await SendToPastel())
+                {
+                    Vibration.Vibrate();
+                    message.DisplayMessage("Error! - Could not Complete",true);
+                }
+                message.DisplayMessage("Complete!!!", true);               
             }
             else
             {
@@ -101,6 +106,27 @@ namespace GoodsRecieveingApp
                 message.DisplayMessage("Please make sure all items are GREEN!", true);
             }
         }
+        private async Task<bool> SendToPastel()
+        {
+            string docL = "",docH="";
+            docH = $"|";
+            docL ="";
+            RestClient client = new RestClient();
+            string path = "AddDocument";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"GET?DocHead={docH}&Docline={docL}&DocType=103";
+                var Request = new RestRequest(str, Method.POST);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("0"))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+                    
         private async Task<bool> Check()
         {
             List<DocLine> lines = await App.Database.GetSpecificDocsAsync(docCode);

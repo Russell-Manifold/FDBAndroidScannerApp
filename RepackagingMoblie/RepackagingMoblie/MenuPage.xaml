@@ -13,7 +13,7 @@
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
-            <StackLayout x:Name="Mainlayout">
+            <StackLayout x:Name="Mainlayout" VerticalOptions="FillAndExpand">
                 <Label x:Name="lblRepackHeader" FontSize="Large" HorizontalOptions="Center" TextDecorations="Underline">Repacking Progress</Label>
                 <Label x:Name="lblBOMInfo" FontSize="Large" TextColor="red"/>
                 <Button Text="Single Units" x:Name="btnSingles" Clicked="BtnSingles_Clicked" VerticalOptions="FillAndExpand" ImageSource="repacksing.png" FontSize="Medium" BackgroundColor="Transparent" BorderWidth="1" BorderColor="LightGray"/>

@@ -73,7 +73,8 @@ namespace RepackagingMoblie
             {
                 lblBOMInfo.Text = "0/" + MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemQty + " Repacked";
             }
-            if (MainPage.docLines.FindAll(x => x.ItemDesc != "1ItemFromMain").Sum(x => x.ItemQty) == MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemQty) {
+            if (MainPage.docLines.FindAll(x => x.ItemDesc != "1ItemFromMain").Sum(x => x.ItemQty) == MainPage.docLines.Find(x => x.ItemDesc == "1ItemFromMain").ItemQty) 
+            {
                 imgProgress.Source = "Tick.png";
             }
         }

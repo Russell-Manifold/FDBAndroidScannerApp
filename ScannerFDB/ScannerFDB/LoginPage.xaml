@@ -17,7 +17,7 @@
             <Label Text="Login" FontSize="Large" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
             <controls:ExtendedEntry IsPassword="True" ShowVirtualKeyboardOnFocus="False" x:Name="txfUserBarcode" Completed="txfUserBarcode_Completed" VerticalOptions="StartAndExpand" HorizontalTextAlignment="Center" HorizontalOptions="FillAndExpand"/>
             <ActivityIndicator VerticalOptions="StartAndExpand" x:Name="AccessLoading" IsRunning="True"  IsVisible="False"/>
-            <Image Source="MainIconLogin.png"  HeightRequest="140" VerticalOptions="EndAndExpand"/>
+            <ImageButton Source="MainIconLogin.png" Clicked="txfUserBarcode_Completed" HeightRequest="140" VerticalOptions="EndAndExpand"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage> 
