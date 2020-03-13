@@ -132,8 +132,8 @@ namespace RepackagingMoblie
         {
             try
             {
-                string BOMHead = "" + barcode + "|BOM HEADER|12.1|12.2|12.3|12.4|12.5|12.6|12.7|12.8|12.9|12|10|20|30|100|200|300|" + itemCode + "|Y|Y|N||N|N|" + (await GoodsRecieveingApp.App.Database.GetConfig()).DefaultAccWH ;
-                string line = "" + barcode + "|" + itemCode + "|" + txfQTY.Text.Trim() + "|" + (await GoodsRecieveingApp.App.Database.GetConfig()).DefaultAccWH + "#";
+                string BOMHead = "" + barcode + "|BOM HEADER|12.1|12.2|12.3|12.4|12.5|12.6|12.7|12.8|12.9|12|10|20|30|100|200|300|" + itemCode + "|Y|Y|N||N|N|" + MainPage.MainWH ;
+                string line = "" + barcode + "|" + itemCode + "|" + txfQTY.Text.Trim() + "|" + MainPage.MainWH + "#";
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "POSTBOM";
                 client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);

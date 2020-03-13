@@ -20,6 +20,8 @@ namespace RepackagingMoblie
         public static List<DocLine> docLines = new List<DocLine>();
         public static List<string> PackCodes = new List<string>();
         IMessage message = DependencyService.Get<IMessage>();
+        public static string MainWH;
+        public static string DMGWH;
         bool MustMakePack = false;
         public MainPage()
         {
@@ -52,6 +54,8 @@ namespace RepackagingMoblie
                 await DisplayAlert("Error!","Please make sure to set both warehouses in the configuration","OK");
                 await Navigation.PopAsync();
             }
+            dev.DefaultAccWH = MainWH;
+            dev.DefaultRejWH = DMGWH;
             base.OnAppearing();
             txfPackbarcode.Text = "";
             lblQTY.Text = "";
