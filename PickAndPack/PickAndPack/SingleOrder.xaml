@@ -92,11 +92,14 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </StackLayout>
-            <StackLayout Orientation="Horizontal" HeightRequest="40">
+            <StackLayout Orientation="Horizontal" HeightRequest="40" VerticalOptions="EndAndExpand" x:Name="palletAddStack">
                 <Label Text="Pallets" FontSize="25"  HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center"/>
                 <Button FontSize="Large" x:Name="btnPrev" Clicked="btnPrevPallet_Clicked" BackgroundColor="Transparent" ImageSource="PalletMinus.png" HorizontalOptions="StartAndExpand" />
                 <Label x:Name="lblPalletNumber" Text="1" FontSize="25"  HorizontalOptions="CenterAndExpand"/>
                 <Button FontSize="Large" x:Name="btnNext" Clicked="btnNextPallet_Clicked" BackgroundColor="Transparent" ImageSource="PalletAdd.png" HorizontalOptions="EndAndExpand"/>
+            </StackLayout>
+            <StackLayout IsVisible="False" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand" Orientation="Horizontal" x:Name="CompletedStack">
+                <Button TextColor="Green" VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand" Text="Complete" BackgroundColor="Transparent" BorderColor="Black" BorderWidth="1" FontAttributes="Bold" ImageSource="TickSmall.png" FontSize="Large" x:Name="btnComplete" Clicked="btnComplete_Clicked"/>
             </StackLayout>
         </StackLayout>
     </StackLayout>

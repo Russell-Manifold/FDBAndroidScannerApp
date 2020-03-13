@@ -17,7 +17,7 @@ namespace InventoryCount
     public partial class InvLandingPage : ContentPage
     {
         List<string> WHIDs = new List<string>();
-        public static string WH = "001";
+        public static string WH = "";
         public static bool CustQty = false;
         public InvLandingPage()
         {

@@ -20,7 +20,7 @@ namespace WHTransfer
     {
         private List<string> WHIDs = new List<string>();
         IMessage message = DependencyService.Get<IMessage>();
-        public static string FromWH="001";
+        public static string FromWH="";
         public OutPage()
         {
             InitializeComponent();

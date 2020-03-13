@@ -338,9 +338,38 @@ namespace PickAndPack
                         message.DisplayMessage("This Item is not on this order", true);
                     }
                 }
+                if (await CompleteCheck())
+                {
+                    CompletedStack.IsVisible = true;
+                    palletAddStack.IsVisible = false;
+                }
+                else
+                {
+                    CompletedStack.IsVisible = false;
+                    palletAddStack.IsVisible = true;
+                }
                 txfItemCode.Text = "";
                 txfItemCode.Focus();
             }
+        }
+        private async Task<bool> CompleteCheck()
+        {
+            List<DocLine> docs = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text);
+            foreach (string str in docs.Select(x => x.ItemCode).Distinct())
+            {
+                try
+                {
+                    if (docs.Where(x => x.ItemCode == str).FirstOrDefault().ItemQty != docs.Where(x => x.ItemCode == str).Sum(c => c.ScanAccQty))
+                    {
+                        return false;
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            return true;
         }
         async Task<bool> CheckOrderBarcode(string Code)
         {
@@ -681,6 +710,11 @@ namespace PickAndPack
                 }
             }
             return false;
+        }
+
+        private void btnComplete_Clicked(object sender, EventArgs e)
+        {
+
         }
     }
 }

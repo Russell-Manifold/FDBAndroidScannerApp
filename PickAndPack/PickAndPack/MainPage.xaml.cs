@@ -44,11 +44,17 @@ namespace PickAndPack
         {
             base.OnAppearing();
             DeviceConfig d = await GoodsRecieveingApp.App.Database.GetConfig();
-            if (!d.PaperPickSlips)
+            if (d == null || d.DefaultAccWH == null || d.DefaultRejWH == null)
             {
-                btnPickingSlips.IsVisible = false;
-                btnHOPickingSlips.IsVisible = false;
+                Vibration.Vibrate();
+                await DisplayAlert("Error!", "Please select options in device config in device configuration", "OK");
+                await Navigation.PopAsync();
             }
+            //if (!d.PaperPickSlips)
+            //{
+            //    btnPickingSlips.IsVisible = false;
+            //    btnHOPickingSlips.IsVisible = false;
+            //}
             if (GoodsRecieveingApp.MainPage.PSCollect == true&&!d.PaperPickSlips)
             {
                 btnPickingSlips.IsVisible = true;

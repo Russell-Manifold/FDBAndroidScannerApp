@@ -1,6 +1,7 @@
 ﻿using Data.KeyboardContol;
 using Data.Message;
 using Data.Model;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -227,9 +228,34 @@ namespace PickAndPack
                         message.DisplayMessage("This Item is not on this order", true);
                     }
                 }
+                if (await CompleteCheck())
+                {
+                    btnComplete.IsVisible = true;
+                }
+                else
+                    btnComplete.IsVisible = false;
                 txfItemCode.Text = "";
                 txfItemCode.Focus();
             }
+        }
+        private async Task<bool> CompleteCheck()
+        {
+            List<DocLine> docs = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text);
+            foreach (string str in docs.Select(x => x.ItemCode).Distinct())
+            {
+                try
+                {
+                    if (docs.Where(x => x.ItemCode == str).FirstOrDefault().ItemQty != docs.Where(x => x.ItemCode == str).Sum(c => c.ScanAccQty))
+                    {
+                        return false;
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            return true;
         }
         private async void btnAddSoNumber_Clicked(object sender, EventArgs e)
         {
@@ -717,6 +743,107 @@ namespace PickAndPack
                 }
             }
             return false;
-        }                       
+        }
+        private async void btnComplete_Clicked(object sender, EventArgs e)
+        {
+           if(!await SendToPastel())
+            {
+                Vibration.Vibrate();
+                message.DisplayMessage("Could not send to pastel",true);
+            }
+        }
+        private async Task<bool> SendToPastel()
+        {
+            List<DocLine> docs = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text);
+            string docL = await CreateDocLines(docs);
+            string docH = await CreateDocHeader();
+            if (docL == "" || docH == "")
+                return false;
+            RestClient client = new RestClient();
+            string path = "AddDocument";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"GET?DocHead={docH}&Docline={docL}&DocType=107";
+                var Request = new RestRequest(str, Method.POST);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("0"))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        async Task<string> GetGlCode(string itemCode, string WHCode)
+        {
+            RestClient client = new RestClient();
+            string path = "GetField";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"GET?qrystr=ACCSTKST|1|{itemCode}{WHCode}|2";
+                var Request = new RestRequest(str, Method.GET);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("0"))
+                {
+                    str = $"GET?qrystr=ACCGRP|0|{res.Content.Replace('"', ' ').Replace('\\', ' ').Trim().Split('|')[1]}|3";
+                    Request = new RestRequest(str, Method.GET);
+                    cancellationTokenSource = new CancellationTokenSource();
+                    res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("0"))
+                    {
+                        return res.Content.Replace('"', ' ').Replace('\\', ' ').Trim().Split('|')[1];
+                    }
+                }
+            }
+            return "";
+        }
+        async Task<string> CreateDocLines(List<DocLine> d)
+        {
+            DataTable det = await GetDocDetails(txfSOCode.Text);
+            if (det == null)
+            {
+                return "";
+            }
+            string s = "", GLCode = "";
+            foreach (string CODE in d.Select(x => x.ItemCode).Distinct())
+            {
+                foreach (string WH in d.Where(x => x.ItemCode == CODE && x.ItemQty != 0).Select(x => x.WarehouseID).Distinct())
+                {
+                    DataRow CurrentRow = det.Select($"ItemCode=={CODE}").FirstOrDefault();
+                    GLCode = await GetGlCode(CODE, WH);
+                    if (CurrentRow != null)
+                        s += $"{CurrentRow["CostPrice"].ToString()}|{CurrentRow["ItemQty"].ToString()}|{CurrentRow["ExVat"].ToString()}|{CurrentRow["InclVat"].ToString()}|{CurrentRow["Unit"].ToString()}|{CurrentRow["TaxType"].ToString()}|{CurrentRow["DiscType"].ToString()}|{CurrentRow["DiscPerc"].ToString()}|{GLCode}|{CurrentRow["ItemDesc"].ToString()}|4|{WH}|{CurrentRow["CostCode"].ToString()}#";
+                }
+            }
+            return s;
+        }
+        async Task<string> CreateDocHeader()
+        {
+            DataTable det = await GetDocDetails(txfSOCode.Text);
+            if (det == null)
+                return "";
+            DataRow CurrentRow = det.Rows[0];
+            return $"||Y|{CurrentRow["CustomerCode"].ToString()}|{DateTime.Now.ToString("dd/MM/yyyy")}|{CurrentRow["OrderNumber"].ToString()}||N|0|{CurrentRow["Message_1"].ToString()}|{CurrentRow["Message_2"].ToString()}|{CurrentRow["Message_3"].ToString()}|{CurrentRow["Address1"].ToString()}|{CurrentRow["Address2"].ToString()}|{CurrentRow["Address3"].ToString()}|{CurrentRow["Address4"].ToString()}||{CurrentRow["SalesmanCode"].ToString()}|00||{CurrentRow["Due_Date"].ToString()}|-|-|-|1#"; ;
+        }
+        async Task<DataTable> GetDocDetails(string DocNum)
+        {//http://192.168.0.100/FDBAPI/api/GetFullDocDetails/GET?qrystr=ACCHISTL|6|PO100330|106
+            RestClient client = new RestClient();
+            string path = "GetFullDocDetails";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"GET?qrystr=ACCHISTL|6|{DocNum}|106";
+                var Request = new RestRequest(str, Method.GET);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("0"))
+                {
+                    DataSet myds = new DataSet();
+                    myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                    return myds.Tables[0];
+                }
+            }
+            return null;
+        }
     }
 }

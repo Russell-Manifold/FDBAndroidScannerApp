@@ -24,5 +24,6 @@ namespace Data.Model
         public string Complete { get; set; }
         public int PalletNum { get; set; }
         public string Bin { get; set; }
+        public string GLCode { get; set; }
     }
 }

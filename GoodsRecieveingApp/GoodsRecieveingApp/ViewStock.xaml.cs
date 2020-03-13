@@ -106,11 +106,84 @@ namespace GoodsRecieveingApp
                 message.DisplayMessage("Please make sure all items are GREEN!", true);
             }
         }
+        async Task<DataTable> GetDocDetails(string DocNum)
+        {//http://192.168.0.100/FDBAPI/api/GetFullDocDetails/GET?qrystr=ACCHISTL|6|PO100330|106
+            RestClient client = new RestClient();
+            string path = "GetFullDocDetails";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"GET?qrystr=ACCHISTL|6|{DocNum}|106";
+                var Request = new RestRequest(str, Method.GET);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("0"))
+                {
+                    DataSet myds = new DataSet();
+                    myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                    return myds.Tables[0];
+                }
+            }
+            return null;
+        }
+        async Task<string> CreateDocLines(List<DocLine> d)
+        {
+            DataTable det = await GetDocDetails(docCode);
+            if (det==null)
+            {
+                return "";
+            }
+            string s = "",GLCode="";
+            foreach (string CODE in d.Select(x=>x.ItemCode).Distinct())
+            {
+                foreach (string WH in d.Where(x=>x.ItemCode==CODE && x.ItemQty == 0).Select(x => x.WarehouseID).Distinct())
+                {            
+                    DataRow CurrentRow = det.Select($"ItemCode=={CODE}").FirstOrDefault();
+                    GLCode = await GetGlCode(CODE, WH);
+                    if (CurrentRow!=null)
+                        s += $"{CurrentRow["CostPrice"].ToString()}|{CurrentRow["ItemQty"].ToString()}|{CurrentRow["ExVat"].ToString()}|{CurrentRow["InclVat"].ToString()}|{CurrentRow["Unit"].ToString()}|{CurrentRow["TaxType"].ToString()}|{CurrentRow["DiscType"].ToString()}|{CurrentRow["DiscPerc"].ToString()}|{GLCode}|{CurrentRow["ItemDesc"].ToString()}|4|{WH}|{CurrentRow["CostCode"].ToString()}#";
+                }                  
+            }
+            return s;
+        }
+        async Task<string> CreateDocHeader()
+        {
+            DataTable det = await GetDocDetails(docCode);
+            if (det==null)
+                return "";        
+            DataRow CurrentRow = det.Rows[0];
+            return $"||Y|{CurrentRow["CustomerCode"].ToString()}|{DateTime.Now.ToString("dd/MM/yyyy")}|{CurrentRow["OrderNumber"].ToString()}||N|0|{CurrentRow["Message_1"].ToString()}|{CurrentRow["Message_2"].ToString()}|{CurrentRow["Message_3"].ToString()}|{CurrentRow["Address1"].ToString()}|{CurrentRow["Address2"].ToString()}|{CurrentRow["Address3"].ToString()}|{CurrentRow["Address4"].ToString()}||{CurrentRow["SalesmanCode"].ToString()}|00||{CurrentRow["Due_Date"].ToString()}|-|-|-|1#"; ;
+        }
+        async Task<string> GetGlCode(string itemCode,string WHCode)
+        {
+            RestClient client = new RestClient();
+            string path = "GetField";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"GET?qrystr=ACCSTKST|1|{itemCode}{WHCode}|2";
+                var Request = new RestRequest(str, Method.GET);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("0"))
+                {
+                    str = $"GET?qrystr=ACCGRP|0|{res.Content.Replace('"', ' ').Replace('\\', ' ').Trim().Split('|')[1]}|5";
+                    Request = new RestRequest(str, Method.GET);
+                    cancellationTokenSource = new CancellationTokenSource();
+                    res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("0"))
+                    {
+                        return res.Content.Replace('"', ' ').Replace('\\', ' ').Trim().Split('|')[1];
+                    }
+                }
+            }
+            return "";
+        }
         private async Task<bool> SendToPastel()
         {
-            string docL = "",docH="";
-            docH = $"|";
-            docL ="";
+            List<DocLine> docs = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode);
+            string docL = await CreateDocLines(docs);
+            string docH = await CreateDocHeader();
+            if (docL == ""||docH=="")
+                return false;         
             RestClient client = new RestClient();
             string path = "AddDocument";
             client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
@@ -125,8 +198,7 @@ namespace GoodsRecieveingApp
                 }
             }
             return false;
-        }
-                    
+        }                   
         private async Task<bool> Check()
         {
             List<DocLine> lines = await App.Database.GetSpecificDocsAsync(docCode);
