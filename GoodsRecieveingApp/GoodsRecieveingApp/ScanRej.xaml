@@ -14,7 +14,7 @@
         <StackLayout>
             <Label x:Name="lblMainRej" Text="{Binding name}" FontSize="20" TextColor="Orange" FontAttributes="Bold"/>
             <Label Text= "Scan Barcode" FontSize="20" TextDecorations="Underline" Padding="10" TextColor="Orange" FontAttributes="Bold"/>
-            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" MaxLength="14" HorizontalOptions="FillAndExpand" TextChanged="EntryRej_TextChanged" x:Name="txfRejCode" />
+            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" MaxLength="14" HorizontalOptions="FillAndExpand" Completed="txfRejCode_Completed" x:Name="txfRejCode" />
             <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblitemDescRej" FontSize="23"/>
             <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblBarCode" FontSize="20" VerticalOptions="Start"/>
             <Grid>

@@ -25,5 +25,6 @@ namespace Data.Model
         public int PalletNum { get; set; }
         public string Bin { get; set; }
         public string GLCode { get; set; }
+        public bool GRN { get; set; }
     }
 }

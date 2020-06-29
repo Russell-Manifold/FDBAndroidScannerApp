@@ -711,10 +711,9 @@ namespace PickAndPack
             }
             return false;
         }
-
         private void btnComplete_Clicked(object sender, EventArgs e)
         {
-
+            btnViewSO_Clicked(null,null);
         }
     }
 }

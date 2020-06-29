@@ -64,7 +64,7 @@ namespace ScannerFDB
                     var Request = new RestRequest(str, Method.GET);
                     var cancellationTokenSource = new CancellationTokenSource();
                     var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                    if (res.IsSuccessful && res.Content.Contains("UserName"))
+                     if (res.IsSuccessful && res.Content.Contains("UserName"))
                     {
                         DataSet myds = new DataSet();
                         myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
@@ -86,6 +86,7 @@ namespace ScannerFDB
                             GoodsRecieveingApp.MainPage.SystAdmin = Convert.ToBoolean(row["SystAdmin"]);
                             GoodsRecieveingApp.MainPage.CreateInvCount = Convert.ToBoolean(row["CreateInvCount"]);
                             GoodsRecieveingApp.MainPage.CloseInvCount = Convert.ToBoolean(row["CloseInvCount"]);
+                            //GoodsRecieveingApp.MainPage.CanPartRec = Convert.ToBoolean(row["CanPartReceive"]);
                             GoodsRecieveingApp.MainPage.PSCollect = Convert.ToBoolean(row["PSCollect"]);
                         }
                         _ = GetInfo();

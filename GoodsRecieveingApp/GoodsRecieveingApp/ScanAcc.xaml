@@ -14,7 +14,7 @@
         <StackLayout>
             <Label x:Name="lblMainAcc" Text="{Binding name}" FontSize="20"/>
             <Label Text= "Scan Barcode" FontSize="20" TextDecorations="Underline" Padding="10"/>
-            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" MaxLength="14" HorizontalOptions="FillAndExpand" TextChanged="EntryAcc_TextChanged" x:Name="txfAccCode" />
+            <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" MaxLength="14" HorizontalOptions="FillAndExpand" Completed="txfAccCode_Completed" x:Name="txfAccCode" />
             <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblitemDescAcc" FontSize="20"/>
             <Label HorizontalOptions="CenterAndExpand" FontAttributes="Bold" x:Name="lblBarCode" FontSize="20" VerticalOptions="Start"/>
             <Grid>

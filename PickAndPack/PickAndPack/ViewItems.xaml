@@ -49,6 +49,9 @@
                                             <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="Wrong">
                                                 <Setter Property="BackgroundColor" Value="#f50505"/>
                                             </DataTrigger>
+                                            <DataTrigger TargetType="StackLayout" Binding="{Binding Complete}" Value="Orig">
+                                                <Setter Property="BackgroundColor" Value="#c2edfc"/>
+                                            </DataTrigger>
                                         </StackLayout.Triggers>
                                         <Grid>
                                             <Grid.RowDefinitions>

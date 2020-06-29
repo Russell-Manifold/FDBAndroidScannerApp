@@ -23,10 +23,10 @@ namespace GoodsRecieveingApp
         //public static string APIPathIN = "http://192.168.10.254/FDBAPI/api/";
         //public static string APIPathOUT = "http://firstdutchbrands.dvrdns.org:5555/FDBWebServiceAPI/api/";
         
-        //public static string APIPath = "https://manifoldsa.co.za/FDBAPI/api/";
+        public static string APIPath = "https://manifoldsa.co.za/FDBAPI/api/";
         public static string APIPathIN = "https://manifoldsa.co.za/FDBAPI/api/";
         public static string APIPathOUT = "https://manifoldsa.co.za/FDBAPI/api/";
-        public static string APIPath = "http://192.168.0.111/FDBAPI/api/";
+        //public static string APIPath = "http://192.168.0.111/FDBAPI/api/";
         public static string UserName = "";
         public static string ACCWH = "";
         public static string REJWH = "";
@@ -45,6 +45,8 @@ namespace GoodsRecieveingApp
         public static Boolean CreateInvCount = false;
         public static Boolean CloseInvCount = false;
         public static Boolean PSCollect = false;
+        public static Boolean CanPartRec = false;
+        public static bool InProccess = false;
         IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;
         public MainPage()
@@ -71,59 +73,39 @@ namespace GoodsRecieveingApp
         }              
         private async void TxfPOCode_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (txfPOCode.Text.Length == 8)
+           
+        }
+        private async Task GetDocStatus()
+        {
+            if (Connectivity.NetworkAccess == NetworkAccess.Internet)
             {
-                LodingIndiactor.IsVisible = true;
-                if (await GetItems(txfPOCode.Text.ToUpper()))
+                RestSharp.RestClient client = new RestSharp.RestClient();
+                string path = "DocumentSQLConnection";
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
                 {
-                    DocLine d = await App.Database.GetOneSpecificDocAsync(txfPOCode.Text.ToUpper());
-                    lblCompany.Text = d.SupplierName.ToUpper();
-                    lblPONum.Text = txfPOCode.Text.ToUpper();
-                    lblCompany.IsVisible = true;
-                    lblPONum.IsVisible = true;
-                    txfPOCode.IsEnabled = false;
-                    txfPOCode.IsVisible = false;
-                    lblPOCode.IsVisible = false;
-                    btnAccept.IsVisible = true;
-                    btnRej.IsVisible = true;
-                    btnAll.IsVisible = true;
-
-                    //ToolbarItem item = new ToolbarItem()
-                    //{
-                    //    Text = "Save"                    
-                    //};
-                    //item.Clicked += SaveClicked;
-                    //this.ToolbarItems.Add(item);
-
-                    try
+                    string str = $"GET?qry=SELECT DocStatus FROM tblTempDocHeader WHERE DocNum ='{txfPOCode.Text}'";
+                    var Request = new RestSharp.RestRequest(str, RestSharp.Method.GET);
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.Content.ToString().Contains("DocStatus"))
                     {
-                        await App.Database.Delete(await App.Database.GetHeader(d.DocNum));
+                        DataSet myds = new DataSet();
+                        myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                        if (myds.Tables[0].Rows[0]["DocStatus"] != null)
+                        {
+                            if (Convert.ToInt32(myds.Tables[0].Rows[0]["DocStatus"]) == 3)
+                            {
+                                InProccess = true;
+                            }
+                        }
                     }
-                    catch
-                    {
-
-                    }
-                    try
-                    {
-                        await App.Database.Insert(new DocHeader { DocNum = txfPOCode.Text, PackerUser = UserCode, AccName = d.SupplierName, AcctCode = d.SupplierCode });
-                    }
-                    catch
-                    {
-
-                    }
-                    LodingIndiactor.IsVisible = false;
-                    //await DisplayAlert("Done", "All the data has been loaded for this order", "OK");                       
                 }
-                else
-                {
-                    txfPOCode.Text = "";
-                    txfPOCode.Focus();
-                }
-
             }
-            else {
-                await DisplayAlert("Error!", "Invalid Document Number", "OK");
+            else
+            {
                 Vibration.Vibrate();
+                message.DisplayMessage("Could not find document status", false);
             }
         }
         private async void ButtonAccepted_Clicked(object sender, EventArgs e)
@@ -157,6 +139,7 @@ namespace GoodsRecieveingApp
                     string path = "GetDocument";
                     client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
                     {
+                        //https://manifoldsa.co.za/FDBAPI/api/GetDocument/GET?qrystr=ACCHISTL|6|PO100352|106|1
                         string str = $"GET?qrystr=ACCHISTL|6|{code}|106|"+MainPage.UserCode;
                         var Request = new RestSharp.RestRequest();
                         Request.Resource = str;
@@ -314,21 +297,48 @@ namespace GoodsRecieveingApp
                 t1.Columns.Add("Balance");
                 t1.Columns.Add("ScanRejQty");
                 t1.Columns.Add("PalletNumber");
-                docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemQty==0).ToList();
+                t1.Columns.Add("GRV");
+                docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemQty==0||x.GRN).ToList();
                 if (docs.Count == 0)
                     return true;
-                foreach (string str in docs.Select(x=>x.ItemCode).Distinct())
+                //foreach (string str in docs.Select(x=>x.ItemCode).Distinct())
+                //{
+                //    int i = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
+                //    row = t1.NewRow();
+                //    row["DocNum"] = docs.FirstOrDefault().DocNum;
+                //    row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
+                //    row["ScanAccQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanAccQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
+                //    row["Balance"] =0;
+                //    row["ScanRejQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanRejQty)+(await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str&&x.ItemQty!=0).Sum(x=>x.ScanRejQty);
+                //    row["PalletNumber"] = 0;
+                //    t1.Rows.Add(row);
+                //}                
+                foreach (string str in docs.Select(x => x.ItemCode).Distinct())
                 {
+                    DocLine currentGRV = (await App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.GRN && x.ItemCode == str).FirstOrDefault();
+                    if (currentGRV != null)
+                    {
+                        row = t1.NewRow();
+                        row["DocNum"] = txfPOCode.Text;
+                        row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode; ;
+                        row["ScanAccQty"] = currentGRV.ScanAccQty;
+                        row["Balance"] = 0;
+                        row["ScanRejQty"] = currentGRV.ScanRejQty;
+                        row["PalletNumber"] = 0;
+                        row["GRV"] = true;
+                        t1.Rows.Add(row);
+                    }
                     int i = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
                     row = t1.NewRow();
                     row["DocNum"] = docs.FirstOrDefault().DocNum;
                     row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
-                    row["ScanAccQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanAccQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
-                    row["Balance"] =0;
-                    row["ScanRejQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanRejQty)+(await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str&&x.ItemQty!=0).Sum(x=>x.ScanRejQty);
+                    row["ScanAccQty"] = docs.Where(x => x.ItemCode == str && !x.GRN).Sum(x => x.ScanAccQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
+                    row["Balance"] = 0;
+                    row["ScanRejQty"] = docs.Where(x => x.ItemCode == str && !x.GRN).Sum(x => x.ScanRejQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanRejQty);
                     row["PalletNumber"] = 0;
+                    row["GRV"] = false;
                     t1.Rows.Add(row);
-                }                
+                }
                 ds.Tables.Add(t1);
             }
             catch (Exception)
@@ -355,5 +365,65 @@ namespace GoodsRecieveingApp
                 }
             }
         }
-    }
+
+		private async void txfPOCode_Completed(object sender, EventArgs e)
+		{
+            if (txfPOCode.Text.Length == 8)
+            {
+                LodingIndiactor.IsVisible = true;
+                if (await GetItems(txfPOCode.Text.ToUpper()))
+                {
+                    _ = GetDocStatus();
+                    DocLine d = await App.Database.GetOneSpecificDocAsync(txfPOCode.Text.ToUpper());
+                    lblCompany.Text = d.SupplierName.ToUpper();
+                    lblPONum.Text = txfPOCode.Text.ToUpper();
+                    lblCompany.IsVisible = true;
+                    lblPONum.IsVisible = true;
+                    txfPOCode.IsEnabled = false;
+                    txfPOCode.IsVisible = false;
+                    lblPOCode.IsVisible = false;
+                    btnAccept.IsVisible = true;
+                    btnRej.IsVisible = true;
+                    btnAll.IsVisible = true;
+
+                    //ToolbarItem item = new ToolbarItem()
+                    //{
+                    //    Text = "Save"                    
+                    //};
+                    //item.Clicked += SaveClicked;
+                    //this.ToolbarItems.Add(item);
+
+                    try
+                    {
+                        await App.Database.Delete(await App.Database.GetHeader(d.DocNum));
+                    }
+                    catch
+                    {
+
+                    }
+                    try
+                    {
+                        await App.Database.Insert(new DocHeader { DocNum = txfPOCode.Text, PackerUser = UserCode, AccName = d.SupplierName, AcctCode = d.SupplierCode });
+                    }
+                    catch
+                    {
+
+                    }
+                    LodingIndiactor.IsVisible = false;
+                    //await DisplayAlert("Done", "All the data has been loaded for this order", "OK");                       
+                }
+                else
+                {
+                    txfPOCode.Text = "";
+                    txfPOCode.Focus();
+                }
+
+            }
+            else
+            {
+                await DisplayAlert("Error!", "Invalid Document Number", "OK");
+                Vibration.Vibrate();
+            }
+        }
+	}
 }

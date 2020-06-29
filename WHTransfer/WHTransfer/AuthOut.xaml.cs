@@ -34,18 +34,21 @@ namespace WHTransfer
         }
         private async void BtnDone_Clicked(object sender, EventArgs e)
         {
-                    if (await completeOrder())
-                    {
-                        await GoodsRecieveingApp.App.Database.DeleteAllHeaders();
-                        message.DisplayMessage("COMPLETE!",false);                                             
-                        Navigation.RemovePage(Navigation.NavigationStack[4]);
-                        Navigation.RemovePage(Navigation.NavigationStack[3]);
-                        Navigation.RemovePage(Navigation.NavigationStack[2]);
-                        await Navigation.PopAsync();
-                        return;
-                    }
-                    message.DisplayMessage("There was a error in sending the information", true);
-                    Vibration.Vibrate();
+            if (await completeOrder())
+            {
+                if (await PastelTransferToGit())
+                {
+                    await GoodsRecieveingApp.App.Database.DeleteAllHeaders();
+                    message.DisplayMessage("COMPLETE!", false);
+                    Navigation.RemovePage(Navigation.NavigationStack[4]);
+                    Navigation.RemovePage(Navigation.NavigationStack[3]);
+                    Navigation.RemovePage(Navigation.NavigationStack[2]);
+                    await Navigation.PopAsync();
+                    return;
+                }         
+            }
+            message.DisplayMessage("There was a error in sending the information", true);
+            Vibration.Vibrate();
         }
         private async Task<bool> completeOrder()
         {
@@ -202,6 +205,72 @@ namespace WHTransfer
             {
             }
             return false;
+        }
+        private async Task<bool> PastelTransferToGit()
+        {
+            string dataString = GetItems();
+            if (dataString.Length > 1)
+            {
+                RestSharp.RestClient client = new RestSharp.RestClient();
+                string path = "PastelInv";
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                {
+                    string str = $"POST?";
+                    var Request = new RestSharp.RestRequest(str, RestSharp.Method.POST);
+                    Request.RequestFormat = RestSharp.DataFormat.Json;
+                    Request.AddJsonBody(dataString);
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.StatusCode.ToString().Contains("OK") && res.Content.Contains("Complete"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        private string GetItems()
+        {
+            //DataSet ds = new DataSet();
+            //DataTable dt = new DataTable();
+            //dt.Columns.Add("Cost");
+            //dt.Columns.Add("ItemCode");
+            //dt.Columns.Add("AccountGL");
+            //dt.Columns.Add("JnlDate");
+            //dt.Columns.Add("JobCode");
+            //dt.Columns.Add("Narration");
+            //dt.Columns.Add("Reference");
+            //dt.Columns.Add("QtyAdjust");
+            //dt.Columns.Add("Store");
+            //foreach (IBTItem item in lines)
+            //{
+            //    DataRow drAdd = dt.NewRow();
+            //    drAdd["Cost"] = 0;
+            //    drAdd["ItemCode"] = item.ItemCode;
+            //    drAdd["JnlDate"] = DateTime.Now.ToString("dd MMM yyyy");
+            //    drAdd["JobCode"] = "NA";
+            //    drAdd["Narration"] = "WH TRANSFER IN";
+            //    drAdd["Reference"] = "TRFID:" + item.iTrfID;
+            //    drAdd["QtyAdjust"] = item.ItemQtyOut;
+            //    drAdd["AccountGL"] = "";
+            //    drAdd["Store"] = GitWH;
+            //    dt.Rows.Add(drAdd);
+            //    DataRow drMinus = dt.NewRow();
+            //    drMinus["Cost"] = 0;
+            //    drMinus["ItemCode"] = item.ItemCode;
+            //    drMinus["JnlDate"] = DateTime.Now.ToString("dd MMM yyyy");
+            //    drMinus["JobCode"] = "NA";
+            //    drMinus["Narration"] = "WH TRANSFER OUT";
+            //    drMinus["Reference"] = "TRFID:" + item.iTrfID;
+            //    drMinus["QtyAdjust"] = -item.ItemQtyOut;
+            //    drMinus["AccountGL"] = "";
+            //    drMinus["Store"] = CurrentHeader.FromWH;
+            //    dt.Rows.Add(drMinus);
+            //}
+            //ds.Tables.Add(dt);
+            //string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
+            //return myds;
+            return null;
         }
     }
 }

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using GoodsRecieveingApp;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using RestSharp;
+using System.Threading;
+using System.Data;
 
 namespace PickAndPack
 {
@@ -25,27 +28,36 @@ namespace PickAndPack
             lstItems.ItemsSource = null;
             List<DocLine> lines = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode);
             List<DocLine> list = new List<DocLine>();
-            foreach (string s in lines.Select(x => x.ItemDesc).Distinct())
+            foreach (string s in lines.Select(x => x.ItemCode).Distinct())
             {
-                foreach (int i in lines.Where(x=>x.ItemDesc==s).Select(x => x.PalletNum).Distinct())
+                foreach (int i in lines.Where(x=>x.ItemCode==s).Select(x => x.PalletNum).Distinct())
                 {
-                    DocLine TDoc = lines.Where(x => x.ItemDesc == s&&x.PalletNum==i).First();
-                    DocLine TempDoc = new DocLine() {PalletNum=TDoc.PalletNum,ItemDesc=TDoc.ItemDesc};
-                    TempDoc.ScanAccQty = (lines.Where(x => x.ItemDesc == s && x.PalletNum == i).Sum(x => x.ScanAccQty));
-                    TempDoc.ItemQty = (lines.Where(x => x.ItemDesc == s).First().ItemQty);
-                    TempDoc.Balacnce = TempDoc.ItemQty - (lines.Where(x => x.ItemDesc == s).Sum(x => x.ScanAccQty));
-                    if (TempDoc.Balacnce == 0)
-                    {
-                        TempDoc.Complete = "Yes";
+                    int Pall = lines.Where(x => x.ItemCode == s && x.PalletNum == i).Select(x => x.PalletNum).FirstOrDefault();
+                    string itemdesc = lines.Where(x => x.ItemCode == s && x.PalletNum == i).Select(x=>x.ItemDesc).FirstOrDefault();
+                    DocLine TempDoc = new DocLine() {PalletNum= Pall, ItemDesc= itemdesc };
+                    TempDoc.ScanAccQty = (lines.Where(x => x.ItemCode == s && x.PalletNum == i).Sum(x => x.ScanAccQty));
+                    TempDoc.ItemQty = (lines.Where(x => x.ItemCode == s).First().ItemQty);
+                    TempDoc.Balacnce = TempDoc.ItemQty - TempDoc.ScanAccQty;
+					if (i==0)
+					{
+                        TempDoc.Complete = "Orig";
                     }
-                    else if (TempDoc.ScanAccQty==0)
-                    {
-                        TempDoc.Complete = "NotStarted";
+					else
+					{
+                        if (TempDoc.Balacnce == 0)
+                        {
+                            TempDoc.Complete = "Yes";
+                        }
+                        else if (TempDoc.ScanAccQty == 0)
+                        {
+                            TempDoc.Complete = "NotStarted";
+                        }
+                        else
+                        {
+                            TempDoc.Complete = "No";
+                        }
                     }
-                    else
-                    {
-                        TempDoc.Complete = "No";
-                    }
+                  
                     list.Add(TempDoc);
                 }               
             }
@@ -81,25 +93,32 @@ namespace PickAndPack
         private async void BtnComplete_Clicked(object sender, EventArgs e)
         {
             if (await Check())
-            {
-                await DisplayAlert("Complete!", "The recieving for this PO is complete", "OK");
-                //send GRV back to Pastel database
+            { 
+                if(await SendToPastel())
+				{
+                    await DisplayAlert("Complete!", "The recieving for this PO is complete", "OK");
+                }
+				else
+				{
+                    await DisplayAlert("Error!", "Could not send data to pastel", "OK");
+
+                }
             }
             else
             {
-                await DisplayAlert("Errro!", "There is an error in the order, Please make sure all items are green", "OK");
+                await DisplayAlert("Error!", "There is an error in the order, Please make sure all items are green", "OK");
             }
         }
         private async Task<bool> Check()
         {
             List<DocLine> lines = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode);
-            foreach (DocLine dc in lines.Where(x => x.ItemQty != 0))
+            foreach (DocLine dc in lines.Where(x => x.PalletNum == 0))
             {
-                foreach (DocLine dl in lines.Where(x => x.ItemQty == 0))
+                foreach (DocLine dl in lines.Where(x => x.PalletNum != 0))
                 {
                     if (dc.ItemCode == dl.ItemCode)
                     {
-                        dc.Balacnce += dl.ScanAccQty + dl.ScanRejQty;
+                        dc.Balacnce += dl.ScanAccQty;
                     }
                 }
                 if (dc.Balacnce != dc.ItemQty)
@@ -108,6 +127,94 @@ namespace PickAndPack
                 }
             }
             return true;
+        }
+        private async Task<bool> SendToPastel()
+        {
+            List<DocLine> docs = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode);
+            DataTable det = await GetDocDetails(docCode);
+            if (det == null)
+            {
+                return false;
+            }
+            string docL = CreateDocLines(docs, det);//33.5|6|60|69|PCE|15|3|0|1215|8 Lt clear locked storage box|4|001%2342.5|6|77.6|89.24|PCE|15|3|0|1216|13 Lt clear locked storage box|4|001%2358|12|108.1|124.32|PCE|15|3|0|1217|20 Lt clear locked storage box|4|001%23101|8|170|195.5|PCE|15|3|0|6716000084401|Filo Laundry Hamper Romantic Ivory|4|001%23
+            string docH = CreateDocHeader(det);//||Y|TAO01|29/06/2020|IO170852|N|0||||Take a Lot  JHB Distrubution|Cnr Riverfields Boulevard &|First Road, Witfontein Ext 54|Kempton Park,Johannesburg 1619|||||27/09/2019||||1
+            if (docL == "" || docH == "")
+                return false;
+            RestClient client = new RestClient();
+            string path = "AddDocument";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"GET?DocHead={docH}&Docline={docL}&DocType=103";
+                var Request = new RestRequest(str, Method.POST);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("0"))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        string CreateDocLines(List<DocLine> d,DataTable det)
+        {       
+            string s = "";
+            foreach (string CurrItem in d.Where(x=>x.PalletNum==0).Select(x=>x.ItemCode).Distinct())
+            {
+                DataRow CurrentRow = det.Select($"ItemCode='{CurrItem}'").FirstOrDefault();
+                if (CurrentRow != null)
+                    s += $"{CurrentRow["CostPrice"].ToString()}|{CurrentRow["ItemQty"].ToString()}|{CurrentRow["ExVat"].ToString()}|{CurrentRow["InclVat"].ToString()}|{CurrentRow["Unit"].ToString()}|{CurrentRow["TaxType"].ToString()}|{CurrentRow["DiscType"].ToString()}|{CurrentRow["DiscPerc"].ToString()}|{CurrentRow["ItemCode"].ToString()}|{CurrentRow["ItemDesc"].ToString()}|4|001%23";
+                        //                                 285 | 1                                | 350.88                         | 400.00                           | EACH                          | 01                               |                                   |                                   | ACC /                             |                       Description |4|001             
+            }
+            return s;
+        }
+        string CreateDocHeader(DataTable det)
+        {         
+            DataRow CurrentRow = det.Rows[0];
+            return $"||Y|{CurrentRow["CustomerCode"].ToString()}|{DateTime.Now.ToString("dd/MM/yyyy")}|{CurrentRow["OrderNumber"].ToString()}|N|0|{CurrentRow["Message_1"].ToString()}|{CurrentRow["Message_2"].ToString()}|{CurrentRow["Message_3"].ToString()}|{CurrentRow["Address1"].ToString()}|{CurrentRow["Address2"].ToString()}|{CurrentRow["Address3"].ToString()}|{CurrentRow["Address4"].ToString()}|||{CurrentRow["SalesmanCode"].ToString()}||{Convert.ToDateTime(CurrentRow["Due_Date"]).ToString("dd/MM/yyyy")}||||1"; ;
+                   //||Y|ACK001                                 |05/03/1999                           |                                      |N|0|Message no.1                        |Message no.2                        |Message no.3                        |Delivery no.1                      |Delivery no.2                      |Delivery no.3                      |Delivery no.4                      |||00                                     ||05/03/1999                                                         |011-7402156|Johnny|011-7402157|1
+        }
+        async Task<DataTable> GetDocDetails(string DocNum)
+        {//https://manifoldsa.co.za/FDBAPI/api/GetFullDocDetails/GET?qrystr=ACCHISTL|6|IO170852|102
+            RestClient client = new RestClient();
+            string path = "GetFullDocDetails";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"GET?qrystr=ACCHISTL|6|{DocNum}|102";
+                var Request = new RestRequest(str, Method.GET);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("0"))
+                {
+                    DataSet myds = new DataSet();
+                    myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                    return myds.Tables[0];
+                }
+            }
+            return null;
+        }
+        async Task<string> GetGlCode(string itemCode, string WHCode)
+        {
+            RestClient client = new RestClient();
+            string path = "GetField";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"GET?qrystr=ACCSTKST|0|{WHCode}{itemCode}|2";
+                var Request = new RestRequest(str, Method.GET);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Split('|')[0].Contains("0"))
+                {
+                    str = $"GET?qrystr=ACCGRP|0|{res.Content.Replace('"', ' ').Replace('\\', ' ').Trim().Split('|')[1]}|5";
+                    Request = new RestRequest(str, Method.GET);
+                    cancellationTokenSource = new CancellationTokenSource();
+                    res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("0"))
+                    {
+                        return res.Content.Replace('"', ' ').Replace('\\', ' ').Trim().Split('|')[1];
+                    }
+                }
+            }
+            return "";
         }
     }
 }

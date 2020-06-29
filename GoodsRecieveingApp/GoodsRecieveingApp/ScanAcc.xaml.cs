@@ -1,4 +1,5 @@
-﻿using Data.KeyboardContol;
+﻿
+using Data.KeyboardContol;
 using Data.Message;
 using Data.Model;
 using System;
@@ -39,66 +40,7 @@ namespace GoodsRecieveingApp
         }
         private async void EntryAcc_TextChanged(object sender, TextChangedEventArgs e)
         {
-            await Task.Delay(500);
-            //BOM Barcode
-            if (txfAccCode.Text.Length > 0)
-            {
-                lblBarCode.Text =txfAccCode.Text;
-                if (txfAccCode.Text.Length != 13)
-                {
-                    BOMItem bi;
-                    try
-                    {
-                        bi = await App.Database.GetBOMItem(txfAccCode.Text);
-                    }
-                    catch
-                    {
-                        Vibration.Vibrate();
-                        message.DisplayMessage("There is no item with this barcode", true);
-                        txfAccCode.Text = "";
-                        return;
-                    }
-                    if (Check(bi.ItemCode))
-                    {
-                        await App.Database.Insert(new DocLine { ItemCode = bi.ItemCode, ScanAccQty = bi.Qty, ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
-                        PicImage.IsVisible = true;
-                        lastItem = bi.ItemCode;
-                        SetQtyDisplay(lastItem);
-                        txfAccCode.Text = "";
-                    }
-                    else
-                    {
-                        Vibration.Vibrate();
-                        message.DisplayMessage("There is no item on this PO with this code", true);
-                        PicImage.IsVisible = true;
-                        PicImage.ImageSource = "Wrong.png";
-                        txfAccCode.Text = "";
-                    }
-                }
-                //item barcode
-                else if (txfAccCode.Text.Length == 13)
-                {
-                    if (CheckBarcode(txfAccCode.Text))
-                    {
-                        string iCode = currentDocs.Find(x => x.ItemBarcode == txfAccCode.Text && x.ItemQty != 0).ItemCode;
-                        await App.Database.Insert(new DocLine { ItemCode = iCode, ScanAccQty = 1, ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
-                        PicImage.IsVisible = true;
-                        lastItem = iCode;
-                        SetQtyDisplay(iCode);
-                        txfAccCode.Text = "";
-                    }
-                    else
-                    {
-                        Vibration.Vibrate();
-                        message.DisplayMessage("There is no item on this PO with this code", true);
-                        PicImage.IsVisible = true;
-                        PicImage.ImageSource = "Wrong.png";
-                        txfAccCode.Text = "";
-                    }
-                }
-            }
-
-            txfAccCode.Focus();
+            
         }
         public bool Check(string Icode)
         {
@@ -343,5 +285,69 @@ namespace GoodsRecieveingApp
             }
             return true;
         }
-    }
+
+		private async void txfAccCode_Completed(object sender, EventArgs e)
+		{
+            await Task.Delay(500);
+            //BOM Barcode
+            if (txfAccCode.Text.Length > 0)
+            {
+                lblBarCode.Text = txfAccCode.Text;
+                if (txfAccCode.Text.Length != 13)
+                {
+                    BOMItem bi;
+                    try
+                    {
+                        bi = await App.Database.GetBOMItem(txfAccCode.Text);
+                    }
+                    catch
+                    {
+                        Vibration.Vibrate();
+                        message.DisplayMessage("There is no item with this barcode", true);
+                        txfAccCode.Text = "";
+                        return;
+                    }
+                    if (Check(bi.ItemCode))
+                    {
+                        await App.Database.Insert(new DocLine { ItemCode = bi.ItemCode, ScanAccQty = bi.Qty, ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
+                        PicImage.IsVisible = true;
+                        lastItem = bi.ItemCode;
+                        SetQtyDisplay(lastItem);
+                        txfAccCode.Text = "";
+                    }
+                    else
+                    {
+                        Vibration.Vibrate();
+                        message.DisplayMessage("There is no item on this PO with this code", true);
+                        PicImage.IsVisible = true;
+                        PicImage.ImageSource = "Wrong.png";
+                        txfAccCode.Text = "";
+                    }
+                }
+                //item barcode
+                else if (txfAccCode.Text.Length == 13)
+                {
+                    if (CheckBarcode(txfAccCode.Text))
+                    {
+                        string iCode = currentDocs.Find(x => x.ItemBarcode == txfAccCode.Text && x.ItemQty != 0).ItemCode;
+                        await App.Database.Insert(new DocLine { ItemCode = iCode, ScanAccQty = 1, ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
+                        PicImage.IsVisible = true;
+                        lastItem = iCode;
+                        SetQtyDisplay(iCode);
+                        txfAccCode.Text = "";
+                    }
+                    else
+                    {
+                        Vibration.Vibrate();
+                        message.DisplayMessage("There is no item on this PO with this code", true);
+                        PicImage.IsVisible = true;
+                        PicImage.ImageSource = "Wrong.png";
+                        txfAccCode.Text = "";
+                    }
+                }
+            }
+
+            txfAccCode.Focus();
+        }
+	}
 }

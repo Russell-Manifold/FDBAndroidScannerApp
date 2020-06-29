@@ -21,6 +21,7 @@ namespace ScannerFDB
     
         private async void Button_Clicked(object sender, EventArgs e)
         {
+            var sug = await GoodsRecieveingApp.App.Database.GetBOMITEMSAsync();
             LodingIndiactor.IsVisible = true;
             if (Connectivity.NetworkAccess == NetworkAccess.Internet)
             {
@@ -59,8 +60,10 @@ namespace ScannerFDB
                                     {
                                         item.ItemDesc = res1.Content.Split('|')[1].Substring(0,(res1.Content.Split('|')[1].Length-1));
                                     }
-                                }                                       
+                                }
+                                var sugs = await GoodsRecieveingApp.App.Database.GetBOMITEMSAsync();
                                 await GoodsRecieveingApp.App.Database.Insert(item);
+                                var sdg = await GoodsRecieveingApp.App.Database.GetBOMITEMSAsync();
                             }                                                                                                        
                         }
                         LodingIndiactor.IsVisible = false;
@@ -85,8 +88,8 @@ namespace ScannerFDB
 
         }
 
-        private void btnReset_Clicked(object sender, EventArgs e)
-        {
+        private async void btnReset_Clicked(object sender, EventArgs e)
+        {          
             RestSharp.RestClient client = new RestSharp.RestClient();
             string path = "DocumentSQLConnection";
             client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath+path);
