@@ -295,6 +295,7 @@ namespace GoodsRecieveingApp
                 var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                 if (res.IsSuccessful && res.Content.Contains("0"))
                 {
+                    await DisplayAlert("Complete!", "Your requst been sent to pastel you number is " + res.Content.Split('|')[1], "OK");
                     return true;
                 }
             }

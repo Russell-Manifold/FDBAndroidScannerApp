@@ -744,9 +744,19 @@ namespace PickAndPack
             }
             return false;
         }
-        private void btnComplete_Clicked(object sender, EventArgs e)
+        private async void btnComplete_Clicked(object sender, EventArgs e)
         {
-            btnViewSO_Clicked(null, null);
+            message.DisplayMessage("Loading...", false);
+            try
+            {
+                await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(txfSOCode.Text.ToUpper());
+                await Navigation.PushAsync(new ViewItems(txfSOCode.Text.ToUpper()));
+            }
+            catch
+            {
+                Vibration.Vibrate();
+                message.DisplayMessage("Error!Could not load SO", false);
+            }
         }
         //private async Task<bool> SendToPastel()
         //{

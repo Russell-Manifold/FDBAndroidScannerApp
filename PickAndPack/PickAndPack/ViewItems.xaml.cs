@@ -94,15 +94,8 @@ namespace PickAndPack
         {
             if (await Check())
             { 
-                if(await SendToPastel())
-				{
-                    await DisplayAlert("Complete!", "The recieving for this PO is complete", "OK");
-                }
-				else
-				{
+                if(!await SendToPastel())
                     await DisplayAlert("Error!", "Could not send data to pastel", "OK");
-
-                }
             }
             else
             {
@@ -148,8 +141,12 @@ namespace PickAndPack
                 var Request = new RestRequest(str, Method.POST);
                 var cancellationTokenSource = new CancellationTokenSource();
                 var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                //System.IndexOutOfRangeException: Subscript out of range
+                //at PasSDK._PastelPartnerSDK.DefineDocumentHeader(String Data, Boolean& AdditionalCostInvoice)
+                //at FDBWebAPI.Controllers.AddDocumentController.AddDocument(String DocHead, String Docline, String DocType) in E:\\GithubRepos\\FDB\\FirstDutchWebServiceAPI\\FDBWebAPI\\Controllers\\AddDocumentController.cs:line 38"
                 if (res.IsSuccessful && res.Content.Contains("0"))
                 {
+                    await DisplayAlert("Complete!", "The invoice has been sent to pastel you number is "+res.Content.Split('|')[1], "OK");
                     return true;
                 }
             }
@@ -170,7 +167,8 @@ namespace PickAndPack
         string CreateDocHeader(DataTable det)
         {         
             DataRow CurrentRow = det.Rows[0];
-            return $"||Y|{CurrentRow["CustomerCode"].ToString()}|{DateTime.Now.ToString("dd/MM/yyyy")}|{CurrentRow["OrderNumber"].ToString()}|N|0|{CurrentRow["Message_1"].ToString()}|{CurrentRow["Message_2"].ToString()}|{CurrentRow["Message_3"].ToString()}|{CurrentRow["Address1"].ToString()}|{CurrentRow["Address2"].ToString()}|{CurrentRow["Address3"].ToString()}|{CurrentRow["Address4"].ToString()}|||{CurrentRow["SalesmanCode"].ToString()}||{Convert.ToDateTime(CurrentRow["Due_Date"]).ToString("dd/MM/yyyy")}||||1"; ;
+            string ret = $"||Y|{CurrentRow["CustomerCode"].ToString()}|{DateTime.Now.ToString("dd/MM/yyyy")}|{CurrentRow["OrderNumber"].ToString()}|N|0|{CurrentRow["Message_1"].ToString()}|{CurrentRow["Message_2"].ToString()}|{CurrentRow["Message_3"].ToString()}|{CurrentRow["Address1"].ToString()}|{CurrentRow["Address2"].ToString()}|{CurrentRow["Address3"].ToString()}|{CurrentRow["Address4"].ToString()}|||{CurrentRow["SalesmanCode"].ToString()}||{Convert.ToDateTime(CurrentRow["Due_Date"]).ToString("dd/MM/yyyy")}||||1";
+            return ret.Replace('&', '+').Replace('\'', ' ');
                    //||Y|ACK001                                 |05/03/1999                           |                                      |N|0|Message no.1                        |Message no.2                        |Message no.3                        |Delivery no.1                      |Delivery no.2                      |Delivery no.3                      |Delivery no.4                      |||00                                     ||05/03/1999                                                         |011-7402156|Johnny|011-7402157|1
         }
         async Task<DataTable> GetDocDetails(string DocNum)
