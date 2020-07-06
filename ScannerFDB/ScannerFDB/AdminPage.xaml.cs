@@ -159,5 +159,10 @@ namespace ScannerFDB
         {
             await Navigation.PushAsync(new ConfigPage());
         }
+
+        private void btnModuleActive_Clicked(object sender, EventArgs e)
+        {
+
+        }
     }
 }

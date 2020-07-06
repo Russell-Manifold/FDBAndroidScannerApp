@@ -6,7 +6,7 @@
              xmlns:controls="clr-namespace:Data.KeyboardContol;assembly=Data"
              mc:Ignorable="d"
              x:Class="GoodsRecieveingApp.MainPage"
-             Title="Goods Receiving">
+             Title="Receiving">
     <ContentPage.ToolbarItems>
         <ToolbarItem  IconImageSource="home.PNG" x:Name="btnHome" Clicked="HomeClicked"/>
         <ToolbarItem  IconImageSource="save.png" x:Name="btnSave" Clicked="SaveClicked"/>

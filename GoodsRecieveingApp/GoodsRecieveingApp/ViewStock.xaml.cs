@@ -19,6 +19,7 @@ namespace GoodsRecieveingApp
     {
         string docCode ="";
         IMessage message = DependencyService.Get<IMessage>();
+        DeviceConfig config = new DeviceConfig();
         public ViewStock(string dl)
         {
             InitializeComponent();
@@ -93,10 +94,13 @@ namespace GoodsRecieveingApp
         {
             if (await Check())
             {
-                if(!await SendToPastel())
+                if (await GRVmodule())
                 {
-                    Vibration.Vibrate();
-                    message.DisplayMessage("Error! - Could not Complete",true);
+                    if (!await SendToPastel())
+                    {
+                        Vibration.Vibrate();
+                        message.DisplayMessage("Error! - Could not Complete", true);
+                    }
                 }
                 message.DisplayMessage("Complete!!!", true);               
             }
@@ -295,7 +299,7 @@ namespace GoodsRecieveingApp
                 var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                 if (res.IsSuccessful && res.Content.Contains("0"))
                 {
-                    await DisplayAlert("Complete!", "Your requst been sent to pastel you number is " + res.Content.Split('|')[1], "OK");
+                    await DisplayAlert("Complete!", "Request sent to pastel." + Environment.NewLine + res.Content.Split('|')[1].ToString().Substring(0, res.Content.Split('|')[1].Length - 1) + " successfully created", "OK");
                     return true;
                 }
             }
@@ -465,23 +469,34 @@ namespace GoodsRecieveingApp
                 return false;
             }
             string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
-            RestSharp.RestClient client = new RestSharp.RestClient();
-            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath);
+            if (await GRVmodule())
             {
-                var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
-                Request.RequestFormat = RestSharp.DataFormat.Json;
-                Request.AddJsonBody(myds);
-                var cancellationTokenSource = new CancellationTokenSource();
-                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                if (res.IsSuccessful && res.Content.Contains("COMPLETE"))
-                {                    
-                    return true;
-                }
-                else
+                RestSharp.RestClient client = new RestSharp.RestClient();
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath);
                 {
-                    return false;
+                    var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
+                    Request.RequestFormat = RestSharp.DataFormat.Json;
+                    Request.AddJsonBody(myds);
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("COMPLETE"))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
+            else {
+                return true;
+            }
+        }
+
+        private async Task<bool> GRVmodule() {
+            config = await GoodsRecieveingApp.App.Database.GetConfig();
+            return config.GRVActive;
         }
     }
 }

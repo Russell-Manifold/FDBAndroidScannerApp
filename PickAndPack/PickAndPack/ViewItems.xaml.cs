@@ -17,6 +17,7 @@ namespace PickAndPack
     public partial class ViewItems : ContentPage
     {
         string docCode = "";
+        DeviceConfig config = new DeviceConfig();
         public ViewItems(string dl)
         {
             InitializeComponent();
@@ -68,7 +69,7 @@ namespace PickAndPack
         private async void LstItems_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
             DocLine dl = e.SelectedItem as DocLine;
-            string output = await DisplayActionSheet("Confirm:-Reset QTY to zero?", "YES", "NO");
+            string output = await DisplayActionSheet("Confirm:- Reset QTY to zero?", "YES", "NO");
             switch (output)
             {
                 case "NO":
@@ -93,9 +94,11 @@ namespace PickAndPack
         private async void BtnComplete_Clicked(object sender, EventArgs e)
         {
             if (await Check())
-            { 
-                if(!await SendToPastel())
+            {
+                if (await InvModule()) { 
+                    if (!await SendToPastel())
                     await DisplayAlert("Error!", "Could not send data to pastel", "OK");
+                }
             }
             else
             {
@@ -146,7 +149,7 @@ namespace PickAndPack
                 //at FDBWebAPI.Controllers.AddDocumentController.AddDocument(String DocHead, String Docline, String DocType) in E:\\GithubRepos\\FDB\\FirstDutchWebServiceAPI\\FDBWebAPI\\Controllers\\AddDocumentController.cs:line 38"
                 if (res.IsSuccessful && res.Content.Contains("0"))
                 {
-                    await DisplayAlert("Complete!", "The invoice has been sent to pastel you number is "+res.Content.Split('|')[1], "OK");
+                    await DisplayAlert("Complete!", "Invoice "+res.Content.Split('|')[1] + " scucessfully generated in Pastel", "OK");
                     return true;
                 }
             }
@@ -213,6 +216,11 @@ namespace PickAndPack
                 }
             }
             return "";
+        }
+        private async Task<bool> InvModule()
+        {
+            config = await GoodsRecieveingApp.App.Database.GetConfig();
+            return config.GRVActive;
         }
     }
 }

@@ -13,11 +13,11 @@
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
-            <Image Source="FDBicon1.png"  HeightRequest="120"/>
+            <Image Source="FDBicon1.png"  HeightRequest="80"/>
             <Label Text="Login" FontSize="Large" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
             <controls:ExtendedEntry IsPassword="True" ShowVirtualKeyboardOnFocus="False" x:Name="txfUserBarcode" Completed="txfUserBarcode_Completed" VerticalOptions="StartAndExpand" HorizontalTextAlignment="Center" HorizontalOptions="FillAndExpand"/>
             <ActivityIndicator VerticalOptions="StartAndExpand" x:Name="AccessLoading" IsRunning="True"  IsVisible="False"/>
-            <ImageButton Source="MainIconLogin.png" Clicked="txfUserBarcode_Completed" HeightRequest="140" VerticalOptions="EndAndExpand"/>
+            <ImageButton Source="MainIconLogin.png" Clicked="txfUserBarcode_Completed"  VerticalOptions="EndAndExpand" BackgroundColor="Transparent"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage> 

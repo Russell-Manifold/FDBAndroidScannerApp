@@ -15,5 +15,12 @@ namespace Data.Model
         public bool PaperPickSlips { get; set; }
         public bool UseBins { get; set; }
         public bool UseZones { get; set; }
+       public bool GRVActive { get; set; }
+        public bool RepackActive { get; set; }
+        public bool WhseTrfActive { get; set; }
+        public bool CountActive { get; set; }
+        public bool InvoiceActive { get; set; }
+
+
     }
 }

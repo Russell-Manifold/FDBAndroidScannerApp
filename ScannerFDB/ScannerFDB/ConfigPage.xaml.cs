@@ -46,12 +46,22 @@ namespace ScannerFDB
             {
                 txfAccWH.SelectedItem = config.DefaultAccWH;
                 txfRejWH.SelectedItem = config.DefaultRejWH;
+                swGRV.IsToggled = config.GRVActive;
+                swRepack.IsToggled = config.RepackActive;
+                swWTRF.IsToggled = config.WhseTrfActive;
+                swInvCnt.IsToggled = config.CountActive;
+                swInvoice.IsToggled = config.InvoiceActive;
             }           
         }
         private async void btnSave_Clicked(object sender, EventArgs e)
         {
             config.DefaultAccWH = txfAccWH.SelectedItem.ToString();
             config.DefaultRejWH = txfRejWH.SelectedItem.ToString();
+            config.GRVActive = swGRV.IsToggled;
+            config.RepackActive = swRepack.IsToggled;
+            config.WhseTrfActive = swWTRF.IsToggled;
+            config.CountActive = swInvCnt.IsToggled;
+            config.InvoiceActive = swInvoice.IsToggled;
             if (isNew)
             {
                 await GoodsRecieveingApp.App.Database.Insert(config);
