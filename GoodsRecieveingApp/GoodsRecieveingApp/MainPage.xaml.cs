@@ -19,16 +19,16 @@ namespace GoodsRecieveingApp
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-        //public static string APIPath = "http://192.168.10.254/FDBAPI/api/";
-        //public static string APIPathIN = "http://192.168.10.254/FDBAPI/api/";
-        //public static string APIPathOUT = "http://firstdutchbrands.dvrdns.org:5555/FDBWebServiceAPI/api/";
+       public static string APIPath = "http://192.168.10.254/FDBWebServiceAPI/api/";
+       public static string APIPathIN = "http://192.168.10.254/FDBWebServiceAPI/api/";
+       public static string APIPathOUT = "http://firstdutchbrands.dvrdns.org:5555/FDBWebServiceAPI/api/";
 
         //public static string APIPath = "https://manifoldsa.co.za/FDBAPI/api/";
         //public static string APIPathIN = "https://manifoldsa.co.za/FDBAPI/api/";
         //public static string APIPathOUT = "https://manifoldsa.co.za/FDBAPI/api/";
-        public static string APIPath = "http://192.168.0.111/FDBAPI/api/";
-        public static string APIPathIN = "http://192.168.0.111/FDBAPI/api/";
-        public static string APIPathOUT = "http://192.168.0.111/FDBAPI/api/";
+        //public static string APIPath = "http://192.168.0.111/FDBAPI/api/";
+       // public static string APIPathIN = "http://192.168.0.111/FDBAPI/api/";
+       //public static string APIPathOUT = "http://192.168.0.111/FDBAPI/api/";
         public static string UserName = "";
         public static string ACCWH = "";
         public static string REJWH = "";
@@ -148,6 +148,7 @@ namespace GoodsRecieveingApp
                         Request.Method = RestSharp.Method.GET;
                         var cancellationTokenSource = new CancellationTokenSource();
                         var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                       // var res = client.ExecuteAsync(Request);
                         if (res.Content.ToString().Contains("DocNum"))
                         {
                             DataSet myds = new DataSet();
@@ -194,6 +195,7 @@ namespace GoodsRecieveingApp
                         }
                         else
                         {
+                            message.DisplayMessage("Error - Unable to load PO - Please check in Pastel if PO exists and is valid.", true);
                             LodingIndiactor.IsVisible = false;
                             Vibration.Vibrate();
                         }

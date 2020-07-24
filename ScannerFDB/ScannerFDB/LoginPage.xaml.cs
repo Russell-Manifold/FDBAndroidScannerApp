@@ -98,7 +98,7 @@ namespace ScannerFDB
                     else
                     {
                         AccessLoading.IsVisible = false;
-                        message.DisplayMessage("Invalid user!",true);
+                        message.DisplayMessage("Error - " + res.ErrorMessage,true);
                         Vibration.Vibrate();
                         return false;
                     }
@@ -150,7 +150,8 @@ namespace ScannerFDB
         }
         private async void txfUserBarcode_Completed(object sender, EventArgs e)
         {
-            txfUserBarcode.Text = "USER";
+            //txfUserBarcode.Text = "USER";
+            
             if (!(txfUserBarcode.Text.Length < 2))
             {
                 if (!await CheckUser())
@@ -173,6 +174,11 @@ namespace ScannerFDB
             btnInWH.IconImageSource = "WHTrfIN.png";
             btnOUTWH.IconImageSource = "WHTrfOutGreen.png";
             GoodsRecieveingApp.MainPage.APIPath= GoodsRecieveingApp.MainPage.APIPathOUT;
+        }
+
+        private void txfUserBarcode_TextChanged(object sender, TextChangedEventArgs e)
+        {
+              string str = txfUserBarcode.Text;
         }
     }
 }
