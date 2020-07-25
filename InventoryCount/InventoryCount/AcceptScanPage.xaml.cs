@@ -36,6 +36,8 @@ namespace InventoryCount
         private async void txfUserCode_Completed(object sender, EventArgs e)
         {
             LoadingIndicator.IsVisible = true;
+            txfUserCode.Completed -= txfUserCode_Completed;
+            txfUserCode.Text =GoodsRecieveingApp.MainPage.CalculateCheckDigit(txfUserCode.Text);
             try
             {
                 RestClient client = new RestClient();
@@ -84,6 +86,7 @@ namespace InventoryCount
                 txfUserCode.Focus();
                 return;
             }
+            txfUserCode.Completed += txfUserCode_Completed;
         }
         private async void Entry_Focused(object sender, FocusEventArgs e)
         {

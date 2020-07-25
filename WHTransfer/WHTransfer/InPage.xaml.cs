@@ -56,27 +56,6 @@ namespace WHTransfer
 
             }
         }
-        private async void TxfScannedItem_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            await Task.Delay(100);
-            if (txfScannedItem.Text.Length > 1)
-            {
-                if (!CheckItem(txfScannedItem.Text))
-                {
-                    Vibration.Vibrate();
-                    message.DisplayMessage("This item is invalid",true);
-                }
-                else
-                {
-                    _ = IsDone();
-                    await Task.Delay(100);
-                    ListViewItems.ItemsSource = null;
-                    ListViewItems.ItemsSource = lines;
-                }
-                txfScannedItem.Text = "";
-                txfScannedItem.Focus();
-            }
-        }
         private bool CheckItem(string barcode)
         {
             try
@@ -252,5 +231,29 @@ namespace WHTransfer
         {
             await IsDone();
         }
-    }
+
+		private async void txfScannedItem_Completed(object sender, EventArgs e)
+		{
+            if (txfScannedItem.Text.Length > 1)
+            {
+                txfScannedItem.Completed -= txfScannedItem_Completed;
+                txfScannedItem.Text = GoodsRecieveingApp.MainPage.CalculateCheckDigit(txfScannedItem.Text);
+                if (!CheckItem(txfScannedItem.Text))
+                {
+                    Vibration.Vibrate();
+                    message.DisplayMessage("This item is invalid", true);
+                }
+                else
+                {
+                    _ = IsDone();
+                    await Task.Delay(100);
+                    ListViewItems.ItemsSource = null;
+                    ListViewItems.ItemsSource = lines;
+                }
+                txfScannedItem.Completed += txfScannedItem_Completed;
+                txfScannedItem.Text = "";
+                txfScannedItem.Focus();
+            }
+        }
+	}
 }

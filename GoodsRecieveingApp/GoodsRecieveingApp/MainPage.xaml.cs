@@ -56,6 +56,27 @@ namespace GoodsRecieveingApp
             InitializeComponent();
             txfPOCode.Focused += Entry_Focused;
         }
+        public static string CalculateCheckDigit(string line)
+        {
+            if (line.Length == 12)
+            {
+                int[] d = line.Select(c => Convert.ToInt32(c.ToString())).ToArray();
+                int outcode = d[0] + (d[1] * 3) + d[2] + (d[3] * 3) + d[4] + (d[5] * 3) + d[6] + (d[7] * 3) + d[8] + (d[9] * 3) + d[10] + (d[11] * 3);
+                outcode = outcode % 10;
+                if (outcode == 0)
+                {
+                    return line + 0;
+                }
+                else
+                {
+                    return line + outcode;
+                }
+            }
+            else
+            {
+                return line;
+            }
+        }
         protected async override void OnAppearing()
         {
             DeviceConfig dev = await App.Database.GetConfig();

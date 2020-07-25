@@ -211,8 +211,9 @@ namespace GoodsRecieveingApp
 
 		private async void txfRejCode_Completed(object sender, EventArgs e)
 		{
-            await Task.Delay(500);
             lblBarCode.Text = txfRejCode.Text;
+            txfRejCode.Completed -= txfRejCode_Completed;
+            txfRejCode.Text = MainPage.CalculateCheckDigit(txfRejCode.Text);
             //BOM Barcode
             if (txfRejCode.Text.Length == 14 || txfRejCode.Text.Length == 8)
             {
@@ -263,6 +264,7 @@ namespace GoodsRecieveingApp
                     PicImage.ImageSource = "Wrong.png";
                 }
             }
+            txfRejCode.Completed += txfRejCode_Completed;
             txfRejCode.Focus();
         }
 	}

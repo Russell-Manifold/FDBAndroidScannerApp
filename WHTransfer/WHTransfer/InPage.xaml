@@ -16,7 +16,7 @@
             <StackLayout IsVisible="False" x:Name="LayoutMain">
                 <Label x:Name="lblInfo" FontSize="Large"/>
                 <Label Text="Scan all items:" FontSize="Large"/>
-                <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScannedItem" TextChanged="TxfScannedItem_TextChanged"/>
+                <controls:ExtendedEntry ShowVirtualKeyboardOnFocus="False" x:Name="txfScannedItem" Completed="txfScannedItem_Completed" />
                 <ListView x:Name="ListViewItems" HasUnevenRows="True">
                      <ListView.Header>
                         <Grid>

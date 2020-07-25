@@ -196,6 +196,8 @@ namespace InventoryCount
         private async void txfItemCode_Completed(object sender, EventArgs e)
         {
             LoadingIndicator.IsVisible = true;
+            txfItemCode.Completed -= txfItemCode_Completed;
+            txfItemCode.Text = GoodsRecieveingApp.MainPage.CalculateCheckDigit(txfItemCode.Text);
             if (txfItemCode.Text.Length>10)
             {
                 if (items.Where(x => x.BarCode == txfItemCode.Text&&x.Complete==false).FirstOrDefault() != null)
@@ -299,6 +301,7 @@ namespace InventoryCount
                 Vibration.Vibrate();
                 message.DisplayMessage("You cannot add a pack to a custom Qty scan", true);
             }
+            txfItemCode.Completed += txfItemCode_Completed;
             txfItemCode.Text = "";
             LoadingIndicator.IsVisible = false;
             txfItemCode.Focus();

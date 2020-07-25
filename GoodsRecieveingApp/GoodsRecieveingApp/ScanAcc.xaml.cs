@@ -287,11 +287,12 @@ namespace GoodsRecieveingApp
         }
 
 		private async void txfAccCode_Completed(object sender, EventArgs e)
-		{
-            await Task.Delay(500);
+		{           
             //BOM Barcode
             if (txfAccCode.Text.Length > 0)
             {
+                txfAccCode.Completed -= txfAccCode_Completed;
+                txfAccCode.Text=MainPage.CalculateCheckDigit(txfAccCode.Text);
                 lblBarCode.Text = txfAccCode.Text;
                 if (txfAccCode.Text.Length != 13)
                 {
@@ -345,6 +346,7 @@ namespace GoodsRecieveingApp
                         txfAccCode.Text = "";
                     }
                 }
+                txfAccCode.Completed += txfAccCode_Completed;
             }
 
             txfAccCode.Focus();

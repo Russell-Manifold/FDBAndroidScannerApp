@@ -153,10 +153,11 @@ namespace WHTransfer
             }
         }
         private async void txfScannedItem_Completed(object sender, EventArgs e)
-        {
-            await Task.Delay(100);
+        {          
             if (txfScannedItem.Text.Length > 1)
             {
+                txfScannedItem.Completed -= txfScannedItem_Completed;
+                txfScannedItem.Text = GoodsRecieveingApp.MainPage.CalculateCheckDigit(txfScannedItem.Text);
                 if (await CheckItem())
                 {
                     ListViewItems.ItemsSource = null;
@@ -174,6 +175,7 @@ namespace WHTransfer
                     txfScannedItem.Text = "";
                     txfScannedItem.Focus();
                 }
+                txfScannedItem.Completed += txfScannedItem_Completed;
             }
         }
     }
