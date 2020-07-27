@@ -285,7 +285,6 @@ namespace GoodsRecieveingApp
             }
             return true;
         }
-
 		private async void txfAccCode_Completed(object sender, EventArgs e)
 		{           
             //BOM Barcode
@@ -314,7 +313,7 @@ namespace GoodsRecieveingApp
                         PicImage.IsVisible = true;
                         lastItem = bi.ItemCode;
                         SetQtyDisplay(lastItem);
-                        txfAccCode.Text = "";
+                        txfAccCode.Text = "";                       
                     }
                     else
                     {
@@ -336,6 +335,7 @@ namespace GoodsRecieveingApp
                         lastItem = iCode;
                         SetQtyDisplay(iCode);
                         txfAccCode.Text = "";
+                        btnEntry.IsVisible = true;
                     }
                     else
                     {
@@ -350,6 +350,27 @@ namespace GoodsRecieveingApp
             }
 
             txfAccCode.Focus();
+        }
+		private async void btnEntry_Clicked(object sender, EventArgs e)
+		{
+			if (lblBarCode.Text.Length==13)
+			{
+                string result = await DisplayPromptAsync("Enter Amount!", "Enter the amount of item to add", "OK", "Cancel", null, keyboard: Keyboard.Numeric);
+                if (Convert.ToInt32(result) > Convert.ToInt32(lblBalance.Text))
+                {
+                    await DisplayAlert("Error!", "You cannot scan in more items than neededs", "OK");
+                }
+                else
+                {
+                    string code = lblBarCode.Text;
+                    string iCode = currentDocs.Find(x => x.ItemBarcode == code && x.ItemQty != 0).ItemCode;
+                    await App.Database.Insert(new DocLine { ItemCode = iCode, ScanAccQty = Convert.ToInt32(result), ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
+                    PicImage.IsVisible = true;
+                    lastItem = iCode;
+                    SetQtyDisplay(iCode);
+                    txfAccCode.Text = "";
+                }
+            }          
         }
 	}
 }

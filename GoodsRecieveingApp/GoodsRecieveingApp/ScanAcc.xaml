@@ -23,6 +23,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100*"/>
@@ -36,6 +37,7 @@
                 <Label x:Name="lblScanQTY" FontSize="18" Grid.Column="1" Grid.Row="1"/>
                 <Label x:Name="lblBalance" FontSize="18" Grid.Column="1" Grid.Row="2"/>
                 <Label x:Name="lblBin" FontSize="18" Grid.Column="1" Grid.Row="3"/>
+                <Button x:Name="btnEntry" ImageSource="ViewAll.PNG" HeightRequest="60" WidthRequest="60" BackgroundColor="Transparent" IsVisible="false"  HorizontalOptions="Start" Grid.ColumnSpan="2" Grid.Row="4" Clicked="btnEntry_Clicked"/>
             </Grid>
             <Button x:Name="PicImage" HeightRequest="100" WidthRequest="100" Clicked="PicImage_Clicked" IsVisible="False" BackgroundColor="Transparent"/>
         </StackLayout>
