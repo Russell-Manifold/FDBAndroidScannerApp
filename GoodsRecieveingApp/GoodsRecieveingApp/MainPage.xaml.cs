@@ -19,11 +19,11 @@ namespace GoodsRecieveingApp
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-       //public static string APIPath = "http://192.168.10.254/FDBWebServiceAPI/api/";
+       public static string APIPath = "http://192.168.10.254/FDBWebServiceAPI/api/";
        public static string APIPathIN = "http://192.168.10.254/FDBWebServiceAPI/api/";
        public static string APIPathOUT = "http://firstdutchbrands.dvrdns.org:5555/FDBWebServiceAPI/api/";
 
-        public static string APIPath = "https://manifoldsa.co.za/FDBAPI/api/";
+        //public static string APIPath = "https://manifoldsa.co.za/FDBAPI/api/";
         //public static string APIPathIN = "https://manifoldsa.co.za/FDBAPI/api/";
         //public static string APIPathOUT = "https://manifoldsa.co.za/FDBAPI/api/";
         //public static string APIPath = "http://192.168.0.111/FDBAPI/api/";
@@ -56,41 +56,41 @@ namespace GoodsRecieveingApp
             InitializeComponent();
             txfPOCode.Focused += Entry_Focused;
         }
-        public static string CalculateCheckDigit(string line)
-        {
-            if (line.Length == 12) // for EAN 13 barcodes
-            {
-                int[] d = line.Select(c => Convert.ToInt32(c.ToString())).ToArray();
-                int outcode = d[0] + (d[1] * 3) + d[2] + (d[3] * 3) + d[4] + (d[5] * 3) + d[6] + (d[7] * 3) + d[8] + (d[9] * 3) + d[10] + (d[11] * 3);
-                double chknum = (Math.Ceiling(outcode * 0.1) * 10) - outcode;
-                if (chknum == 0)
-                {
-                    return line + 0;
-                }
-                else
-                {
-                    return line + chknum;
-                }
-            }
-            else if (line.Length == 11) // for UPC-A barcodes
-            {
-                int[] d = line.Select(c => Convert.ToInt32(c.ToString())).ToArray();
-                int outcode = (d[0] * 3) + d[1] + (d[2] * 3) + d[3] + (d[4] * 3) + d[5] + (d[6] * 3) + d[7] + (d[8] * 3) + d[9] + (d[10] * 3);
-                double chknum = (Math.Ceiling(outcode * 0.1) * 10) - outcode;
-                if (chknum == 0)
-                {
-                    return line + 0;
-                }
-                else
-                {
-                    return line + chknum;
-                }
-            }
-            else
-            {
-                return line;
-            }
-        }
+        //public static string CalculateCheckDigit(string line)
+        //{
+        //    if (line.Length == 12) // for EAN 13 barcodes
+        //    {
+        //        int[] d = line.Select(c => Convert.ToInt32(c.ToString())).ToArray();
+        //        int outcode = d[0] + (d[1] * 3) + d[2] + (d[3] * 3) + d[4] + (d[5] * 3) + d[6] + (d[7] * 3) + d[8] + (d[9] * 3) + d[10] + (d[11] * 3);
+        //        double chknum = (Math.Ceiling(outcode * 0.1) * 10) - outcode;
+        //        if (chknum == 0)
+        //        {
+        //            return line + 0;
+        //        }
+        //        else
+        //        {
+        //            return line + chknum;
+        //        }
+        //    }
+        //    else if (line.Length == 11) // for UPC-A barcodes
+        //    {
+        //        int[] d = line.Select(c => Convert.ToInt32(c.ToString())).ToArray();
+        //        int outcode = (d[0] * 3) + d[1] + (d[2] * 3) + d[3] + (d[4] * 3) + d[5] + (d[6] * 3) + d[7] + (d[8] * 3) + d[9] + (d[10] * 3);
+        //        double chknum = (Math.Ceiling(outcode * 0.1) * 10) - outcode;
+        //        if (chknum == 0)
+        //        {
+        //            return line + 0;
+        //        }
+        //        else
+        //        {
+        //            return line + chknum;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return line;
+        //    }
+        //}
         protected async override void OnAppearing()
         {
             DeviceConfig dev = await App.Database.GetConfig();

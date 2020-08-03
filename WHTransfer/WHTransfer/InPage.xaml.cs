@@ -237,7 +237,7 @@ namespace WHTransfer
             if (txfScannedItem.Text.Length > 1)
             {
                 txfScannedItem.Completed -= txfScannedItem_Completed;
-                txfScannedItem.Text = GoodsRecieveingApp.MainPage.CalculateCheckDigit(txfScannedItem.Text);
+                //txfScannedItem.Text = GoodsRecieveingApp.MainPage.CalculateCheckDigit(txfScannedItem.Text);
                 if (!CheckItem(txfScannedItem.Text))
                 {
                     Vibration.Vibrate();

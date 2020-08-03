@@ -37,7 +37,7 @@ namespace InventoryCount
         {
             LoadingIndicator.IsVisible = true;
             txfUserCode.Completed -= txfUserCode_Completed;
-            txfUserCode.Text =GoodsRecieveingApp.MainPage.CalculateCheckDigit(txfUserCode.Text);
+            //xfUserCode.Text =GoodsRecieveingApp.MainPage.CalculateCheckDigit(txfUserCode.Text);
             try
             {
                 RestClient client = new RestClient();

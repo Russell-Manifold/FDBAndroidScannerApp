@@ -212,7 +212,8 @@ namespace GoodsRecieveingApp
 		{
             lblBarCode.Text = txfRejCode.Text;
             txfRejCode.Completed -= txfRejCode_Completed;
-            txfRejCode.Text = MainPage.CalculateCheckDigit(txfRejCode.Text);
+           // txfRejCode.Text = txfRejCode.Text;
+
             //BOM Barcode
             if (txfRejCode.Text.Length == 14 || txfRejCode.Text.Length == 8)
             {

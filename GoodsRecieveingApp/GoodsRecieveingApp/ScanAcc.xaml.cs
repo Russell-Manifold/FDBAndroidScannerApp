@@ -111,8 +111,11 @@ namespace GoodsRecieveingApp
                     case "YES":
                         await ResetItem();
                         break;
-                }               
-            }                     
+                }
+            }
+            else {
+                await Navigation.PushAsync(new ViewStock(UsingDoc.DocNum.ToUpper()));
+            }                    
         }
         public async Task<bool> restetQty(DocLine d)
         {
@@ -163,7 +166,7 @@ namespace GoodsRecieveingApp
                     if (res.IsSuccessful && res.Content.Contains("COMPLETE"))
                     {
                         await restetQty(doc);
-                        lblBalance.Text = "";
+                        lblBalance.Text = "0";
                         lblScanQTY.Text = "";
                         lblOrderQTY.Text = "";
                         lblitemDescAcc.Text = "";
@@ -291,7 +294,7 @@ namespace GoodsRecieveingApp
             if (txfAccCode.Text.Length > 0)
             {
                 txfAccCode.Completed -= txfAccCode_Completed;
-                txfAccCode.Text=MainPage.CalculateCheckDigit(txfAccCode.Text);
+                //txfAccCode.Text=MainPage.CalculateCheckDigit(txfAccCode.Text);
                 lblBarCode.Text = txfAccCode.Text;
                 if (txfAccCode.Text.Length != 13)
                 {
@@ -313,7 +316,8 @@ namespace GoodsRecieveingApp
                         PicImage.IsVisible = true;
                         lastItem = bi.ItemCode;
                         SetQtyDisplay(lastItem);
-                        txfAccCode.Text = "";                       
+                        txfAccCode.Text = "";
+                        btnEntry.IsVisible = false;
                     }
                     else
                     {
@@ -354,21 +358,29 @@ namespace GoodsRecieveingApp
 		private async void btnEntry_Clicked(object sender, EventArgs e)
 		{
 			if (lblBarCode.Text.Length==13)
-			{
-                string result = await DisplayPromptAsync("Enter Amount!", "Enter the amount of item to add", "OK", "Cancel", null, keyboard: Keyboard.Numeric);
-                if (Convert.ToInt32(result) > Convert.ToInt32(lblBalance.Text))
-                {
-                    await DisplayAlert("Error!", "You cannot scan in more items than neededs", "OK");
-                }
-                else
-                {
-                    string code = lblBarCode.Text;
-                    string iCode = currentDocs.Find(x => x.ItemBarcode == code && x.ItemQty != 0).ItemCode;
-                    await App.Database.Insert(new DocLine { ItemCode = iCode, ScanAccQty = Convert.ToInt32(result), ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
-                    PicImage.IsVisible = true;
-                    lastItem = iCode;
-                    SetQtyDisplay(iCode);
-                    txfAccCode.Text = "";
+			{   
+                if (lblBalance.Text.ToString() != "") {
+                    if (Convert.ToInt32(lblBalance.Text) > 0)
+                    {
+                        string result = await DisplayPromptAsync("Enter Amount!", "Enter the amount of item to add", "OK", "Cancel", null, keyboard: Keyboard.Numeric);
+                        if (Convert.ToInt32(result) > Convert.ToInt32(lblBalance.Text))
+                        {
+                            await DisplayAlert("Error!", "You cannot scan in more items than needed", "OK");
+                        }
+                        else
+                        {
+                            string code = lblBarCode.Text;
+                            string iCode = currentDocs.Find(x => x.ItemBarcode == code && x.ItemQty != 0).ItemCode;
+                            await App.Database.Insert(new DocLine { ItemCode = iCode, ScanAccQty = Convert.ToInt32(result), ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
+                            PicImage.IsVisible = true;
+                            lastItem = iCode;
+                            SetQtyDisplay(iCode);
+                            txfAccCode.Text = "";
+                        }
+                    }
+                    else {
+                        await DisplayAlert("Error!", "No more to receive", "OK");
+                    }
                 }
             }          
         }
