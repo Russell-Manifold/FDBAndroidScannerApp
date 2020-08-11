@@ -19,11 +19,11 @@ namespace GoodsRecieveingApp
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-       public static string APIPath = "http://192.168.10.254/FDBWebServiceAPI/api/";
+       //public static string APIPath = "http://192.168.10.254/FDBWebServiceAPI/api/";
        public static string APIPathIN = "http://192.168.10.254/FDBWebServiceAPI/api/";
        public static string APIPathOUT = "http://firstdutchbrands.dvrdns.org:5555/FDBWebServiceAPI/api/";
 
-        //public static string APIPath = "https://manifoldsa.co.za/FDBAPI/api/";
+        public static string APIPath = "https://manifoldsa.co.za/FDBAPI/api/";
         //public static string APIPathIN = "https://manifoldsa.co.za/FDBAPI/api/";
         //public static string APIPathOUT = "https://manifoldsa.co.za/FDBAPI/api/";
         //public static string APIPath = "http://192.168.0.111/FDBAPI/api/";
@@ -50,6 +50,7 @@ namespace GoodsRecieveingApp
         public static Boolean CanPartRec = false;
         public static bool InProccess = false;
         IMessage message = DependencyService.Get<IMessage>();
+        DeviceConfig config = new DeviceConfig();
         private ExtendedEntry _currententry;
         public MainPage()
         {
@@ -212,6 +213,14 @@ namespace GoodsRecieveingApp
                                     }
                                     try
                                     {
+                                        Doc.GRN = Convert.ToBoolean(row["GRV"].ToString());
+                                    }
+                                    catch
+                                    {
+                                        Doc.GRN = false;
+                                    }
+                                    try
+                                    {
                                         Doc.ScanRejQty = Convert.ToInt32(row["ScanRejQty"].ToString());
                                     }
                                     catch
@@ -337,35 +346,39 @@ namespace GoodsRecieveingApp
                 t1.Columns.Add("ScanRejQty");
                 t1.Columns.Add("PalletNumber");
                 t1.Columns.Add("GRV");
-                docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemQty==0||x.GRN).ToList();
+                docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemQty == 0 || x.GRN).ToList();
                 if (docs.Count == 0)
                     return true;
-                //foreach (string str in docs.Select(x=>x.ItemCode).Distinct())
+                //foreach (string str in docs.Select(x => x.ItemCode).Distinct())
                 //{
-                //    int i = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
+                //    int i = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
                 //    row = t1.NewRow();
                 //    row["DocNum"] = docs.FirstOrDefault().DocNum;
-                //    row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
-                //    row["ScanAccQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanAccQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
-                //    row["Balance"] =0;
-                //    row["ScanRejQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanRejQty)+(await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str&&x.ItemQty!=0).Sum(x=>x.ScanRejQty);
+                //    row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
+                //    row["ScanAccQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanAccQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
+                //    row["Balance"] = 0;
+                //    row["ScanRejQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanRejQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanRejQty);
                 //    row["PalletNumber"] = 0;
                 //    t1.Rows.Add(row);
-                //}                
+                //}
                 foreach (string str in docs.Select(x => x.ItemCode).Distinct())
                 {
                     DocLine currentGRV = (await App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.GRN && x.ItemCode == str).FirstOrDefault();
-                    if (currentGRV != null)
+                    if (currentGRV != null && await GRVmodule())
                     {
                         row = t1.NewRow();
                         row["DocNum"] = txfPOCode.Text;
-                        row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode; ;
+                        row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
                         row["ScanAccQty"] = currentGRV.ScanAccQty;
                         row["Balance"] = 0;
                         row["ScanRejQty"] = currentGRV.ScanRejQty;
                         row["PalletNumber"] = 0;
                         row["GRV"] = true;
                         t1.Rows.Add(row);
+                    }
+                    else if (currentGRV != null && !await GRVmodule())
+                    {
+                        await DisplayAlert("Please set up GRV in the settings", "Error", "OK");
                     }
                     int i = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfPOCode.Text)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
                     row = t1.NewRow();
@@ -395,7 +408,6 @@ namespace GoodsRecieveingApp
                 var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                 if (res.IsSuccessful && res.Content.Contains("COMPLETE"))
                 {
-                    await RemoveAllOld(docs.FirstOrDefault().DocNum);
                     return true;
                 }
                 else
@@ -404,8 +416,12 @@ namespace GoodsRecieveingApp
                 }
             }
         }
-
-		private async void txfPOCode_Completed(object sender, EventArgs e)
+        private async Task<bool> GRVmodule()
+        {
+            config = await GoodsRecieveingApp.App.Database.GetConfig();
+            return config.GRVActive;
+        }
+        private async void txfPOCode_Completed(object sender, EventArgs e)
 		{
             if (txfPOCode.Text.Length == 8)
             {

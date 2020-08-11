@@ -20,6 +20,7 @@ namespace GoodsRecieveingApp
         string docCode ="";
         IMessage message = DependencyService.Get<IMessage>();
         DeviceConfig config = new DeviceConfig();
+        bool isSaving = false;
         public ViewStock(string dl)
         {
             InitializeComponent();
@@ -337,27 +338,32 @@ namespace GoodsRecieveingApp
         }
         private async void btnSave_Clicked(object sender, EventArgs e)
         {
-            message.DisplayMessage("Saving....", false);
-            if (await SaveData())
-            {
-                message.DisplayMessage("All data Saved", true);
-                if (Navigation.NavigationStack.Count == 4)
+			if (!isSaving)
+			{
+                isSaving = true;
+                message.DisplayMessage("Saving....", false);
+                if (await SaveData())
                 {
-                    Navigation.RemovePage(Navigation.NavigationStack[2]);
+                    message.DisplayMessage("All data Saved", true);
+                    if (Navigation.NavigationStack.Count == 4)
+                    {
+                        Navigation.RemovePage(Navigation.NavigationStack[2]);
+                        await Navigation.PopAsync();
+                    }
+                    else
+                    {
+                        Navigation.RemovePage(Navigation.NavigationStack[2]);
+                        Navigation.RemovePage(Navigation.NavigationStack[3]);
+                        await Navigation.PopAsync();
+                    }
                 }
                 else
                 {
-                    Navigation.RemovePage(Navigation.NavigationStack[2]);
-                    Navigation.RemovePage(Navigation.NavigationStack[3]);
-                    await Navigation.PopAsync();
+                    Vibration.Vibrate();
+                    message.DisplayMessage("Error!!! Could Not Save!", true);
                 }
-            }
-            else
-            {
-                Vibration.Vibrate();
-                message.DisplayMessage("Error!!! Could Not Save!", true);
-            }
-
+                isSaving = false;
+            }          
         }
         private async Task<bool> ResetItem(DocLine doc) 
         {
@@ -372,6 +378,7 @@ namespace GoodsRecieveingApp
                 t1.Columns.Add("Balance");
                 t1.Columns.Add("ScanRejQty");
                 t1.Columns.Add("PalletNumber");
+                t1.Columns.Add("GRV");
                 row = t1.NewRow();
                 row["DocNum"] = doc.DocNum;
                 row["ItemBarcode"] = doc.ItemBarcode;
@@ -379,6 +386,7 @@ namespace GoodsRecieveingApp
                 row["Balance"] = 0;
                 row["ScanRejQty"] = 0;
                 row["PalletNumber"] = 0;
+                row["GRV"] = false;
                 t1.Rows.Add(row);
                 ds.Tables.Add(t1);
                 string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
@@ -438,12 +446,12 @@ namespace GoodsRecieveingApp
                 //}
                 foreach (string str in docs.Select(x => x.ItemCode).Distinct())
                 {
-                    DocLine currentGRV = (await App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.GRN && x.ItemCode == str).FirstOrDefault();
-                    if (currentGRV != null)
+                    DocLine currentGRV = (await App.Database.GetSpecificDocsAsync(docCode)).Where(x =>x.GRN&& x.ItemCode == str).FirstOrDefault();
+                    if (currentGRV != null&&await GRVmodule())
                     {
                         row = t1.NewRow();
                         row["DocNum"] = docCode;
-                        row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode; ;
+                        row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
                         row["ScanAccQty"] = currentGRV.ScanAccQty;
                         row["Balance"] = 0;
                         row["ScanRejQty"] = currentGRV.ScanRejQty;
@@ -451,6 +459,10 @@ namespace GoodsRecieveingApp
                         row["GRV"] = true;
                         t1.Rows.Add(row);
                     }
+                    else if (currentGRV!=null&&!await GRVmodule())
+					{
+                        await DisplayAlert("Please set up GRV in the settings","Error","OK");
+					}
                     int i = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
                     row = t1.NewRow();
                     row["DocNum"] = docs.FirstOrDefault().DocNum;
@@ -468,9 +480,7 @@ namespace GoodsRecieveingApp
             {
                 return false;
             }
-            string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
-            if (await GRVmodule())
-            {
+            string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);           
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath);
                 {
@@ -487,13 +497,8 @@ namespace GoodsRecieveingApp
                     {
                         return false;
                     }
-                }
-            }
-            else {
-                return true;
-            }
+                }                  
         }
-
         private async Task<bool> GRVmodule() {
             config = await GoodsRecieveingApp.App.Database.GetConfig();
             return config.GRVActive;

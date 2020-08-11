@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -208,26 +209,77 @@ namespace WHTransfer
         }
         private async Task<bool> PastelTransferToGit()
         {
-            string dataString = GetItems();
-            if (dataString.Length > 1)
+            //List<string> DoneItems = new List<string>();
+            //foreach (IBTItem i in OutItems.items)
+            //{
+            //    if (!DoneItems.Contains(i.ItemCode))
+            //    {
+            //        DoneItems.Add(i.ItemCode);
+            //        string JnlAcc = await GetGlCode(i.ItemCode, i.WH);
+            //        RestSharp.RestClient client2 = new RestSharp.RestClient();
+            //        int k = OutItems.items.Where(x => x.ItemCode == i.ItemCode).Sum(c => c.ItemQtyOut);
+            //        string path2 = "WHTransfer";
+            //        client2.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path2);
+            //        {
+            //            string str2 = $"POST?itemCode={i.ItemCode}&JnlAcc={JnlAcc}&JnlDate={DateTime.Now.ToString("dd MMM yyyy")}&JobCode={i.iTrfID}&Desc={i.iTrfID}&Ref={DateTime.Now.ToString("ddMMMyyyy") + "-" + i.iTrfID}&Qty={k}&Store={i.WH}";
+            //            var Request2 = new RestSharp.RestRequest();
+            //            Request2.Resource = str2;
+            //            Request2.Method = RestSharp.Method.POST;
+            //            var cancellationTokenSource2 = new CancellationTokenSource();
+            //            var res2 = await client2.ExecuteAsync(Request2, cancellationTokenSource2.Token);
+            //            if (!(res2.IsSuccessful && res2.Content != null))
+            //            {
+
+            //            }
+            //        }
+            //    }
+            //}
+            //return false;
+            //string dataString = GetItems();
+            //if (dataString.Length > 1)
+            //{
+            //    RestSharp.RestClient client = new RestSharp.RestClient();
+            //    string path = "PastelInv";
+            //    client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            //    {
+            //        string str = $"POST?";
+            //        var Request = new RestSharp.RestRequest(str, RestSharp.Method.POST);
+            //        Request.RequestFormat = RestSharp.DataFormat.Json;
+            //        Request.AddJsonBody(dataString);
+            //        var cancellationTokenSource = new CancellationTokenSource();
+            //        var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+            //        if (res.StatusCode.ToString().Contains("OK") && res.Content.Contains("Complete"))
+            //        {
+            //            return true;
+            //        }
+            //    }
+            //}
+            //return false;
+            return true;
+		}
+		async Task<string> GetGlCode(string itemCode, string WHCode)
+        {
+            RestClient client = new RestClient();
+            string path = "GetField";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
             {
-                RestSharp.RestClient client = new RestSharp.RestClient();
-                string path = "PastelInv";
-                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                string str = $"GET?qrystr=ACCSTKST|0|{WHCode}{itemCode}|2";
+                var Request = new RestRequest(str, Method.GET);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Split('|')[0].Contains("0"))
                 {
-                    string str = $"POST?";
-                    var Request = new RestSharp.RestRequest(str, RestSharp.Method.POST);
-                    Request.RequestFormat = RestSharp.DataFormat.Json;
-                    Request.AddJsonBody(dataString);
-                    var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                    if (res.StatusCode.ToString().Contains("OK") && res.Content.Contains("Complete"))
+                    str = $"GET?qrystr=ACCGRP|0|{res.Content.Replace('"', ' ').Replace('\\', ' ').Trim().Split('|')[1]}|6";//////////////////////////////////////////////////////////
+                    Request = new RestRequest(str, Method.GET);
+                    cancellationTokenSource = new CancellationTokenSource();
+                    res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("0"))
                     {
-                        return true;
+                        return res.Content.Replace('"', ' ').Replace('\\', ' ').Trim().Split('|')[1];
                     }
                 }
             }
-            return false;
+            return "";
         }
         private string GetItems()
         {

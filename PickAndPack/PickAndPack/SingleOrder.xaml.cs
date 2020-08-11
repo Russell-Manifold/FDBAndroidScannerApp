@@ -277,7 +277,6 @@ namespace PickAndPack
         {
             if (txfItemCode.Text.Length != 0)
             {
-                txfItemCode.Completed -= txfItemCode_Completed;
                 //txfItemCode.Text = GoodsRecieveingApp.MainPage.CalculateCheckDigit(txfItemCode.Text);
                 if (txfItemCode.Text.Length == 8)
                 {
@@ -350,7 +349,6 @@ namespace PickAndPack
                     CompletedStack.IsVisible = false;
                     palletAddStack.IsVisible = true;
                 }
-                txfItemCode.Completed += txfItemCode_Completed;
                 txfItemCode.Text = "";
                 txfItemCode.Focus();
             }

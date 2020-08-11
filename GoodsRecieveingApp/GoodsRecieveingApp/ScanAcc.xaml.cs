@@ -120,7 +120,7 @@ namespace GoodsRecieveingApp
         public async Task<bool> restetQty(DocLine d)
         {
             List<DocLine> dls = await App.Database.GetSpecificDocsAsync(d.DocNum);
-            foreach (DocLine docline in dls.Where(x => x.ItemCode == d.ItemCode && x.ItemQty == 0))
+            foreach (DocLine docline in dls.Where(x => x.ItemCode == d.ItemCode && x.ScanAccQty > 0 && !x.GRN))
             {
                 await App.Database.Delete(docline);
             }
@@ -145,6 +145,7 @@ namespace GoodsRecieveingApp
                 t1.Columns.Add("Balance");
                 t1.Columns.Add("ScanRejQty");
                 t1.Columns.Add("PalletNumber");
+                t1.Columns.Add("GRV");
                 row = t1.NewRow();
                 row["DocNum"] = doc.DocNum;
                 row["ItemBarcode"] = doc.ItemBarcode;
@@ -152,6 +153,7 @@ namespace GoodsRecieveingApp
                 row["Balance"] = 0;
                 row["ScanRejQty"] = 0;
                 row["PalletNumber"] = 0;
+                row["GRV"] = false;
                 t1.Rows.Add(row);
                 ds.Tables.Add(t1);
                 string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
@@ -293,7 +295,6 @@ namespace GoodsRecieveingApp
             //BOM Barcode
             if (txfAccCode.Text.Length > 0)
             {
-                txfAccCode.Completed -= txfAccCode_Completed;
                 //txfAccCode.Text=MainPage.CalculateCheckDigit(txfAccCode.Text);
                 lblBarCode.Text = txfAccCode.Text;
                 if (txfAccCode.Text.Length != 13)
@@ -312,7 +313,7 @@ namespace GoodsRecieveingApp
                     }
                     if (Check(bi.ItemCode))
                     {
-                        await App.Database.Insert(new DocLine { ItemCode = bi.ItemCode, ScanAccQty = bi.Qty, ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
+                        await App.Database.Insert(new DocLine { ItemCode = bi.ItemCode, ScanAccQty = bi.Qty, GRN = false, ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
                         PicImage.IsVisible = true;
                         lastItem = bi.ItemCode;
                         SetQtyDisplay(lastItem);
@@ -334,7 +335,7 @@ namespace GoodsRecieveingApp
                     if (CheckBarcode(txfAccCode.Text))
                     {
                         string iCode = currentDocs.Find(x => x.ItemBarcode == txfAccCode.Text && x.ItemQty != 0).ItemCode;
-                        await App.Database.Insert(new DocLine { ItemCode = iCode, ScanAccQty = 1, ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
+                        await App.Database.Insert(new DocLine { ItemCode = iCode, ScanAccQty = 1, ScanRejQty = 0, GRN = false, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
                         PicImage.IsVisible = true;
                         lastItem = iCode;
                         SetQtyDisplay(iCode);
@@ -350,7 +351,6 @@ namespace GoodsRecieveingApp
                         txfAccCode.Text = "";
                     }
                 }
-                txfAccCode.Completed += txfAccCode_Completed;
             }
 
             txfAccCode.Focus();
@@ -371,7 +371,7 @@ namespace GoodsRecieveingApp
                         {
                             string code = lblBarCode.Text;
                             string iCode = currentDocs.Find(x => x.ItemBarcode == code && x.ItemQty != 0).ItemCode;
-                            await App.Database.Insert(new DocLine { ItemCode = iCode, ScanAccQty = Convert.ToInt32(result), ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
+                            await App.Database.Insert(new DocLine { ItemCode = iCode, ScanAccQty = Convert.ToInt32(result), GRN = false, ScanRejQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.ACCWH, isRejected = false });
                             PicImage.IsVisible = true;
                             lastItem = iCode;
                             SetQtyDisplay(iCode);

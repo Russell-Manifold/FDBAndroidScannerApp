@@ -1,6 +1,7 @@
 ﻿using Data.KeyboardContol;
 using Data.Message;
 using Data.Model;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -181,12 +182,13 @@ namespace WHTransfer
                 {
                     if (!DoneItems.Contains(i.ItemCode)) {
                         DoneItems.Add(i.ItemCode);
+                        string JnlAcc = await GetGlCode(i.ItemCode,i.WH);
                         int k = lines.Where(x => x.ItemCode == i.ItemCode).Sum(c=>c.ItemQtyOut);
                         RestSharp.RestClient client2 = new RestSharp.RestClient();
                         string path2 = "WHTransfer";
                         client2.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path2);
                         {
-                            string str2 = $"POST?itemCode={i.ItemCode}&InOrOut=true&JnlDate={DateTime.Now.ToString("dd MMM yyyy")}&JobCode={i.iTrfID}&Desc={i.iTrfID}&Ref={DateTime.Now.ToString("ddMMMyyyy")+"-"+i.iTrfID}&Qty={k}&Store={i.WH}";
+                            string str2 = $"POST?itemCode={i.ItemCode}&JnlAcc={JnlAcc}&JnlDate={DateTime.Now.ToString("dd MMM yyyy")}&JobCode={i.iTrfID}&Desc={i.iTrfID+"-Transfer items in"}&Ref={DateTime.Now.ToString("ddMMMyyyy")+"-"+i.iTrfID}&Qty={k}&Store={CurrentHeader.ToWH}";
                             var Request2 = new RestSharp.RestRequest();
                             Request2.Resource = str2;
                             Request2.Method = RestSharp.Method.POST;
@@ -194,11 +196,20 @@ namespace WHTransfer
                             var res2 = await client2.ExecuteAsync(Request2, cancellationTokenSource2.Token);
                             if (!(res2.IsSuccessful && res2.Content != null))
                             {
-                                //await DisplayAlert("Error!", "Could not delete record", "OK");
-                                await DisplayAlert("Complete","Transfer complete!","OK");
-                                Navigation.RemovePage(Navigation.NavigationStack[2]);
-                                await Navigation.PopAsync();
-                                return;
+                                str2 = $"POST?itemCode={i.ItemCode}&JnlAcc={JnlAcc}&JnlDate={DateTime.Now.ToString("dd MMM yyyy")}&JobCode={i.iTrfID}&Desc={i.iTrfID + "-Transfer items out"}&Ref={DateTime.Now.ToString("ddMMMyyyy") + "-" + i.iTrfID}&Qty={(k/-1)}&Store={CurrentHeader.FromWH}";
+                                Request2 = new RestSharp.RestRequest();
+                                Request2.Resource = str2;
+                                Request2.Method = RestSharp.Method.POST;
+                                cancellationTokenSource2 = new CancellationTokenSource();
+                                res2 = await client2.ExecuteAsync(Request2, cancellationTokenSource2.Token);
+                                if (!(res2.IsSuccessful && res2.Content != null))
+                                {
+                                    //await DisplayAlert("Error!", "Could not delete record", "OK");
+                                    await DisplayAlert("Complete", "Transfer complete!", "OK");
+                                    Navigation.RemovePage(Navigation.NavigationStack[2]);
+                                    await Navigation.PopAsync();
+                                    return;
+                                }
                             }
                         }
                     }
@@ -231,12 +242,34 @@ namespace WHTransfer
         {
             await IsDone();
         }
-
-		private async void txfScannedItem_Completed(object sender, EventArgs e)
+        async Task<string> GetGlCode(string itemCode, string WHCode)
+        {
+            RestClient client = new RestClient();
+            string path = "GetField";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"GET?qrystr=ACCSTKST|0|{WHCode}{itemCode}|2";
+                var Request = new RestRequest(str, Method.GET);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Split('|')[0].Contains("0"))
+                {
+                    str = $"GET?qrystr=ACCGRP|0|{res.Content.Replace('"', ' ').Replace('\\', ' ').Trim().Split('|')[1]}|6";//////////////////////////////////////////////////////////
+                    Request = new RestRequest(str, Method.GET);
+                    cancellationTokenSource = new CancellationTokenSource();
+                    res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("0"))
+                    {
+                        return res.Content.Replace('"', ' ').Replace('\\', ' ').Trim().Split('|')[1];
+                    }
+                }
+            }
+            return "";
+        }
+        private async void txfScannedItem_Completed(object sender, EventArgs e)
 		{
             if (txfScannedItem.Text.Length > 1)
             {
-                txfScannedItem.Completed -= txfScannedItem_Completed;
                 //txfScannedItem.Text = GoodsRecieveingApp.MainPage.CalculateCheckDigit(txfScannedItem.Text);
                 if (!CheckItem(txfScannedItem.Text))
                 {
@@ -250,7 +283,6 @@ namespace WHTransfer
                     ListViewItems.ItemsSource = null;
                     ListViewItems.ItemsSource = lines;
                 }
-                txfScannedItem.Completed += txfScannedItem_Completed;
                 txfScannedItem.Text = "";
                 txfScannedItem.Focus();
             }

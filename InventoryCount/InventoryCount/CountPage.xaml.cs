@@ -5,6 +5,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -153,9 +154,8 @@ namespace InventoryCount
             _ = CheckIfComplete();
             return true;
         }
-         Task CheckIfComplete()
-        {
-            
+        Task CheckIfComplete()
+        {          
             foreach (InventoryItem i in items)
             {
                 if (i.Complete == false)
@@ -196,8 +196,6 @@ namespace InventoryCount
         private async void txfItemCode_Completed(object sender, EventArgs e)
         {
             LoadingIndicator.IsVisible = true;
-            txfItemCode.Completed -= txfItemCode_Completed;
-            //txfItemCode.Text = GoodsRecieveingApp.MainPage.CalculateCheckDigit(txfItemCode.Text);
             if (txfItemCode.Text.Length>10)
             {
                 if (items.Where(x => x.BarCode == txfItemCode.Text&&x.Complete==false).FirstOrDefault() != null)
@@ -301,7 +299,6 @@ namespace InventoryCount
                 Vibration.Vibrate();
                 message.DisplayMessage("You cannot add a pack to a custom Qty scan", true);
             }
-            txfItemCode.Completed += txfItemCode_Completed;
             txfItemCode.Text = "";
             LoadingIndicator.IsVisible = false;
             txfItemCode.Focus();
@@ -387,8 +384,8 @@ namespace InventoryCount
         {
             message.DisplayMessage("Complete!",true);
             await Navigation.PopAsync();
-            //SendSQLToPastel
         }
+      
         private async void Entry_Focused(object sender, FocusEventArgs e)
         {
             await Task.Delay(110);
@@ -449,7 +446,7 @@ namespace InventoryCount
                     }
                     else
                     {
-                        QTY=Convert.ToInt32(Convert.ToDouble(res.Content));                        
+                        QTY = Convert.ToInt32(Double.Parse(res.Content, CultureInfo.InvariantCulture.NumberFormat), CultureInfo.InvariantCulture.NumberFormat);                       
                     }
                 }
             }
@@ -487,7 +484,7 @@ namespace InventoryCount
                 else
                 {
                     items.Where(x => x.BarCode == currentItem.BarCode).First().FinalQTY = items.Where(x => x.BarCode == currentItem.BarCode).First().SecondScanQty;
-                    await Navigation.PushAsync(new AcceptScanPage(currentItem));
+                    await Navigation.PushAsync(new AcceptScanPage(currentItem,QTY));
                     return true;
                 }
             }

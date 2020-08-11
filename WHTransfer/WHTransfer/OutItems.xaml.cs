@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using System.Globalization;
 
 namespace WHTransfer
 {
@@ -82,7 +83,7 @@ namespace WHTransfer
                 catch
                 {
                     Loading.IsVisible = false;
-                    message.DisplayMessage("Please check your internet", true);
+                    message.DisplayMessage("There was a error in getting this item", true);
                     return false;
                 }
             }
@@ -110,7 +111,16 @@ namespace WHTransfer
                     }
                     else
                     {
-                        int q = Convert.ToInt32(Convert.ToDouble(res.Content));
+                        int q = 0;
+
+                        try
+						{
+                             q= Convert.ToInt32(Double.Parse(res.Content, CultureInfo.InvariantCulture.NumberFormat),CultureInfo.InvariantCulture.NumberFormat);
+                        }
+						catch(Exception ex)
+						{
+
+						}                        
                         if (q>=(qty+items.Where(x=>x.ItemCode==iCode).Sum(X=>X.ItemQtyOut)))
                         {
                             return true;
@@ -156,7 +166,6 @@ namespace WHTransfer
         {          
             if (txfScannedItem.Text.Length > 1)
             {
-                txfScannedItem.Completed -= txfScannedItem_Completed;
                // txfScannedItem.Text = GoodsRecieveingApp.MainPage.CalculateCheckDigit(txfScannedItem.Text);
                 if (await CheckItem())
                 {
@@ -175,7 +184,6 @@ namespace WHTransfer
                     txfScannedItem.Text = "";
                     txfScannedItem.Focus();
                 }
-                txfScannedItem.Completed += txfScannedItem_Completed;
             }
         }
     }

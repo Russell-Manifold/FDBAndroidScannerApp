@@ -132,6 +132,7 @@ namespace GoodsRecieveingApp
                 t1.Columns.Add("Balance");
                 t1.Columns.Add("ScanRejQty");
                 t1.Columns.Add("PalletNumber");
+                t1.Columns.Add("GRV");
                 row = t1.NewRow();
                 row["DocNum"] = doc.DocNum;
                 row["ItemBarcode"] = doc.ItemBarcode;
@@ -139,6 +140,7 @@ namespace GoodsRecieveingApp
                 row["Balance"] = 0;
                 row["ScanRejQty"] = 0;
                 row["PalletNumber"] = 0;
+                row["GRV"] = false;
                 t1.Rows.Add(row);
                 ds.Tables.Add(t1);
                 string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
@@ -176,7 +178,7 @@ namespace GoodsRecieveingApp
         public async Task<bool> restetQty(DocLine d)
         {
             List<DocLine> dls = await App.Database.GetSpecificDocsAsync(d.DocNum);
-            foreach (DocLine docline in dls.Where(x => x.ItemCode == d.ItemCode && x.ItemQty == 0))
+            foreach (DocLine docline in dls.Where(x => x.ItemCode == d.ItemCode && x.ScanRejQty > 0 && !x.GRN))
             {
                 await App.Database.Delete(docline);
             }
@@ -211,7 +213,6 @@ namespace GoodsRecieveingApp
 		private async void txfRejCode_Completed(object sender, EventArgs e)
 		{
             lblBarCode.Text = txfRejCode.Text;
-            txfRejCode.Completed -= txfRejCode_Completed;
            // txfRejCode.Text = txfRejCode.Text;
 
             //BOM Barcode
@@ -230,7 +231,7 @@ namespace GoodsRecieveingApp
                 }
                 if (Check(bi.ItemCode))
                 {
-                    await App.Database.Insert(new DocLine { ItemCode = bi.ItemCode, ScanRejQty = bi.Qty, ScanAccQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.REJWH, isRejected = true });
+                    await App.Database.Insert(new DocLine { ItemCode = bi.ItemCode, ScanRejQty = bi.Qty, ScanAccQty = 0,GRN=false, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.REJWH, isRejected = true });
                     PicImage.IsVisible = true;
                     lastItem = bi.ItemCode;
                     SetQtyDisplay(lastItem);
@@ -250,7 +251,7 @@ namespace GoodsRecieveingApp
                 if (CheckBarcode(txfRejCode.Text))
                 {
                     string iCode = currentDocs.Find(x => x.ItemBarcode == txfRejCode.Text && x.ItemQty != 0).ItemCode;
-                    await App.Database.Insert(new DocLine { ItemCode = iCode, ScanRejQty = 1, ScanAccQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.REJWH, isRejected = true });
+                    await App.Database.Insert(new DocLine { ItemCode = iCode, ScanRejQty = 1,GRN = false, ScanAccQty = 0, DocNum = UsingDoc.DocNum, WarehouseID = MainPage.REJWH, isRejected = true });
                     PicImage.IsVisible = true;
                     lastItem = iCode;
                     SetQtyDisplay(iCode);
@@ -265,7 +266,6 @@ namespace GoodsRecieveingApp
                     PicImage.ImageSource = "Wrong.png";
                 }
             }
-            txfRejCode.Completed += txfRejCode_Completed;
             txfRejCode.Focus();
         }
         private async void btnEntry_Clicked(object sender, EventArgs e)
@@ -281,7 +281,7 @@ namespace GoodsRecieveingApp
                 {
                     string code = lblBarCode.Text;
                     string iCode = currentDocs.Find(x => x.ItemBarcode == code && x.ItemQty != 0).ItemCode;
-                    await App.Database.Insert(new DocLine { ItemCode = iCode, ScanAccQty = 0, ScanRejQty = Convert.ToInt32(result), DocNum = UsingDoc.DocNum, WarehouseID = MainPage.REJWH, isRejected = true });
+                    await App.Database.Insert(new DocLine { ItemCode = iCode, ScanAccQty = 0, GRN = false, ScanRejQty = Convert.ToInt32(result), DocNum = UsingDoc.DocNum, WarehouseID = MainPage.REJWH, isRejected = true });
                     PicImage.IsVisible = true;
                     lastItem = iCode;
                     SetQtyDisplay(iCode);
