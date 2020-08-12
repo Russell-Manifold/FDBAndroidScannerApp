@@ -9,7 +9,6 @@
              Title="Receiving">
     <ContentPage.ToolbarItems>
         <ToolbarItem  IconImageSource="home.PNG" x:Name="btnHome" Clicked="HomeClicked"/>
-        <ToolbarItem  IconImageSource="save.png" x:Name="btnSave" Clicked="SaveClicked"/>
     </ContentPage.ToolbarItems>
     <ScrollView>
       <StackLayout x:Name="MainStack" Orientation="Vertical" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"  Padding="0, 20,0,0">

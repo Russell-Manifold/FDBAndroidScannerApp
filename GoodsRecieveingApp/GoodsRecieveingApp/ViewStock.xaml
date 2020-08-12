@@ -8,7 +8,6 @@
              Title="View List">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="" Clicked="ToolbarItem_Clicked"  IconImageSource="home.PNG"/>
-        <ToolbarItem  IconImageSource="save.png" x:Name="btnSave" Clicked="btnSave_Clicked"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>

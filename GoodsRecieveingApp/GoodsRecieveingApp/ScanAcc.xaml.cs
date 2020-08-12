@@ -22,6 +22,7 @@ namespace GoodsRecieveingApp
         DocLine UsingDoc = new DocLine();
         List<DocLine> currentDocs;
         string lastItem;
+        DeviceConfig config = new DeviceConfig();
         bool wrong;
         IMessage message = DependencyService.Get<IMessage>();
         private ExtendedEntry _currententry;
@@ -31,6 +32,100 @@ namespace GoodsRecieveingApp
             txfAccCode.Focused += Entry_Focused;
             UsingDoc = d;
             lblMainAcc.Text = UsingDoc.SupplierName + " - " + UsingDoc.DocNum;
+        }
+        protected async override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            if (await SaveData())
+            {
+                message.DisplayMessage("All data Saved", true);
+            }
+            else
+            {
+                Vibration.Vibrate();
+                message.DisplayMessage("Error!!! Could Not Save!", true);
+            }
+        }
+        private async Task<bool> SaveData()
+        {
+            List<DocLine> docs = new List<DocLine>();
+            var ds = new DataSet();
+            try
+            {
+                var t1 = new DataTable();
+                DataRow row = null;
+                t1.Columns.Add("DocNum");
+                t1.Columns.Add("ItemBarcode");
+                t1.Columns.Add("ScanAccQty");
+                t1.Columns.Add("Balance");
+                t1.Columns.Add("ScanRejQty");
+                t1.Columns.Add("PalletNumber");
+                t1.Columns.Add("GRV");
+                docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemQty == 0 || x.GRN).ToList();
+                if (docs.Count == 0)
+                    return true;
+                foreach (string str in docs.Select(x => x.ItemCode).Distinct())
+                {
+                    DocLine currentGRV = (await App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.GRN && x.ItemCode == str).FirstOrDefault();
+                    if (currentGRV != null && await GRVmodule())
+                    {
+                        row = t1.NewRow();
+                        row["DocNum"] = UsingDoc.DocNum;
+                        row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
+                        row["ScanAccQty"] = currentGRV.ScanAccQty;
+                        row["Balance"] = 0;
+                        row["ScanRejQty"] = currentGRV.ScanRejQty;
+                        row["PalletNumber"] = 0;
+                        row["GRV"] = true;
+                        t1.Rows.Add(row);
+                    }
+                    else if (currentGRV != null && !await GRVmodule())
+                    {
+                        await DisplayAlert("Please set up GRV in the settings", "Error", "OK");
+                    }
+                    List<DocLine> CurrItems = (await App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => !x.GRN && x.ItemCode == str && x.ItemQty == 0).ToList();
+                    if (CurrItems.Count() > 0)
+                    {
+                        row = t1.NewRow();
+                        row["DocNum"] = UsingDoc.DocNum;
+                        row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
+                        row["ScanAccQty"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemCode == str && !x.GRN).Sum(x => x.ScanAccQty);
+                        row["Balance"] = 0;
+                        row["ScanRejQty"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemCode == str && !x.GRN).Sum(x => x.ScanRejQty);
+                        row["PalletNumber"] = 0;
+                        row["GRV"] = false;
+                        t1.Rows.Add(row);
+                    }
+                }
+                ds.Tables.Add(t1);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
+            RestSharp.RestClient client = new RestSharp.RestClient();
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath);
+            {
+                var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
+                Request.RequestFormat = RestSharp.DataFormat.Json;
+                Request.AddJsonBody(myds);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("COMPLETE"))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        private async Task<bool> GRVmodule()
+        {
+            config = await GoodsRecieveingApp.App.Database.GetConfig();
+            return config.GRVActive;
         }
         protected async override void OnAppearing()
         {
@@ -219,61 +314,6 @@ namespace GoodsRecieveingApp
             //    message.DisplayMessage("Error!!! Could Not Save!", true);
             //}
             await Navigation.PushAsync(new ViewStock(UsingDoc.DocNum.ToUpper()));
-        }
-        private async Task<bool> SaveData()
-        {
-            List<DocLine> docs = new List<DocLine>();
-            var ds = new DataSet();
-            try
-            {
-                var t1 = new DataTable();
-                DataRow row = null;
-                t1.Columns.Add("DocNum");
-                t1.Columns.Add("ItemBarcode");
-                t1.Columns.Add("ScanAccQty");
-                t1.Columns.Add("Balance");
-                t1.Columns.Add("ScanRejQty");
-                t1.Columns.Add("PalletNumber");
-                docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemQty == 0).ToList();
-                if (docs.Count == 0)
-                    return true;
-                foreach (string str in docs.Select(x => x.ItemCode).Distinct())
-                {
-                    int i = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
-                    row = t1.NewRow();
-                    row["DocNum"] = docs.FirstOrDefault().DocNum;
-                    row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
-                    row["ScanAccQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanAccQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
-                    row["Balance"] = 0;
-                    row["ScanRejQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanRejQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(UsingDoc.DocNum)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanRejQty);
-                    row["PalletNumber"] = 0;
-                    t1.Rows.Add(row);
-                }
-                ds.Tables.Add(t1);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
-            RestSharp.RestClient client = new RestSharp.RestClient();
-            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath);
-            {
-                var Request = new RestSharp.RestRequest("SaveDocLine", RestSharp.Method.POST);
-                Request.RequestFormat = RestSharp.DataFormat.Json;
-                Request.AddJsonBody(myds);
-                var cancellationTokenSource = new CancellationTokenSource();
-                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                if (res.IsSuccessful && res.Content.Contains("COMPLETE"))
-                {
-                    await RemoveAllOld(docs.FirstOrDefault().DocNum);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
         }
         private async Task<bool> RemoveAllOld(string docNum)
         {

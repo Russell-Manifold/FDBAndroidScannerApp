@@ -432,18 +432,6 @@ namespace GoodsRecieveingApp
                 docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemQty == 0||x.GRN).ToList();
                 if (docs.Count == 0)
                     return true;
-                //foreach (string str in docs.Select(x => x.ItemCode).Distinct())
-                //{
-                //    int i = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
-                //    row = t1.NewRow();
-                //    row["DocNum"] = docs.FirstOrDefault().DocNum;
-                //    row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
-                //    row["ScanAccQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanAccQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
-                //    row["Balance"] = 0;
-                //    row["ScanRejQty"] = docs.Where(x => x.ItemCode == str).Sum(x => x.ScanRejQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanRejQty);
-                //    row["PalletNumber"] = 0;
-                //    t1.Rows.Add(row);
-                //}
                 foreach (string str in docs.Select(x => x.ItemCode).Distinct())
                 {
                     DocLine currentGRV = (await App.Database.GetSpecificDocsAsync(docCode)).Where(x =>x.GRN&& x.ItemCode == str).FirstOrDefault();
@@ -463,16 +451,19 @@ namespace GoodsRecieveingApp
 					{
                         await DisplayAlert("Please set up GRV in the settings","Error","OK");
 					}
-                    int i = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
-                    row = t1.NewRow();
-                    row["DocNum"] = docs.FirstOrDefault().DocNum;
-                    row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
-                    row["ScanAccQty"] = docs.Where(x => x.ItemCode == str && !x.GRN).Sum(x => x.ScanAccQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanAccQty);
-                    row["Balance"] = 0;
-                    row["ScanRejQty"] = docs.Where(x => x.ItemCode == str && !x.GRN).Sum(x => x.ScanRejQty) + (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).Sum(x => x.ScanRejQty);
-                    row["PalletNumber"] = 0;
-                    row["GRV"] = false;
-                    t1.Rows.Add(row);
+                    List<DocLine> CurrItems = (await App.Database.GetSpecificDocsAsync(docCode)).Where(x => !x.GRN && x.ItemCode == str&&x.ItemQty==0).ToList();
+					if (CurrItems.Count()>0)
+					{
+                        row = t1.NewRow();
+                        row["DocNum"] = docs.FirstOrDefault().DocNum;
+                        row["ItemBarcode"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && x.ItemQty != 0).FirstOrDefault().ItemBarcode;
+                        row["ScanAccQty"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && !x.GRN).Sum(x => x.ScanAccQty);
+                        row["Balance"] = 0;
+                        row["ScanRejQty"] = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode)).Where(x => x.ItemCode == str && !x.GRN).Sum(x => x.ScanRejQty);
+                        row["PalletNumber"] = 0;
+                        row["GRV"] = false;
+                        t1.Rows.Add(row);
+                    }                 
                 }
                 ds.Tables.Add(t1);
             }
