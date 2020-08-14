@@ -33,7 +33,7 @@ namespace InventoryCount
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            lblInfo.Text = "Approve QTY for:\n"+i.ItemDesc+"\nFirst Count: "+i.FirstScanQty+"\nSecond Count: "+i.SecondScanQty+"\nWhile your system has:"+ActualQTY+" in stock";
+            lblInfo.Text = "Approve QTY for:\n"+i.ItemDesc+"\nFirst Count: "+i.FirstScanQty+"\nSecond Count: "+i.SecondScanQty+"\n";
             txfUserCode.Focus();
         }
         private async void txfUserCode_Completed(object sender, EventArgs e)

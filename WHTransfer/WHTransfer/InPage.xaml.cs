@@ -1,6 +1,7 @@
 ﻿using Data.KeyboardContol;
 using Data.Message;
 using Data.Model;
+using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -169,7 +170,7 @@ namespace WHTransfer
             }
             catch (InvalidOperationException)
             {
-                message.DisplayMessage("COMPLETE!!",true);
+                message.DisplayMessage("Sending data...",true);
                 await Complete();
             }         
                     
@@ -177,7 +178,8 @@ namespace WHTransfer
         private async Task Complete()
         {
             try
-            {              
+            {
+                DoneItems.Clear();
                 foreach (IBTItem i in lines)
                 {
                     if (!DoneItems.Contains(i.ItemCode)) {
@@ -194,7 +196,7 @@ namespace WHTransfer
                             Request2.Method = RestSharp.Method.POST;
                             var cancellationTokenSource2 = new CancellationTokenSource();
                             var res2 = await client2.ExecuteAsync(Request2, cancellationTokenSource2.Token);
-                            if (!(res2.IsSuccessful && res2.Content != null))
+                            if (res2.IsSuccessful && res2.Content != null)
                             {
                                 str2 = $"POST?itemCode={i.ItemCode}&JnlAcc={JnlAcc}&JnlDate={DateTime.Now.ToString("dd MMM yyyy")}&JobCode={i.iTrfID}&Desc={i.iTrfID + "-Transfer items out"}&Ref={DateTime.Now.ToString("ddMMMyyyy") + "-" + i.iTrfID}&Qty={(k/-1)}&Store={CurrentHeader.FromWH}";
                                 Request2 = new RestSharp.RestRequest();
@@ -202,39 +204,55 @@ namespace WHTransfer
                                 Request2.Method = RestSharp.Method.POST;
                                 cancellationTokenSource2 = new CancellationTokenSource();
                                 res2 = await client2.ExecuteAsync(Request2, cancellationTokenSource2.Token);
-                                if (!(res2.IsSuccessful && res2.Content != null))
+                                if (res2.IsSuccessful && res2.Content != null)
                                 {
-                                    //await DisplayAlert("Error!", "Could not delete record", "OK");
-                                    await DisplayAlert("Complete", "Transfer complete!", "OK");
-                                    Navigation.RemovePage(Navigation.NavigationStack[2]);
-                                    await Navigation.PopAsync();
+                                    RestSharp.RestClient client = new RestSharp.RestClient();
+                                    string path = "IBTHeader";
+                                    client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                                    {
+                                        string str = $"DELETE?coid={CurrentHeader.ID}";
+                                        var Request = new RestSharp.RestRequest();
+                                        Request.Resource = str;
+                                        Request.Method = RestSharp.Method.DELETE;
+                                        var cancellationTokenSource = new CancellationTokenSource();
+                                        var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                                        if (res.IsSuccessful && res.Content != null)
+                                        {
+                                            
+                                        }
+										else
+										{
+                                            await DisplayAlert("Error","Could not upload","OK");
+                                            return;
+                                        }
+                                    } 
+                                }
+                                else
+                                {
+                                    await DisplayAlert("Error", "Could not upload", "OK");
                                     return;
                                 }
                             }
+                            else if (!res2.IsSuccessful && res2.Content != null)
+							{
+                                await DisplayAlert("Error!",""+res2.Content.Substring(res2.Content.IndexOf("Message"),res2.Content.IndexOf("Data")-res2.Content.IndexOf("Message")),"OK");
+                                return;
+                            }
+                            else
+                            {
+                                await DisplayAlert("Error", "Could not upload", "OK");
+                                return;
+                            }
                         }
                     }
-                }
-                RestSharp.RestClient client = new RestSharp.RestClient();
-                string path = "IBTHeader";
-                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
-                {
-                    string str = $"DELETE?coid={CurrentHeader.ID}";
-                    var Request = new RestSharp.RestRequest();
-                    Request.Resource = str;
-                    Request.Method = RestSharp.Method.DELETE;
-                    var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                    if (!(res.IsSuccessful && res.Content != null))
-                    {
-                        await DisplayAlert("Error!", "Could not delete record", "OK");
-                        return;
-                    }
-                }
+                }               
             }
-            catch
+            catch(Exception ed)
             {
-            }
-            await DisplayAlert("Complete!","All items have been saved","OK");
+                await DisplayAlert("Error!", "Could not complete", "OK");
+                return;
+            }         
+            await DisplayAlert("Complete", "Transfer complete!", "OK");
             Navigation.RemovePage(Navigation.NavigationStack[2]);
             await Navigation.PopAsync();
         }

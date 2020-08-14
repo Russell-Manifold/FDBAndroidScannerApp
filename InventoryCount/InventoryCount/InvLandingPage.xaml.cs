@@ -43,7 +43,7 @@ namespace InventoryCount
                     {
                         CustQty = Convert.ToBoolean(row["AllowCustomQty"]);
                         WHIDs.Add(""+row["Whse"]);
-                        pickerCountID.Items.Add(""+row["CountID"]);
+                        pickerCountID.Items.Add(""+row["CountID"]+"- "+row["Description"]);
                     }
                 }
                 else
@@ -60,7 +60,7 @@ namespace InventoryCount
             if (pickerCountID.SelectedIndex>-1)
             {
                 WH = WHIDs[pickerCountID.SelectedIndex];
-                await Navigation.PushAsync(new CountPage(Convert.ToInt32(pickerCountID.SelectedItem.ToString())));
+                await Navigation.PushAsync(new CountPage(Convert.ToInt32(pickerCountID.SelectedItem.ToString().Split('-')[0])));
             }
             Loading.IsVisible = false;
         }

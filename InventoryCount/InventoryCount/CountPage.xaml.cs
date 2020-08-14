@@ -385,7 +385,6 @@ namespace InventoryCount
             message.DisplayMessage("Complete!",true);
             await Navigation.PopAsync();
         }
-      
         private async void Entry_Focused(object sender, FocusEventArgs e)
         {
             await Task.Delay(110);
@@ -483,9 +482,9 @@ namespace InventoryCount
                 }
                 else
                 {
+                    items.Where(x => x.BarCode == currentItem.BarCode).First().Complete = true;
                     items.Where(x => x.BarCode == currentItem.BarCode).First().FinalQTY = items.Where(x => x.BarCode == currentItem.BarCode).First().SecondScanQty;
-                    await Navigation.PushAsync(new AcceptScanPage(currentItem,QTY));
-                    return true;
+                    //await Navigation.PushAsync(new AcceptScanPage(currentItem,QTY));
                 }
             }
             if (!await SendData())
