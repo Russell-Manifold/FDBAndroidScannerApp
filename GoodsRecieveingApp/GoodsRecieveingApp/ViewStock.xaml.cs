@@ -271,7 +271,7 @@ namespace GoodsRecieveingApp
                 var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                 if (res.IsSuccessful && res.Content.Split('|')[0].Contains("0"))
                 {
-                    str = $"GET?qrystr=ACCGRP|0|{res.Content.Replace('"', ' ').Replace('\\', ' ').Trim().Split('|')[1]}|5";
+                    str = $"GET?qrystr=ACCGRP|0|{res.Content.Replace('"', ' ').Replace('\\', ' ').Trim().Split('|')[1]}|7";
                     Request = new RestRequest(str, Method.GET);
                     cancellationTokenSource = new CancellationTokenSource();
                     res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
