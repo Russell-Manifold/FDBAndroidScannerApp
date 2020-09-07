@@ -96,7 +96,7 @@ namespace PickAndPack
             if (await Check())
             {
                 if (await InvModule()) { 
-                    if (!await SendToPastel())
+                    if (!await SendToPastel())//Add Check or mast just say that must do on other screeen ?
                     await DisplayAlert("Error!", "Could not send data to pastel", "OK");
                 }
             }
@@ -149,7 +149,12 @@ namespace PickAndPack
                 //at FDBWebAPI.Controllers.AddDocumentController.AddDocument(String DocHead, String Docline, String DocType) in E:\\GithubRepos\\FDB\\FirstDutchWebServiceAPI\\FDBWebAPI\\Controllers\\AddDocumentController.cs:line 38"
                 if (res.IsSuccessful && res.Content.Contains("0"))
                 {
-                    await DisplayAlert("Complete!", "Invoice "+res.Content.Split('|')[1] + " scucessfully generated in Pastel", "OK");
+                    await DisplayAlert("Complete!", "Invoice "+res.Content.Split('|')[1] + " successfully generated in Pastel", "OK");
+                    return true;
+				}
+				else if(res.IsSuccessful &&res.Content.Contains("99"))
+				{
+                    await DisplayAlert("Error!", "Your document could not be sent due to"+Environment.NewLine+res.Content, "OK");
                     return true;
                 }
             }
