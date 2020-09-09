@@ -17,105 +17,136 @@ namespace PickAndPack
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class AuthOut : ContentPage
 	{
-        private static string docCode = "";
         IMessage message = DependencyService.Get<IMessage>();
+        private List<string> CompleteNums = new List<string>();
+        private List<string> ErrorDocs = new List<string>();
+        private List<string> CompleteCodes = new List<string>();
         public AuthOut()
 		{
 			InitializeComponent();
-		}
+            _=GetItems();
+			if (!GoodsRecieveingApp.MainPage.AuthDispatch)
+			{
+                btnComplete.IsEnabled = false;
+			}
+        }
         public async void PopData()
         {
             lstItems.ItemsSource = null;
-            List<DocLine> lines = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode);
             List<DocLine> list = new List<DocLine>();
-            foreach (string s in lines.Select(x => x.ItemCode).Distinct())
-            {
-                foreach (int i in lines.Where(x => x.ItemCode == s).Select(x => x.PalletNum).Distinct())
+            foreach (string docItem in CompleteNums)
+			{
+                List<DocLine> lines = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docItem);               
+                foreach (string s in lines.Select(x => x.ItemCode).Distinct())
                 {
-                    int Pall = lines.Where(x => x.ItemCode == s && x.PalletNum == i).Select(x => x.PalletNum).FirstOrDefault();
-                    string itemdesc = lines.Where(x => x.ItemCode == s && x.PalletNum == i).Select(x => x.ItemDesc).FirstOrDefault();
-                    DocLine TempDoc = new DocLine() { PalletNum = Pall, ItemDesc = itemdesc };
-                    TempDoc.ScanAccQty = (lines.Where(x => x.ItemCode == s && x.PalletNum == i).Sum(x => x.ScanAccQty));
-                    TempDoc.ItemQty = (lines.Where(x => x.ItemCode == s).First().ItemQty);
-                    TempDoc.Balacnce = TempDoc.ItemQty - TempDoc.ScanAccQty;
-                    if (i == 0)
+                    foreach (int i in lines.Where(x => x.ItemCode == s).Select(x => x.PalletNum).Distinct())
                     {
-                        TempDoc.Complete = "Orig";
-                    }
-                    else
-                    {
-                        if (TempDoc.Balacnce == 0)
+                        int Pall = lines.Where(x => x.ItemCode == s && x.PalletNum == i).Select(x => x.PalletNum).FirstOrDefault();
+                        string itemdesc = lines.Where(x => x.ItemCode == s && x.PalletNum == i).Select(x => x.ItemDesc).FirstOrDefault();
+                        DocLine TempDoc = new DocLine() { PalletNum = Pall, ItemDesc = itemdesc };
+                        TempDoc.ScanAccQty = (lines.Where(x => x.ItemCode == s && x.PalletNum == i).Sum(x => x.ScanAccQty));
+                        TempDoc.ItemQty = (lines.Where(x => x.ItemCode == s).First().ItemQty);
+                        TempDoc.Balacnce = TempDoc.ItemQty - TempDoc.ScanAccQty;
+                        if (i == 0)
                         {
-                            TempDoc.Complete = "Yes";
-                        }
-                        else if (TempDoc.ScanAccQty == 0)
-                        {
-                            TempDoc.Complete = "NotStarted";
+                            TempDoc.Complete = "Orig";
                         }
                         else
                         {
-                            TempDoc.Complete = "No";
+                            if (TempDoc.Balacnce == 0)
+                            {
+                                TempDoc.Complete = "Yes";
+                            }
+                            else if (TempDoc.ScanAccQty == 0)
+                            {
+                                TempDoc.Complete = "NotStarted";
+                            }
+                            else
+                            {
+                                TempDoc.Complete = "No";
+                            }
                         }
-                    }
 
-                    list.Add(TempDoc);
+                        list.Add(TempDoc);
+                    }
                 }
-            }
-            //list.RemoveAll(x => x.ItemCode.Length < 2);
-            //lstItems.ItemsSource = list.OrderBy(x => new { x.ItemDesc , x.PalletNum } );
+            }           
+            LodingIndiactor.IsVisible = false;
             lstItems.ItemsSource = list;
         }
         private async void BtnComplete_Clicked(object sender, EventArgs e)
         {
-
             if (GoodsRecieveingApp.MainPage.AuthDispatch)
-            { 
-                if (!await SendToPastel())
-                    await DisplayAlert("Error!", "Could not send data to pastel", "OK");
-			}
+            {
+                await SendToPastel();
+				if (ErrorDocs.Count>0)
+				{
+                    await DisplayAlert("Error!", "The following documents could not be uploaded", "View");
+					foreach (string s in ErrorDocs)
+					{
+                        await DisplayAlert("Error!", s, "Next");
+                    }
+                }
+                if (CompleteCodes.Count > 0)
+                {
+                    await DisplayAlert("Complete!", "The following documents have been uploaded here are the INV numbers", "View");
+                    foreach (string s in CompleteCodes)
+                    {
+                        await DisplayAlert("Complete!", s, "Next");
+                    }
+                }
+            }
 			else
 			{
                 await DisplayAlert("Error!", "You do not have access to send these", "OK");
             }
-
-
         }
         private async Task<bool> SendToPastel()
         {
-            //Do a foreach for every docline
-            List<DocLine> docs = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode);
-            DataTable det = await GetDocDetails(docCode);
-            if (det == null)
-            {
-                return false;
-            }
-            string docL = CreateDocLines(docs, det);//33.5|6|60|69|PCE|15|3|0|1215|8 Lt clear locked storage box|4|001%2342.5|6|77.6|89.24|PCE|15|3|0|1216|13 Lt clear locked storage box|4|001%2358|12|108.1|124.32|PCE|15|3|0|1217|20 Lt clear locked storage box|4|001%23101|8|170|195.5|PCE|15|3|0|6716000084401|Filo Laundry Hamper Romantic Ivory|4|001%23
-            string docH = CreateDocHeader(det);//||Y|TAO01|29/06/2020|IO170852|N|0||||Take a Lot  JHB Distrubution|Cnr Riverfields Boulevard &|First Road, Witfontein Ext 54|Kempton Park,Johannesburg 1619|||||27/09/2019||||1
-            if (docL == "" || docH == "")
-                return false;
-            RestClient client = new RestClient();
-            string path = "AddDocument";
-            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
-            {
-                string str = $"GET?DocHead={docH}&Docline={docL}&DocType=103";
-                var Request = new RestRequest(str, Method.POST);
-                var cancellationTokenSource = new CancellationTokenSource();
-                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                //System.IndexOutOfRangeException: Subscript out of range
-                //at PasSDK._PastelPartnerSDK.DefineDocumentHeader(String Data, Boolean& AdditionalCostInvoice)
-                //at FDBWebAPI.Controllers.AddDocumentController.AddDocument(String DocHead, String Docline, String DocType) in E:\\GithubRepos\\FDB\\FirstDutchWebServiceAPI\\FDBWebAPI\\Controllers\\AddDocumentController.cs:line 38"
-                if (res.IsSuccessful && res.Content.Contains("0"))
+            ErrorDocs.Clear();
+			foreach (string docCode in CompleteNums)
+			{
+                List<DocLine> docs = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode);
+                DataTable det = await GetDocDetails(docCode);
+                if (det == null)
                 {
-                    await DisplayAlert("Complete!", "Invoice " + res.Content.Split('|')[1] + " successfully generated in Pastel", "OK");
-                    return true;
+                    ErrorDocs.Add(docCode);
+                    continue;
                 }
-                else if (res.IsSuccessful && res.Content.Contains("99"))
+                string docL = CreateDocLines(docs, det);
+                string docH = CreateDocHeader(det);
+                if (docL == "" || docH == "")
                 {
-                    await DisplayAlert("Error!", "Your document could not be sent due to" + Environment.NewLine + res.Content, "OK");
-                    return true;
+                    ErrorDocs.Add(docCode);
+                    continue;
+                }
+                RestClient client = new RestClient();
+                string path = "AddDocument";
+                client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+                {
+                    string str = $"GET?DocHead={docH}&Docline={docL}&DocType=103";
+                    var Request = new RestRequest(str, Method.POST);
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("0"))
+                    {                       
+                        CompleteCodes.Add(docCode+" - "+res.Content.Split('|')[1]);                       
+                    }
+                    else if (res.IsSuccessful && res.Content.Contains("99"))
+                    {
+                        ErrorDocs.Add(docCode+" - "+res.Content);
+					}else
+					{
+                        ErrorDocs.Add(docCode);
+                    }
                 }
             }
-            return false;
+			foreach (string s in CompleteCodes)
+			{
+                CompleteNums.Remove(s.Trim().Split(' ')[0]);
+                await SQLRemove(s.Trim().Split(' ')[0]);
+			}
+            return true;
         }
         string CreateDocHeader(DataTable det)
         {
@@ -136,22 +167,40 @@ namespace PickAndPack
             }
             return s;
         }
+        private async Task SQLRemove(string doc)
+		{
+            RestClient client = new RestClient();
+            string path = "DocumentSQLConnection";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"GET?qry=DELETE * FROM tblTempDocLines,tblTempDocHeader WHERE DocNum='" + doc + "'";
+                var Request = new RestRequest(str, Method.GET);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("0"))
+                {
+                }
+            }
+        }
         private async Task<bool> Check()
         {
-            List<DocLine> lines = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode);
-            foreach (DocLine dc in lines.Where(x => x.PalletNum == 0))
-            {
-                foreach (DocLine dl in lines.Where(x => x.PalletNum != 0))
+            foreach(string docCode in CompleteNums)
+			{
+                List<DocLine> lines = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode);
+                foreach (DocLine dc in lines.Where(x => x.PalletNum == 0))
                 {
-                    if (dc.ItemCode == dl.ItemCode)
+                    foreach (DocLine dl in lines.Where(x => x.PalletNum != 0))
                     {
-                        dc.Balacnce += dl.ScanAccQty;
+                        if (dc.ItemCode == dl.ItemCode)
+                        {
+                            dc.Balacnce += dl.ScanAccQty;
+                        }
                     }
-                }
-                if (dc.Balacnce != dc.ItemQty)
-                {
-                    return false;
-                }
+                    if (dc.Balacnce != dc.ItemQty)
+                    {
+                        return false;
+                    }
+                }              
             }
             return true;
         }
@@ -174,102 +223,121 @@ namespace PickAndPack
             }
             return null;
         }
+        private async Task GetAllHeaders()
+        {
+            RestSharp.RestClient client = new RestSharp.RestClient();
+            string path = "DocumentSQLConnection";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"GET?qry=SELECT DocNum FROM tblTempDocHeader WHERE Complete=True";
+                var Request = new RestSharp.RestRequest();
+                Request.Resource = str;
+                Request.Method = RestSharp.Method.GET;
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.Content.ToString().Contains("DocNum"))
+                {
+                    DataSet myds = new DataSet();
+                    myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                    CompleteNums.Clear();
+                    foreach (DataRow row in myds.Tables[0].Rows)
+                    {
+                        CompleteNums.Add(row["DocNum"].ToString());
+                        await RemoveAllOld(row["DocNum"].ToString());
+                    }
+                }
+            }
+        }
         private async Task<bool> GetItems()
         {
             if (Connectivity.NetworkAccess == NetworkAccess.Internet)
-            {
+            {               
                 RestSharp.RestClient client = new RestSharp.RestClient();
                 string path = "DocumentSQLConnection";
                 client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
                 {
-                    string str = $"GET?qry=";
-                    var Request = new RestSharp.RestRequest();
-                    Request.Resource = str;
-                    Request.Method = RestSharp.Method.GET;
-                    var cancellationTokenSource = new CancellationTokenSource();
-                    var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                    if (res.Content.ToString().Contains("DocNum"))
-                    {
-                        DataSet myds = new DataSet();
-                        myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
-                        foreach (DataRow row in myds.Tables[0].Rows)
+                    await GetAllHeaders();
+                    foreach (string strNum in CompleteNums)
+					{
+                        string str = $"GET?qry=SELECT * FROM tblTempDocLines WHERE DocNum='"+strNum+"'";
+                        var Request = new RestSharp.RestRequest();
+                        Request.Resource = str;
+                        Request.Method = RestSharp.Method.GET;
+                        var cancellationTokenSource = new CancellationTokenSource();
+                        var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                        if (res.Content.ToString().Contains("DocNum"))
                         {
-                            var Doc = new DocLine();
-                            await RemoveAllOld(row["DocNum"].ToString());
-                        }
-                        foreach (DataRow row in myds.Tables[0].Rows)
-                        {
-                            try
+                            DataSet myds = new DataSet();
+                            myds = Newtonsoft.Json.JsonConvert.DeserializeObject<DataSet>(res.Content);
+                            foreach (DataRow row in myds.Tables[0].Rows)
                             {
-                                var Doc = new DocLine();
-                                await RemoveAllOld(row["DocNum"].ToString());
-                                Doc.DocNum = row["DocNum"].ToString();
-                                Doc.SupplierCode = row["SupplierCode"].ToString();
-                                Doc.SupplierName = row["SupplierName"].ToString();
-                                Doc.ItemBarcode = row["ItemBarcode"].ToString();
-                                Doc.ItemCode = row["ItemCode"].ToString();
-                                Doc.ItemDesc = row["ItemDesc"].ToString();
-                                Doc.Bin = row["Bin"].ToString();
                                 try
                                 {
-                                    Doc.ScanAccQty = Convert.ToInt32(row["ScanAccQty"].ToString().Trim());
+                                    var Doc = new DocLine();
+                                    await RemoveAllOld(row["DocNum"].ToString());
+                                    Doc.DocNum = row["DocNum"].ToString();
+                                    Doc.SupplierCode = row["SupplierCode"].ToString();
+                                    Doc.SupplierName = row["SupplierName"].ToString();
+                                    Doc.ItemBarcode = row["ItemBarcode"].ToString();
+                                    Doc.ItemCode = row["ItemCode"].ToString();
+                                    Doc.ItemDesc = row["ItemDesc"].ToString();
+                                    Doc.Bin = row["Bin"].ToString();
+                                    try
+                                    {
+                                        Doc.ScanAccQty = Convert.ToInt32(row["ScanAccQty"].ToString().Trim());
+                                    }
+                                    catch
+                                    {
+                                        Doc.ScanAccQty = 0;
+                                    }
+                                    Doc.ScanRejQty = 0;
+                                    try
+                                    {
+                                        Doc.PalletNum = Convert.ToInt32(row["PalletNumber"].ToString().Trim());
+                                    }
+                                    catch
+                                    {
+                                        Doc.PalletNum = 0;
+                                    }
+                                    try
+                                    {
+                                        Doc.Balacnce = Convert.ToInt32(row["Balacnce"].ToString().Trim());
+                                    }
+                                    catch
+                                    {
+                                        Doc.Balacnce = 0;
+                                    }
+                                    if (Convert.ToInt32(Doc.Balacnce) == -1)
+                                    {
+                                        Doc.Balacnce = 0;
+                                    }
+                                    Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
+                                    await GoodsRecieveingApp.App.Database.Insert(Doc);
                                 }
-                                catch
+                                catch (Exception ex)
                                 {
-                                    Doc.ScanAccQty = 0;
+                                    LodingIndiactor.IsVisible = false;
+                                    Vibration.Vibrate();
+                                    message.DisplayMessage("Error In Server!!" + ex, true);
+                                    return false;
                                 }
-                                Doc.ScanRejQty = 0;
-                                try
-                                {
-                                    Doc.PalletNum = Convert.ToInt32(row["PalletNumber"].ToString().Trim());
-                                }
-                                catch
-                                {
-                                    Doc.PalletNum = 0;
-                                }
-                                try
-                                {
-                                    Doc.Balacnce = Convert.ToInt32(row["Balacnce"].ToString().Trim());
-                                }
-                                catch
-                                {
-                                    Doc.Balacnce = 0;
-                                }
-                                if (Convert.ToInt32(Doc.Balacnce) == -1)
-                                {
-                                    Doc.Balacnce = 0;
-                                }
-                                Doc.ItemQty = Convert.ToInt32(row["ItemQty"].ToString().Trim());
-                                await GoodsRecieveingApp.App.Database.Insert(Doc);
-                            }
-                            catch (Exception ex)
-                            {
-                                LodingIndiactor.IsVisible = false;
-                                Vibration.Vibrate();
-                                message.DisplayMessage("Error In Server!!" + ex, true);
-                                return false;
                             }
                         }
-                        return true;
-                    }
-                    else
-                    {
-                        LodingIndiactor.IsVisible = false;
-                        Vibration.Vibrate();
-                        message.DisplayMessage("Error Invalid SO Code!!", true);
                     }
                 }
+                PopData();
             }
             return false;
         }
         private async Task<bool> RemoveAllOld(string docNum)
         {
             try
-            {
+            {               
                 foreach (DocLine dl in (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docNum)))
                 {
                     await GoodsRecieveingApp.App.Database.Delete(dl);
                 }
+                await GoodsRecieveingApp.App.Database.Delete(await GoodsRecieveingApp.App.Database.GetHeader(docNum));
             }
             catch
             {

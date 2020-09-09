@@ -21,7 +21,7 @@
                 <Label Grid.Row="0" Grid.Column="3" Text="BAL" FontSize="15" FontAttributes="Bold"/>
                 <Label Grid.Row="0" Grid.Column="4" Text="Pallet" FontSize="15" FontAttributes="Bold"/>
             </Grid>
-            <ActivityIndicator IsVisible="False" x:Name="LodingIndiactor" IsRunning="True" />
+            <ActivityIndicator IsVisible="True" x:Name="LodingIndiactor" IsRunning="True" />
             <ScrollView BackgroundColor="AliceBlue">
                 <StackLayout>
                     <ListView x:Name="lstItems" ItemSelected="LstItems_ItemSelected" HasUnevenRows="True">

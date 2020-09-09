@@ -91,14 +91,30 @@ namespace PickAndPack
             }
             return true;
         }
+        private async Task SQLSetComplete()
+        {
+            RestClient client = new RestClient();
+            string path = "DocumentSQLConnection";
+            client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
+            {
+                string str = $"GET?qry=UPDATE tblTempDocHeader SET Complete=1 WHERE DocNum='" + docCode + "'";
+                var Request = new RestRequest(str, Method.GET);
+                var cancellationTokenSource = new CancellationTokenSource();
+                var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                if (res.IsSuccessful && res.Content.Contains("0"))
+                {
+                }
+            }
+        }
         private async void BtnComplete_Clicked(object sender, EventArgs e)
         {
             if (await Check())
             {
-                if (await InvModule()) { 
-                    if (!await SendToPastel())//Add Check or mast just say that must do on other screeen ?
-                    await DisplayAlert("Error!", "Could not send data to pastel", "OK");
-                }
+                await SQLSetComplete();
+                //if (await InvModule()) { 
+                //    if (!await SendToPastel())//Add Check or mast just say that must do on other screeen ?
+                //    await DisplayAlert("Error!", "Could not send data to pastel", "OK");
+                //}
             }
             else
             {
