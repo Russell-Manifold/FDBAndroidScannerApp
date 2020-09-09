@@ -70,5 +70,10 @@ namespace PickAndPack
         {
             await Navigation.PushAsync(new HandOverPage());
         }
+
+        private async void btnReleaseOrd_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new AuthOut());
+        }
     }
 }

@@ -344,5 +344,13 @@ namespace PickAndPack
             }
             return true;
         }
+
+        private void LstItems_ItemSelected() { 
+        }
+
+        private void lstItems_ItemSelected_1(object sender, SelectedItemChangedEventArgs e)
+        {
+
+        }
     }
 }
