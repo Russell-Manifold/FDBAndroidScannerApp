@@ -97,12 +97,15 @@ namespace PickAndPack
             string path = "DocumentSQLConnection";
             client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
             {
-                string str = $"GET?qry=UPDATE tblTempDocHeader SET Complete=1 WHERE DocNum='" + docCode + "'";
-                var Request = new RestRequest(str, Method.GET);
+                string str = $"POST?qry=UPDATE tblTempDocHeader SET Complete=1 WHERE DocNum='" + docCode + "'";
+                var Request = new RestRequest(str, Method.POST);
                 var cancellationTokenSource = new CancellationTokenSource();
                 var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                if (res.IsSuccessful && res.Content.Contains("0"))
+                if (res.IsSuccessful && res.Content.Contains("Complete"))
                 {
+                    await DisplayAlert("Complete!","The order has been sent for approval","OK");
+                    Navigation.RemovePage(Navigation.NavigationStack[Navigation.NavigationStack.Count()-1]);
+                    await Navigation.PopAsync();
                 }
             }
         }

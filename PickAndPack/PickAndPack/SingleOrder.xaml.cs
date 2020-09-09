@@ -26,6 +26,15 @@ namespace PickAndPack
             InitializeComponent();
             txfSOCode.Focused += Entry_Focused;
             txfItemCode.Focused += Entry_Focused;
+            _= checkCompete();         
+        }
+        private async Task checkCompete()
+		{
+            if (await CompleteCheck())
+            {
+                CompletedStack.IsVisible = true;
+                palletAddStack.IsVisible = false;
+            }
         }
         protected override void OnAppearing()
         {
@@ -62,14 +71,22 @@ namespace PickAndPack
                         await Navigation.PopAsync();
                         return;
                     }
-                    if(!await GetPallets(txfSOCode.Text))
+                    if(!await GetPallets(txfSOCode.Text.ToUpper()))
                     {
                         LodingIndiactor.IsVisible = false;
                         await Navigation.PopAsync();
                         return;
                     }
                     currentPallet = AllPallets.First();
-                    DocLine d = await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(txfSOCode.Text);
+                    DocLine d = new DocLine();
+
+                    try
+					{
+                       d = await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(txfSOCode.Text.ToUpper());
+                    }
+                    catch (Exception ef)
+					{
+					}
                     txfSOCode.IsEnabled=false;
                     txfSOCode.IsVisible = false;
                     try
@@ -80,7 +97,7 @@ namespace PickAndPack
                     {
 
                     }
-                    await GoodsRecieveingApp.App.Database.Insert(new DocHeader { DocNum = txfSOCode.Text, PackerUser = GoodsRecieveingApp.MainPage.UserCode, AccName = d.SupplierName, AcctCode = d.SupplierCode });
+                    await GoodsRecieveingApp.App.Database.Insert(new DocHeader { DocNum = txfSOCode.Text.ToUpper(), PackerUser = GoodsRecieveingApp.MainPage.UserCode, AccName = d.SupplierName, AcctCode = d.SupplierCode });
                     LodingIndiactor.IsVisible = false;
                     lblPalletNumber.Text = ""+currentPallet;
                     ToolbarItem item = new ToolbarItem
@@ -111,7 +128,7 @@ namespace PickAndPack
                 string path = "DocumentSQLConnection";
                 client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
                 {
-                    string str = $"GET?qry=SELECT * FROM PalletTransaction WHERE SONum='{txfSOCode.Text}'";
+                    string str = $"GET?qry=SELECT * FROM PalletTransaction WHERE SONum='{txfSOCode.Text.ToUpper()}'";
                     var Request = new RestSharp.RestRequest();
                     Request.Resource = str;
                     Request.Method = RestSharp.Method.GET;
@@ -136,7 +153,7 @@ namespace PickAndPack
                     }
                     else
                     {
-                        if(!await AddPallet(txfSOCode.Text))
+                        if(!await AddPallet(txfSOCode.Text.ToUpper()))
                         {
                             return false;
                         }
@@ -295,11 +312,11 @@ namespace PickAndPack
                     }
                     if (await CheckOrderItemCode(bi.ItemCode))
                     {
-                        List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.ItemCode == bi.ItemCode).ToList();
+                        List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text.ToUpper())).Where(x => x.ItemCode == bi.ItemCode).ToList();
                         int i = docs.Sum(x => x.ScanAccQty);
                         if (i + bi.Qty <= docs.First().ItemQty)
                         {
-                            DocLine docline = new DocLine { Balacnce = 0, Complete = "No", DocNum = txfSOCode.Text, isRejected = false, ItemBarcode = docs.First().ItemBarcode, ItemDesc = docs.First().ItemDesc, ItemCode = docs.First().ItemCode, ItemQty = docs.First().ItemQty, PalletNum = currentPallet, ScanAccQty = bi.Qty};
+                            DocLine docline = new DocLine { Balacnce = 0, Complete = "No", DocNum = txfSOCode.Text.ToUpper(), isRejected = false, ItemBarcode = docs.First().ItemBarcode, ItemDesc = docs.First().ItemDesc, ItemCode = docs.First().ItemCode, ItemQty = docs.First().ItemQty, PalletNum = currentPallet, ScanAccQty = bi.Qty};
                             await GoodsRecieveingApp.App.Database.Insert(docline);
                             await RefreshList();
                         }
@@ -319,11 +336,11 @@ namespace PickAndPack
                 {
                     if (await CheckOrderBarcode(txfItemCode.Text))
                     {
-                        List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.ItemBarcode == txfItemCode.Text).ToList();
+                        List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text.ToUpper())).Where(x => x.ItemBarcode == txfItemCode.Text).ToList();
                         int i = docs.Sum(x => x.ScanAccQty);
                         if (i + 1 <= docs.First().ItemQty)
                         {
-                            DocLine docline = new DocLine { Balacnce = 0, Complete = "No", DocNum = txfSOCode.Text, isRejected = false, ItemBarcode = txfItemCode.Text, ItemDesc = docs.First().ItemDesc, ItemCode = docs.First().ItemCode, ItemQty = docs.First().ItemQty, PalletNum = currentPallet, ScanAccQty = 1};
+                            DocLine docline = new DocLine { Balacnce = 0, Complete = "No", DocNum = txfSOCode.Text.ToUpper(), isRejected = false, ItemBarcode = txfItemCode.Text, ItemDesc = docs.First().ItemDesc, ItemCode = docs.First().ItemCode, ItemQty = docs.First().ItemQty, PalletNum = currentPallet, ScanAccQty = 1};
                             await GoodsRecieveingApp.App.Database.Insert(docline);
                             await RefreshList();
                         }
@@ -355,7 +372,7 @@ namespace PickAndPack
         }
         private async Task<bool> CompleteCheck()
         {
-            List<DocLine> docs = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text);
+            List<DocLine> docs = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text.ToUpper());
             foreach (string str in docs.Select(x => x.ItemCode).Distinct())
             {
                 try
@@ -374,7 +391,7 @@ namespace PickAndPack
         }
         async Task<bool> CheckOrderBarcode(string Code)
         {
-            List<DocLine> docs =(await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x=>x.ItemBarcode==Code).ToList();
+            List<DocLine> docs =(await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text.ToUpper())).Where(x=>x.ItemBarcode==Code).ToList();
             if (docs.Count == 0)
                 return false;
 
@@ -382,7 +399,7 @@ namespace PickAndPack
         }
         async Task<bool> CheckOrderItemCode(string Code)
         {
-            List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.ItemCode == Code).ToList();
+            List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text.ToUpper())).Where(x => x.ItemCode == Code).ToList();
             if (docs.Count==0)
                 return false;
 
@@ -392,17 +409,17 @@ namespace PickAndPack
         {
             try{
                 lstItems.ItemsSource = null;
-                List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.PalletNum == currentPallet || x.ScanAccQty == 0).OrderBy(s=>s.Bin).ToList(); 
+                List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text.ToUpper())).Where(x => x.PalletNum == currentPallet || x.ScanAccQty == 0).OrderBy(s=>s.Bin).ToList(); 
                 if (docs == null)
                     return;
                 List<DocLine> displayDocs = new List<DocLine>();
                 foreach (string s in docs.Select(x => x.ItemDesc).Distinct())
                 {
-                    DocLine TempDoc = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.ItemDesc == s).First();
+                    DocLine TempDoc = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text.ToUpper())).Where(x => x.ItemDesc == s).First();
                     TempDoc.ScanAccQty = docs.Where(x => x.ItemDesc == s).Sum(x => x.ScanAccQty);
-                    TempDoc.ItemQty = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.ItemDesc == s).First().ItemQty;
+                    TempDoc.ItemQty = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text.ToUpper())).Where(x => x.ItemDesc == s).First().ItemQty;
                     TempDoc.PalletNum = currentPallet;
-                    TempDoc.Balacnce = TempDoc.ItemQty - (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text)).Where(x => x.ItemDesc == s).Sum(x=>x.ScanAccQty);
+                    TempDoc.Balacnce = TempDoc.ItemQty - (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text.ToUpper())).Where(x => x.ItemDesc == s).Sum(x=>x.ScanAccQty);
                     if (TempDoc.Balacnce == 0)
                     {
                         TempDoc.Complete = "Yes";
@@ -507,13 +524,13 @@ namespace PickAndPack
         }
         private async void btnNextPallet_Clicked(object sender, EventArgs e)
         {
-            foreach (DocLine dl in await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text))
+            foreach (DocLine dl in await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(txfSOCode.Text.ToUpper()))
             {
                 if (dl.PalletNum == currentPallet)
                 {
                     if (currentPallet==AllPallets.Last())
                     {
-                        if(!await AddPallet(txfSOCode.Text))
+                        if(!await AddPallet(txfSOCode.Text.ToUpper()))
                         {
                             Vibration.Vibrate();
                             message.DisplayMessage("Pallet could not be added",true);
@@ -591,7 +608,7 @@ namespace PickAndPack
             string path = "DocumentSQLConnection";
             client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
             {
-                string qry = $"INSERT INTO PalletTransaction(SONum, PalletID) VALUES('{txfSOCode.Text}',{pallet})";
+                string qry = $"INSERT INTO PalletTransaction(SONum, PalletID) VALUES('{txfSOCode.Text.ToUpper()}',{pallet})";
                 string str = $"POST?qry={qry}";
                 var Request = new RestSharp.RestRequest();
                 Request.Resource = str;
@@ -638,7 +655,8 @@ namespace PickAndPack
                 t1.Columns.Add("Balance");
                 t1.Columns.Add("ScanRejQty");
                 t1.Columns.Add("PalletNumber");
-                string s = txfSOCode.Text;
+                t1.Columns.Add("GRV");
+                string s = txfSOCode.Text.ToUpper();
                 List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(s)).ToList();
                 foreach (string str in docs.Select(x => x.ItemDesc).Distinct())
                 {
@@ -651,6 +669,7 @@ namespace PickAndPack
                         row["ItemBarcode"] = docs.Where(x => x.PalletNum == ints && x.ItemDesc == str).Select(x => x.ItemBarcode).FirstOrDefault();
                         row["Balance"] = -1;
                         row["PalletNumber"] = ints;
+                        row["GRV"] = false;
                         t1.Rows.Add(row);
                     }
                 }
@@ -712,8 +731,9 @@ namespace PickAndPack
             }
             return false;
         }
-        private void btnComplete_Clicked(object sender, EventArgs e)
+        private async void btnComplete_Clicked(object sender, EventArgs e)
         {
+            await SaveData();
             btnViewSO_Clicked(null,null);
         }
     }

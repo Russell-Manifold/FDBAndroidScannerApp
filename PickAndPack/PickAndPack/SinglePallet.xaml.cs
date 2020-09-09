@@ -409,6 +409,7 @@ namespace PickAndPack
                 t1.Columns.Add("Balance");
                 t1.Columns.Add("ScanRejQty");
                 t1.Columns.Add("PalletNumber");
+                t1.Columns.Add("GRV");
                 row = t1.NewRow();
                 row["DocNum"] = doc.DocNum;
                 row["ItemBarcode"] = doc.ItemBarcode;
@@ -416,6 +417,7 @@ namespace PickAndPack
                 row["Balance"] = 0;
                 row["ScanRejQty"] = 0;
                 row["PalletNumber"] = doc.PalletNum;
+                row["GRV"] = false;
                 t1.Rows.Add(row);
                 ds.Tables.Add(t1);
                 string myds = Newtonsoft.Json.JsonConvert.SerializeObject(ds);
@@ -707,6 +709,7 @@ namespace PickAndPack
                 t1.Columns.Add("Balance");
                 t1.Columns.Add("ScanRejQty");
                 t1.Columns.Add("PalletNumber");
+                t1.Columns.Add("GRV");
                 string s = txfSOCode.Text;
                 List<DocLine> docs = (await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(s)).ToList();
                     foreach (string str in docs.Select(x => x.ItemDesc).Distinct())
@@ -720,6 +723,7 @@ namespace PickAndPack
                             row["ItemBarcode"] = docs.Where(x => x.PalletNum == ints && x.ItemDesc == str).Select(x => x.ItemBarcode).FirstOrDefault();
                             row["Balance"] = 0;
                             row["PalletNumber"] = ints;
+                            row["GRV"] = false;
                             t1.Rows.Add(row);
                         }
                     }
@@ -750,6 +754,7 @@ namespace PickAndPack
             message.DisplayMessage("Loading...", false);
             try
             {
+                await SaveData();
                 await GoodsRecieveingApp.App.Database.GetOneSpecificDocAsync(txfSOCode.Text.ToUpper());
                 await Navigation.PushAsync(new ViewItems(txfSOCode.Text.ToUpper()));
             }

@@ -49,6 +49,7 @@ namespace PickAndPack
                 Vibration.Vibrate();
                 await DisplayAlert("Error!", "Please select options in device config in device configuration", "OK");
                 await Navigation.PopAsync();
+                return;
             }
             //if (!d.PaperPickSlips)
             //{

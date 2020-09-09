@@ -21,58 +21,23 @@ namespace PickAndPack
         private List<string> CompleteNums = new List<string>();
         private List<string> ErrorDocs = new List<string>();
         private List<string> CompleteCodes = new List<string>();
+        private List<DocHeader> DocHeaders = new List<DocHeader>();
         public AuthOut()
 		{
 			InitializeComponent();
-            _=GetItems();
-			if (!GoodsRecieveingApp.MainPage.AuthDispatch)
-			{
+            if (!GoodsRecieveingApp.MainPage.AuthDispatch)
+            {
                 btnComplete.IsEnabled = false;
-			}
+            }
+            _ =GetItems();		
         }
-        public async void PopData()
+        public void PopData()
         {
             lstItems.ItemsSource = null;
-            List<DocLine> list = new List<DocLine>();
-            foreach (string docItem in CompleteNums)
-			{
-                List<DocLine> lines = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docItem);               
-                foreach (string s in lines.Select(x => x.ItemCode).Distinct())
-                {
-                    foreach (int i in lines.Where(x => x.ItemCode == s).Select(x => x.PalletNum).Distinct())
-                    {
-                        int Pall = lines.Where(x => x.ItemCode == s && x.PalletNum == i).Select(x => x.PalletNum).FirstOrDefault();
-                        string itemdesc = lines.Where(x => x.ItemCode == s && x.PalletNum == i).Select(x => x.ItemDesc).FirstOrDefault();
-                        DocLine TempDoc = new DocLine() { PalletNum = Pall, ItemDesc = itemdesc };
-                        TempDoc.ScanAccQty = (lines.Where(x => x.ItemCode == s && x.PalletNum == i).Sum(x => x.ScanAccQty));
-                        TempDoc.ItemQty = (lines.Where(x => x.ItemCode == s).First().ItemQty);
-                        TempDoc.Balacnce = TempDoc.ItemQty - TempDoc.ScanAccQty;
-                        if (i == 0)
-                        {
-                            TempDoc.Complete = "Orig";
-                        }
-                        else
-                        {
-                            if (TempDoc.Balacnce == 0)
-                            {
-                                TempDoc.Complete = "Yes";
-                            }
-                            else if (TempDoc.ScanAccQty == 0)
-                            {
-                                TempDoc.Complete = "NotStarted";
-                            }
-                            else
-                            {
-                                TempDoc.Complete = "No";
-                            }
-                        }
-
-                        list.Add(TempDoc);
-                    }
-                }
-            }           
+            DocHeaders.OrderBy(x=>x.DocNum);
+            lblItemCount.Text="There are "+DocHeaders.Count()+" orders";
             LodingIndiactor.IsVisible = false;
-            lstItems.ItemsSource = list;
+            lstItems.ItemsSource = DocHeaders;
         }
         private async void BtnComplete_Clicked(object sender, EventArgs e)
         {
@@ -95,6 +60,8 @@ namespace PickAndPack
                         await DisplayAlert("Complete!", s, "Next");
                     }
                 }
+                LodingIndiactor.IsVisible = true;
+                _ = GetItems();
             }
 			else
 			{
@@ -130,7 +97,7 @@ namespace PickAndPack
                     var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
                     if (res.IsSuccessful && res.Content.Contains("0"))
                     {                       
-                        CompleteCodes.Add(docCode+" - "+res.Content.Split('|')[1]);                       
+                        CompleteCodes.Add(docCode+" - "+res.Content.Split('|')[1].Replace('"',' ').Trim());                       
                     }
                     else if (res.IsSuccessful && res.Content.Contains("99"))
                     {
@@ -173,36 +140,21 @@ namespace PickAndPack
             string path = "DocumentSQLConnection";
             client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
             {
-                string str = $"GET?qry=DELETE * FROM tblTempDocLines,tblTempDocHeader WHERE DocNum='" + doc + "'";
-                var Request = new RestRequest(str, Method.GET);
+                string str = $"POST?qry=DELETE FROM tblTempDocHeader WHERE DocNum='" + doc + "'";
+                var Request = new RestRequest(str, Method.POST);
                 var cancellationTokenSource = new CancellationTokenSource();
                 var res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
-                if (res.IsSuccessful && res.Content.Contains("0"))
+                if (res.IsSuccessful && res.Content.Contains("Complete"))
                 {
+                    str = $"POST?qry=DELETE FROM tblTempDocLines WHERE DocNum='" + doc + "'";
+                    Request = new RestRequest(str, Method.POST);
+                    cancellationTokenSource = new CancellationTokenSource();
+                    res = await client.ExecuteAsync(Request, cancellationTokenSource.Token);
+                    if (res.IsSuccessful && res.Content.Contains("Complete"))
+                    {
+                    }
                 }
             }
-        }
-        private async Task<bool> Check()
-        {
-            foreach(string docCode in CompleteNums)
-			{
-                List<DocLine> lines = await GoodsRecieveingApp.App.Database.GetSpecificDocsAsync(docCode);
-                foreach (DocLine dc in lines.Where(x => x.PalletNum == 0))
-                {
-                    foreach (DocLine dl in lines.Where(x => x.PalletNum != 0))
-                    {
-                        if (dc.ItemCode == dl.ItemCode)
-                        {
-                            dc.Balacnce += dl.ScanAccQty;
-                        }
-                    }
-                    if (dc.Balacnce != dc.ItemQty)
-                    {
-                        return false;
-                    }
-                }              
-            }
-            return true;
         }
         async Task<DataTable> GetDocDetails(string DocNum)
         {//https://manifoldsa.co.za/FDBAPI/api/GetFullDocDetails/GET?qrystr=ACCHISTL|6|IO170852|102
@@ -229,7 +181,7 @@ namespace PickAndPack
             string path = "DocumentSQLConnection";
             client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
             {
-                string str = $"GET?qry=SELECT DocNum FROM tblTempDocHeader WHERE Complete=True";
+                string str = $"GET?qry=SELECT DocNum,AcctCode,OrderNumber,DeliveryAddress1 FROM tblTempDocHeader WHERE Complete=1";
                 var Request = new RestSharp.RestRequest();
                 Request.Resource = str;
                 Request.Method = RestSharp.Method.GET;
@@ -243,6 +195,33 @@ namespace PickAndPack
                     foreach (DataRow row in myds.Tables[0].Rows)
                     {
                         CompleteNums.Add(row["DocNum"].ToString());
+                        DocHeader dh = new DocHeader();
+                        dh.DocNum = row["DocNum"].ToString();
+                        try
+						{
+                            dh.AcctCode = row["AcctCode"].ToString();
+                        }
+						catch
+						{
+                            dh.AcctCode = "";
+                        }
+                        try
+                        {
+                            dh.DeliveryAddress1 = row["DeliveryAddress1"].ToString();
+                        }
+                        catch
+                        {
+                            dh.DeliveryAddress1 = "";
+                        }
+                        try
+                        {
+                            dh.OrderNumber = row["OrderNumber"].ToString();
+                        }
+                        catch
+                        {
+                            dh.OrderNumber = "";
+                        }
+                        DocHeaders.Add(dh);
                         await RemoveAllOld(row["DocNum"].ToString());
                     }
                 }
@@ -257,6 +236,12 @@ namespace PickAndPack
                 client.BaseUrl = new Uri(GoodsRecieveingApp.MainPage.APIPath + path);
                 {
                     await GetAllHeaders();
+					if (CompleteNums.Count==0)
+					{
+                        await DisplayAlert("Done","There are no futher outstanding orders to complete!","OK");
+                        await Navigation.PopAsync();
+                        return false;
+					}
                     foreach (string strNum in CompleteNums)
 					{
                         string str = $"GET?qry=SELECT * FROM tblTempDocLines WHERE DocNum='"+strNum+"'";
@@ -274,7 +259,6 @@ namespace PickAndPack
                                 try
                                 {
                                     var Doc = new DocLine();
-                                    await RemoveAllOld(row["DocNum"].ToString());
                                     Doc.DocNum = row["DocNum"].ToString();
                                     Doc.SupplierCode = row["SupplierCode"].ToString();
                                     Doc.SupplierName = row["SupplierName"].ToString();
@@ -343,14 +327,6 @@ namespace PickAndPack
             {
             }
             return true;
-        }
-
-        private void LstItems_ItemSelected() { 
-        }
-
-        private void lstItems_ItemSelected_1(object sender, SelectedItemChangedEventArgs e)
-        {
-
         }
     }
 }

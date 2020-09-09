@@ -17,6 +17,8 @@ namespace Data.Model
         public int PackerUser { get; set; }
         public int PickerUser { get; set; }
         public int AuthUser { get; set; }
+        public string DeliveryAddress1 { get; set; }
+        public string OrderNumber { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
 
